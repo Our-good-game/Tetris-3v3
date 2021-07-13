@@ -212,20 +212,25 @@ class ClassicTetris {
         boardWidth = ClassicTetris.BOARD_WIDTH,
         boardHeight = ClassicTetris.BOARD_HEIGHT,
     
-        boardX = 30,
+        boardX = 115,
         boardY = -35,
         squareSide = 28,
-        
-        scoreX = 330,
-        scoreY = 100,
-        levelX = 330,
-        levelY = 130,
-        linesX = 330,
-        linesY = 160,
-        nextX = 330,
-        nextY = 260,
-        nextOffsetX = 330,
-        nextOffsetY = 280,
+        //+75
+        scoreX = 415,
+        scoreY = 50,
+        levelX = 415,
+        levelY = 80,
+        linesX = 415,
+        linesY = 110,
+        nextX = 10,
+        nextY = 50,
+        nextOffsetX = 0,
+        nextOffsetY = 80,
+        //add two next off set
+        nextOffsetX2 = 0,
+        nextOffsetY2 = 200,
+        nextOffsetX3 = 0,
+        nextOffsetY3 = 320,
         pauseX = 145, 
         pauseY = 220,
         //字體屬性
@@ -290,7 +295,7 @@ class ClassicTetris {
     this.boardBorder = [
         -0.5 + this.boardX, 
         -0.5 + this.boardY + 2 * this.squareSide, 
-        0.5 + this.boardX + this.boardWidth * this.squareSide, 
+        0.5 + this.boardX + this.boardWidth * this.squareSide + 1, 
         0.5 + this.boardY + this.boardHeight * this.squareSide 
       ];
     
@@ -305,6 +310,10 @@ class ClassicTetris {
     this.nextY = nextY;
     this.nextOffsetX = nextOffsetX;   // next piece coords
     this.nextOffsetY = nextOffsetY;
+    this.nextOffsetX2 = nextOffsetX2;
+    this.nextOffsetY2 = nextOffsetY2;
+    this.nextOffsetX3 = nextOffsetX3;
+    this.nextOffsetY3 = nextOffsetY3;
     this.pauseX = pauseX;             // pause text coords
     this.pauseY = pauseY;
     
@@ -1573,6 +1582,8 @@ class ClassicTetris {
     this._drawPiece();
     this._drawHUD();
     this._drawNext();
+    this._drawNext2();
+    this._drawNext3();
   }
   
   _drawBackground() {
@@ -1735,6 +1746,40 @@ class ClassicTetris {
           this._drawSquare(
               this.nextOffsetX + (j - b[1]) * this.squareSide, 
               this.nextOffsetY + (i - b[0]) * this.squareSide, 
+              this.next.col[0], this.next.col[1]);
+        }
+      }
+    }
+  }
+  _drawNext2() {
+    if (this.gameState === ClassicTetris.STATE_PAUSE || 
+        this.gameState === ClassicTetris.STATE_GAME_OVER) return;
+    
+    const p = this.next.rot[0];
+    const b = this.next.box;
+    for (let i = b[0]; i < b[0] + b[2]; ++i) {
+      for (let j = b[1]; j < b[1] + b[3]; ++j) {
+        if (p[i][j] != 0) {
+          this._drawSquare(
+              this.nextOffsetX2 + (j - b[1]) * this.squareSide, 
+              this.nextOffsetY2 + (i - b[0]) * this.squareSide, 
+              this.next.col[0], this.next.col[1]);
+        }
+      }
+    }
+  }
+  _drawNext3() {
+    if (this.gameState === ClassicTetris.STATE_PAUSE || 
+        this.gameState === ClassicTetris.STATE_GAME_OVER) return;
+    
+    const p = this.next.rot[0];
+    const b = this.next.box;
+    for (let i = b[0]; i < b[0] + b[2]; ++i) {
+      for (let j = b[1]; j < b[1] + b[3]; ++j) {
+        if (p[i][j] != 0) {
+          this._drawSquare(
+              this.nextOffsetX3 + (j - b[1]) * this.squareSide, 
+              this.nextOffsetY3 + (i - b[0]) * this.squareSide, 
               this.next.col[0], this.next.col[1]);
         }
       }
