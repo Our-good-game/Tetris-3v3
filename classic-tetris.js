@@ -198,7 +198,7 @@ class ClassicTetris {
   static LINE_CLEAR_END = 'line-clear-end';
   
   static LINE_CLEAR = 'line-clear';
-  
+  static ch='null';//檢查旋轉時撞牆問題
   
   // doard size in terms of squares
   // this is typically 10x20, but we are adding 2 invisible rows
@@ -684,7 +684,7 @@ class ClassicTetris {
     this.framesTilDrop = -1;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
-    
+    this.cheakwall = false;
     // frames until the piece automatically moves down
     this.framesTilDrop = 36 + this._getFramesPerGridcell(this.level);   // 18 + this._getFramesPerGridcell(this.level);
     
@@ -1073,27 +1073,55 @@ class ClassicTetris {
       });
       
     }
-    if (this.rotateClockwise && this._canRot((this.pieceRotation + 1) % this.piece.rot.length)) {
-      const oldRotation = this.pieceRotation;
-      this.pieceRotation = (this.pieceRotation + 1) % this.piece.rot.length;
-      
-      // play rotation sound
-      if (this.rotateSound) {
-        this.rotateSound.currentTime = 0;
-        this.rotateSound.play();
+    if (this.rotateClockwise ){
+      if(this._canRot((this.pieceRotation + 1) % this.piece.rot.length)) {
+        const oldRotation = this.pieceRotation;
+        this.pieceRotation = (this.pieceRotation + 1) % this.piece.rot.length;
+ 
+        // play rotation sound
+        if (this.rotateSound) {
+          this.rotateSound.currentTime = 0;
+          this.rotateSound.play();
+        }
+        
+        // fire clockwise rotation event
+        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
+          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+          piece: this.piece.name,
+          position: [ ...this.piecePosition ],
+          oldRotation: oldRotation,
+          newRotation: this.pieceRotation
+        });
+      }else if(this.cheakwall ){
+        if(this.piece.id < 6 && 
+          this._canMove(this.piece,(this.pieceRotation + 1) % this.piece.rot.length,this.piecePosition,1,0)){
+          ++this.piecePosition[0];
+        }else if(this.piece.id == 6 && 
+          this._canMove(this.piece,(this.pieceRotation + 1) % this.piece.rot.length,this.piecePosition,2,0)){
+          this.piecePosition[0]=this.piecePosition[0]+2;
+        }else if(this._canMove(this.piece,(this.pieceRotation + 1) % this.piece.rot.length,this.piecePosition,-1,0)){
+          --this.piecePosition[0];
+        }else return ;
+        const oldRotation = this.pieceRotation;
+        this.pieceRotation = (this.pieceRotation + 1) % this.piece.rot.length;
+        // play rotation sound
+        if (this.rotateSound) {
+          this.rotateSound.currentTime = 0;
+          this.rotateSound.play();
+        }
+        // fire clockwise rotation event
+        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
+          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+          piece: this.piece.name,
+          position: [ ...this.piecePosition ],
+          oldRotation: oldRotation,
+          newRotation: this.pieceRotation
+        });
       }
-      
-      // fire clockwise rotation event
-      this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
-        type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
-        piece: this.piece.name,
-        position: [ ...this.piecePosition ],
-        oldRotation: oldRotation,
-        newRotation: this.pieceRotation
-      });
-      
     }
+      
     if (this.rotateAnticlockwise && this._canRot((this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length)) {
+      
       const oldRotation = this.pieceRotation;
       this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
       
@@ -1551,7 +1579,7 @@ class ClassicTetris {
     }
     return true;
   }
-  
+ 
   // can the piece rotate
   _canRot(rotation) {
     const p = this.piece.rot[rotation];
@@ -1560,8 +1588,14 @@ class ClassicTetris {
         if (p[i][j] != 0) {
           const x = this.piecePosition[0] + j;
           const y = this.piecePosition[1] + i;
-          if (x < 0 || x >= this.boardWidth || y >= this.boardHeight || this.board[y][x] != -1) 
+          if(x < 0 || x >= this.boardWidth || this.board[y][x] != -1){
+            this.cheakwall = true;
             return false;
+          }
+          if(y >= this.boardHeight ){
+            this.cheakwall = false;
+            return false;
+          }
         }
       }
     }
