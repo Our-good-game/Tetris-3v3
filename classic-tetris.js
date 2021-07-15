@@ -1,5 +1,5 @@
+// tetris-main3
 'use strict';
-
 
 
 //-------------------------------------------------------------------------
@@ -233,6 +233,8 @@ class ClassicTetris {
         nextOffsetY3 = 320,
         pauseX = 145, 
         pauseY = 220,
+		holdX = 415,
+        holdY = 220,
         //字體屬性
         canvasFont = '36px georgia',
         canvasFontColor = '#000',
@@ -291,6 +293,7 @@ class ClassicTetris {
     this.boardY = boardY;           // board's top
     this.squareSide = squareSide;   // width of individual squares
     
+    
     // board's bounding box
     this.boardBorder = [
         -0.5 + this.boardX, 
@@ -316,6 +319,8 @@ class ClassicTetris {
     this.nextOffsetY3 = nextOffsetY3;
     this.pauseX = pauseX;             // pause text coords
     this.pauseY = pauseY;
+	this.holdX = holdX;
+    this.holdY = holdY;
     
     // canvas font 
     this.canvasFont = canvasFont;
@@ -413,7 +418,7 @@ class ClassicTetris {
         iniPos: ClassicTetris.I_INI_POS,
         col: this.iColor,
         box: ClassicTetris.I_BOX
-      }
+      },
     ];
     
     // movement/controls
@@ -424,6 +429,8 @@ class ClassicTetris {
     this.rotateAnticlockwise = false;
     this.hardDrop = true;
     this.doUndoPause = false;   // pause state changed
+    this.hold = false;
+    this.haveHold = false;
     
     // pointer coords
     this.xIni = undefined;
@@ -441,6 +448,7 @@ class ClassicTetris {
     this.piecePosition = [ 0, 0 ];    // current piece's position
     this.pieceRotation = 0;           // current piece's rotation
     this.next = this.pieces[0];       // next piece
+    this.holdPiece = undefined;
     
     // game parameters
     this.startLevel = 0;
@@ -653,6 +661,8 @@ class ClassicTetris {
     this.rotateAnticlockwise = false;
     this.hardDrop = false;
     this.doUndoPause = false;
+    this.hold = true;
+    this.haveHold = false;
     
     //  pointer coords
     this.xIni = undefined;
@@ -742,22 +752,22 @@ class ClassicTetris {
   //
   // action                 key           key-code
   // ---------------------------------------------
-  // rotate clockwise       up arrow        38
-  // rotate clockwise       'w'             87
-  // down                   down arrow      40
-  // down                   's'             83
   // left                   left arrow      37
   // left                   'a'             65
   // right                  right arrow     39
   // right                  'd'             68
-  // rotate clockwise       'x'             88
+  // rotate clockwise       up arrow        38
   // rotate clockwise       'k'             75
-  // rotate anticlockwise   'z'             90 
+  // rotate clockwise       'w'             87
+  // rotate clockwise       'x'             88
   // rotate anticlockwise   'l'             76 
+  // rotate anticlockwise   'z'             90 
+  // down                   down arrow      40
+  // down                   's'             83
   // hard drop              space bar       32
   // pause                  esc             27
   // pause                  'p'             80
-  // 
+  // hold                  'shift'          16
   // key event listener
   _handleKeyDown = event => {
     
@@ -806,6 +816,26 @@ class ClassicTetris {
         if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
           this.doUndoPause = true;
         }
+        break;
+      case 16:
+        // hold piece
+        if (!this.haveHold) {
+          this.holdPiece = Object.assign({}, this.piece);
+          this.piece = this.next;
+          this.haveHold = true;
+          this.hold = false;
+        }
+        else if (this.hold) {
+          let tempPiece = this.holdPiece;
+          this.holdPiece = this.piece;
+          this.piece = tempPiece;
+          this.hold = false;
+        }
+        // can't hold
+        else {
+        
+        }
+        event.preventDefault();
         break;
     }
   }
@@ -1341,6 +1371,8 @@ class ClassicTetris {
   _processARE() {
     // wait are frames
     --this.areFrames;
+    // 調整為can hold
+    this.hold = true;
     if (this.areFrames === 0) {
       this.areFrames = -1;
       
@@ -1618,6 +1650,9 @@ class ClassicTetris {
     this._drawNext();
     this._drawNext2();
     this._drawNext3();
+    if (this.haveHold) {
+      this._drawHold();
+    }
   }
   
   _drawBackground() {
@@ -1752,6 +1787,7 @@ class ClassicTetris {
     let levelStr = 'Level:   ';
     let linesStr = 'Lines:   ';
     let nextStr = 'Next';
+	let holdStr = 'Hold';
     if (this.gameState != ClassicTetris.STATE_PAUSE) {
       // show data only if game is not paused
       scoreStr += this.score;
@@ -1765,6 +1801,7 @@ class ClassicTetris {
     this.context.fillText(levelStr, this.levelX, this.levelY);
     this.context.fillText(linesStr, this.linesX, this.linesY);
     this.context.fillText(nextStr, this.nextX, this.nextY);
+	this.context.fillText(holdStr, this.holdX, this.holdY);
   }
 
   // draw next piece
@@ -1833,7 +1870,24 @@ class ClassicTetris {
     this.context.fill();
     this.context.stroke();
   }
-  
+  _drawHold() {
+    
+    if (this.gameState === ClassicTetris.STATE_PAUSE ||
+      this.gameState === ClassicTetris.STATE_GAME_OVER) return;
+      
+    const p = this.holdPiece.rot[0];
+    const b = this.holdPiece.box;
+    for (let i = b[0]; i < b[0] + b[2]; ++i) {
+      for (let j = b[1]; j < b[1] + b[3]; ++j) {
+        if (p[i][j] != 0) {
+          this._drawSquare(
+            this.holdX + (j - b[1]) * this.squareSide,
+            this.holdY + (i - b[0]) * this.squareSide + 30,
+            this.holdPiece.col[0], this.holdPiece.col[1]);
+        }
+      }
+    }
+  }
   
   //-----------------------------------------------------------
   // 
