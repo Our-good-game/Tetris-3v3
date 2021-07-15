@@ -233,7 +233,7 @@ class ClassicTetris {
         nextOffsetY3 = 320,
         pauseX = 145, 
         pauseY = 220,
-		holdX = 415,
+		    holdX = 415,
         holdY = 220,
         //字體屬性
         canvasFont = '36px georgia',
@@ -448,7 +448,7 @@ class ClassicTetris {
     this.piecePosition = [ 0, 0 ];    // current piece's position
     this.pieceRotation = 0;           // current piece's rotation
     this.next = this.pieces[0];       // next piece
-    this.holdPiece = undefined;
+    this.holdPiece = undefined;       // holding poece
     
     // game parameters
     this.startLevel = 0;
@@ -661,8 +661,6 @@ class ClassicTetris {
     this.rotateAnticlockwise = false;
     this.hardDrop = false;
     this.doUndoPause = false;
-    this.hold = true;
-    this.haveHold = false;
     
     //  pointer coords
     this.xIni = undefined;
@@ -819,21 +817,22 @@ class ClassicTetris {
         break;
       case 16:
         // hold piece
-        if (!this.haveHold) {
+        if (this.haveHold) {
+          if (this.hold) {
+            var tempPiece = this.holdPiece;
+            this.piecePosition = this.piece.iniPos.slice(0);
+            this.pieceRotation = 0;
+            this.holdPiece = this.piece;
+            this.piece = tempPiece;
+            this.hold = false;
+          }else return;//can't hold
+        }else {
           this.holdPiece = Object.assign({}, this.piece);
+          this.piecePosition = this.piece.iniPos.slice(0);
+          this.pieceRotation = 0;
           this.piece = this.next;
           this.haveHold = true;
           this.hold = false;
-        }
-        else if (this.hold) {
-          let tempPiece = this.holdPiece;
-          this.holdPiece = this.piece;
-          this.piece = tempPiece;
-          this.hold = false;
-        }
-        // can't hold
-        else {
-        
         }
         event.preventDefault();
         break;
