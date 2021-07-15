@@ -2,7 +2,7 @@
 
 ## TO DO LIST
 - [ ] 1.T S Z 特殊旋轉 
-- [x] 2.tmp，shift (little bug) -游
+- [x] 2.tmp，shift -游
 - [x] 3.多增加兩個next view(尚未random) -廷
 - [ ] 4.背景樣式設計 -游 
 - [ ] 5.主介面選單
