@@ -11,5 +11,6 @@
 - [X] 8.分數計算 
 - [ ] 9.計時 150sec. -廷
 - [ ] 10.Random -偉
+- [ ] 11.反轉 -偉
 
 *Last updated on: 2021/7/1 by Alvin Smith*
