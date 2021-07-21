@@ -1149,25 +1149,51 @@ class ClassicTetris {
       }
     }
       
-    if (this.rotateAnticlockwise && this._canRot((this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length)) {
-      
-      const oldRotation = this.pieceRotation;
-      this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
-      
-      // play rotation sound
-      if (this.rotateSound) {
-        this.rotateSound.currentTime = 0;
-        this.rotateSound.play();
+    if (this.rotateAnticlockwise ){
+      if(this._canRot((this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length)) {
+        const oldRotation = this.pieceRotation;
+        this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
+ 
+        // play rotation sound
+        if (this.rotateSound) {
+          this.rotateSound.currentTime = 0;
+          this.rotateSound.play();
+        }
+        
+        // fire clockwise rotation event
+        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
+          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+          piece: this.piece.name,
+          position: [ ...this.piecePosition ],
+          oldRotation: oldRotation,
+          newRotation: this.pieceRotation
+        });
+      }else if(this.cheakwall ){
+        if(this.piece.id < 6 && 
+          this._canMove(this.piece,(this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length,this.piecePosition,1,0)){
+          ++this.piecePosition[0];
+        }else if(this.piece.id == 6 && 
+          this._canMove(this.piece,(this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length,this.piecePosition,2,0)){
+          this.piecePosition[0]=this.piecePosition[0]+2;
+        }else if(this._canMove(this.piece,(this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length,this.piecePosition,-1,0)){
+          --this.piecePosition[0];
+        }else return ;
+        const oldRotation = this.pieceRotation;
+        this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
+        // play rotation sound
+        if (this.rotateSound) {
+          this.rotateSound.currentTime = 0;
+          this.rotateSound.play();
+        }
+        // fire clockwise rotation event
+        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
+          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+          piece: this.piece.name,
+          position: [ ...this.piecePosition ],
+          oldRotation: oldRotation,
+          newRotation: this.pieceRotation
+        });
       }
-      
-      // fire anticlockwise rotation event
-      this._dispatch(ClassicTetris.PIECE_ROTATE_ANTICLOCKWISE, {
-        type: ClassicTetris.PIECE_ROTATE_ANTICLOCKWISE,
-        piece: this.piece.name,
-        position: [ ...this.piecePosition ],
-        oldRotation: oldRotation,
-        newRotation: this.pieceRotation
-      });
       
     }
     
