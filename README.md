@@ -9,7 +9,7 @@
 - [ ] 6.最下面延遲
 - [X] 7.靠牆壁旋轉時要推回來 -偉
 - [X] 8.分數計算 
-- [ ] 9.計時 150sec. -廷
+- [x] 9.計時 60sec. -廷
 - [ ] 10.Random -偉
 
-*Last updated on: 2021/7/15 by Alvin Smith*
+*Last updated on: 2021/7/22 by Alvin Smith*
