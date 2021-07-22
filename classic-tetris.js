@@ -1845,6 +1845,7 @@ class ClassicTetris {
     // if (this.gameState != ClassicTetris.STATE_PAUSE) {
       // show data only if game is not paused
       let tmp_time = this.time;
+      tmp_time = parseInt(tmp_time);
       scoreStr += this.score;
       levelStr += this.level;
       linesStr += this.lines;
