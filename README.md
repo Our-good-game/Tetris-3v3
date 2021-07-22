@@ -12,4 +12,4 @@
 - [x] 9.計時 60sec. -廷
 - [ ] 10.Random -偉
 
-*Last updated on: 2021/7/22 by Alvin Smith*
+*Last updated on: 2021/7/22 by yogo96245*
