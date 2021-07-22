@@ -97,16 +97,6 @@ class ClassicTetris {
     
   static T_ROT = [
       [
-        [ 0, 0, 0 ],
-        [ 1, 1, 1 ],
-        [ 0, 1, 0 ]
-      ],
-      [
-        [ 0, 1, 0 ],
-        [ 1, 1, 0 ],
-        [ 0, 1, 0 ]
-      ],
-      [
         [ 0, 1, 0 ],
         [ 1, 1, 1 ],
         [ 0, 0, 0 ]
@@ -114,6 +104,16 @@ class ClassicTetris {
       [
         [ 0, 1, 0 ],
         [ 0, 1, 1 ],
+        [ 0, 1, 0 ]
+      ],
+      [
+        [ 0, 0, 0 ],
+        [ 1, 1, 1 ],
+        [ 0, 1, 0 ]
+      ],
+      [
+	    [ 0, 1, 0 ],
+        [ 1, 1, 0 ],
         [ 0, 1, 0 ]
       ]
     ];
@@ -140,7 +140,7 @@ class ClassicTetris {
   static O_INI_POS = [ 4, 2 ];
   static L_INI_POS = [ 4, 1 ];
   static J_INI_POS = [ 4, 1 ];
-  static T_INI_POS = [ 4, 1 ];
+  static T_INI_POS = [ 4, 2 ];
   static I_INI_POS = [ 3, 0 ];
 
   static Z_BOX = [ 1, 0, 2, 3 ]; // x y hei wid
@@ -148,7 +148,7 @@ class ClassicTetris {
   static O_BOX = [ 0, 0, 2, 2 ];
   static L_BOX = [ 1, 0, 2, 3 ];
   static J_BOX = [ 1, 0, 2, 3 ];
-  static T_BOX = [ 1, 0, 2, 3 ];
+  static T_BOX = [ 0, 0, 2, 3 ];
   static I_BOX = [ 2, 0, 1, 4 ]; 
   
   
@@ -217,15 +217,15 @@ class ClassicTetris {
         squareSide = 28,
         //+75
         timeX = 415,
-        timeY = 50,
+        timeY = 60,
         scoreX = 415,
-        scoreY = 80,
+        scoreY = 90,
         levelX = 415,
-        levelY = 110,
+        levelY = 120,
         linesX = 415,
-        linesY = 140,
+        linesY = 150,
         nextX = 10,
-        nextY = 50,
+        nextY = 60,
         nextOffsetX = 0,
         nextOffsetY = 80,
         //add two next off set
@@ -324,7 +324,7 @@ class ClassicTetris {
     this.nextOffsetY3 = nextOffsetY3;
     this.pauseX = pauseX;             // pause text coords
     this.pauseY = pauseY;
-	this.holdX = holdX;
+    this.holdX = holdX;
     this.holdY = holdY;
     
     // canvas font 
@@ -679,7 +679,9 @@ class ClassicTetris {
     this.rotateClockwise = false;
     this.rotateAnticlockwise = false;
     this.hardDrop = false;
-    this.doUndoPause = false;
+    this.doUndoPause = false;	
+    this.hold = false;
+	this.haveHold = false;
     
     //  pointer coords
     this.xIni = undefined;
