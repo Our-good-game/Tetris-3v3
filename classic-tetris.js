@@ -452,7 +452,12 @@ class ClassicTetris {
     this.piece = this.pieces[0];      // current piece
     this.piecePosition = [ 0, 0 ];    // current piece's position
     this.pieceRotation = 0;           // current piece's rotation
-    this.next = this.pieces[0];       // next piece
+    this.next = [
+        this.pieces[0],
+        this.pieces[0],
+        this.pieces[0],
+     ];       // next piece
+    this.queue=[0,1,2,3,4,5,6,-1,0,1,2,3,4,5,6]; //for rondom of pieces rule
     this.holdPiece = undefined;       // holding poece
     
     // game parameters
@@ -634,7 +639,7 @@ class ClassicTetris {
     this._dispatch(ClassicTetris.NEXT_PIECE, {
       type: ClassicTetris.NEXT_PIECE,
       piece: this.piece.name,
-      nextPiece: this.next.name
+      nextPiece: this.next[0].name
     });
     // game loop
     this.gameLoop = true;
@@ -681,17 +686,17 @@ class ClassicTetris {
     this.hardDrop = false;
     this.doUndoPause = false;	
     this.hold = false;
-	this.haveHold = false;
-    
+	  this.haveHold = false;
+    this.queue=[0,1,2,3,4,5,6,-1,0,1,2,3,4,5,6];
     //  pointer coords
     this.xIni = undefined;
     this.yIni = undefined;
     this.tIni = undefined;
     
     // select random pieces
-    this.piece = this.pieces[(Math.random() * this.pieces.length) | 0];
-    this.next = this.pieces[this._nextPieceId()];
-    
+    this._nextPieceId();
+    this.piece = this.next[0];
+    this._nextPieceId();
     // initial piece's position and rotation
     this.piecePosition = this.piece.iniPos.slice(0);
     this.pieceRotation = 0;
@@ -852,7 +857,7 @@ class ClassicTetris {
           this.holdPiece = Object.assign({}, this.piece);
           this.piecePosition = this.piece.iniPos.slice(0);
           this.pieceRotation = 0;
-          this.piece = this.next;
+          this.piece = this.next[0];
           this.haveHold = true;
           this.hold = false;
         }
@@ -1429,10 +1434,10 @@ class ClassicTetris {
       this.pointerMoveDownEnabled = false;
       
       // get next piece
-      this.piece = this.next;
+      this.piece = this.next[0];
       this.piecePosition = this.piece.iniPos.slice(0);
       this.pieceRotation = 0;
-      this.next = this.pieces[this._nextPieceId()];
+      this._nextPieceId();
       
       // try to place current piece
       if (this._canMovePiece(0, 0)) {
@@ -1443,7 +1448,7 @@ class ClassicTetris {
         this._dispatch(ClassicTetris.NEXT_PIECE, {
           type: ClassicTetris.NEXT_PIECE,
           piece: this.piece.name,
-          nextPiece: this.next.name
+          nextPiece: this.next[0].name
         });
         
       } else {
@@ -1574,12 +1579,42 @@ class ClassicTetris {
   //--------------------------------------------------------------------------------------------
   
   _nextPieceId() {
-    let nextId = (Math.random() * 8) | 0;
-    if (nextId === 7 || nextId === this.piece.id) {
-      nextId = (Math.random() * 8) | 0;
-      nextId = (nextId + this.piece.id) % 7;
+    if(this.queue[7]==-1){
+      for(let i=0;i<7;++i){
+        let pos=Math.floor(Math.random()*7);
+        let temp=this.queue[pos];
+        this.queue[pos]=this.queue[i];
+        this.queue[i]=temp;
+      }this.queue[7]=7;
+      for(let i=0;i<7;++i){
+        let pos=Math.floor(Math.random()*7)+8;
+        let temp=this.queue[pos];
+        this.queue[pos]=this.queue[i+8];
+        this.queue[i+8]=temp;
+      }
     }
-    return nextId;
+    if(this.queue[0]==7){
+      for(let i=0;i<7;++i){
+        this.queue[i]=this.queue[i+1];
+      }this.queue[7]=7;
+      for(let i=0;i<7;++i){
+        let pos=Math.floor(Math.random()*7)+8;
+        let temp=this.queue[pos];
+        this.queue[pos]=this.queue[i+8];
+        this.queue[i+8]=temp;
+      }
+    }
+    let temp=this.queue[0];
+    for(let i=0;i<14;++i){
+      this.queue[i]=this.queue[i+1];
+    }this.queue[14]=temp;
+    let i=0;
+    for(let p=0;p<3;++p){
+      if(this.queue[i]==7)++i;
+      this.next[p]=this.pieces[this.queue[i]];
+      ++i;
+    }
+    
   }
     
   // score for lines cleared
@@ -1867,15 +1902,15 @@ class ClassicTetris {
     if (this.gameState === ClassicTetris.STATE_PAUSE || 
         this.gameState === ClassicTetris.STATE_GAME_OVER) return;
     
-    const p = this.next.rot[0];
-    const b = this.next.box;
+    const p = this.next[0].rot[0];
+    const b = this.next[0].box;
     for (let i = b[0]; i < b[0] + b[2]; ++i) {
       for (let j = b[1]; j < b[1] + b[3]; ++j) {
         if (p[i][j] != 0) {
           this._drawSquare(
               this.nextOffsetX + (j - b[1]) * this.squareSide, 
               this.nextOffsetY + (i - b[0]) * this.squareSide, 
-              this.next.col[0], this.next.col[1]);
+              this.next[0].col[0], this.next[0].col[1]);
         }
       }
     }
@@ -1884,15 +1919,15 @@ class ClassicTetris {
     if (this.gameState === ClassicTetris.STATE_PAUSE || 
         this.gameState === ClassicTetris.STATE_GAME_OVER) return;
     
-    const p = this.next.rot[0];
-    const b = this.next.box;
+    const p = this.next[1].rot[0];
+    const b = this.next[1].box;
     for (let i = b[0]; i < b[0] + b[2]; ++i) {
       for (let j = b[1]; j < b[1] + b[3]; ++j) {
         if (p[i][j] != 0) {
           this._drawSquare(
               this.nextOffsetX2 + (j - b[1]) * this.squareSide, 
               this.nextOffsetY2 + (i - b[0]) * this.squareSide, 
-              this.next.col[0], this.next.col[1]);
+              this.next[1].col[0], this.next[1].col[1]);
         }
       }
     }
@@ -1901,15 +1936,15 @@ class ClassicTetris {
     if (this.gameState === ClassicTetris.STATE_PAUSE || 
         this.gameState === ClassicTetris.STATE_GAME_OVER) return;
     
-    const p = this.next.rot[0];
-    const b = this.next.box;
+    const p = this.next[2].rot[0];
+    const b = this.next[2].box;
     for (let i = b[0]; i < b[0] + b[2]; ++i) {
       for (let j = b[1]; j < b[1] + b[3]; ++j) {
         if (p[i][j] != 0) {
           this._drawSquare(
               this.nextOffsetX3 + (j - b[1]) * this.squareSide, 
               this.nextOffsetY3 + (i - b[0]) * this.squareSide, 
-              this.next.col[0], this.next.col[1]);
+              this.next[2].col[0], this.next[2].col[1]);
         }
       }
     }
