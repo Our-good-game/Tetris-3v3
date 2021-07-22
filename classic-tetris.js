@@ -212,30 +212,30 @@ class ClassicTetris {
         boardWidth = ClassicTetris.BOARD_WIDTH,
         boardHeight = ClassicTetris.BOARD_HEIGHT,
     
-        boardX = 115,
+        boardX = 140,
         boardY = -35,
         squareSide = 28,
         //+75
-        timeX = 415,
+        timeX = 440,
         timeY = 60,
-        scoreX = 415,
+        scoreX = 440,
         scoreY = 90,
-        levelX = 415,
+        levelX = 440,
         levelY = 120,
-        linesX = 415,
+        linesX = 440,
         linesY = 150,
-        nextX = 10,
+        nextX = 35,
         nextY = 60,
-        nextOffsetX = 0,
+        nextOffsetX = 25,
         nextOffsetY = 80,
         //add two next off set
-        nextOffsetX2 = 0,
+        nextOffsetX2 = 25,
         nextOffsetY2 = 200,
-        nextOffsetX3 = 0,
+        nextOffsetX3 = 25,
         nextOffsetY3 = 320,
-        pauseX = 145, 
+        pauseX = 220, 
         pauseY = 220,
-		    holdX = 415,
+		holdX = 440,
         holdY = 220,
         //字體屬性
         canvasFont = '36px georgia',
@@ -686,7 +686,7 @@ class ClassicTetris {
     this.hardDrop = false;
     this.doUndoPause = false;	
     this.hold = false;
-	  this.haveHold = false;
+    this.haveHold = false;
     this.queue=[0,1,2,3,4,5,6,-1,0,1,2,3,4,5,6];
     //  pointer coords
     this.xIni = undefined;
@@ -857,9 +857,13 @@ class ClassicTetris {
           this.holdPiece = Object.assign({}, this.piece);
           this.piecePosition = this.piece.iniPos.slice(0);
           this.pieceRotation = 0;
-          this.piece = this.next[0];
           this.haveHold = true;
           this.hold = false;
+          // get next piece
+          this.piece = this.next[0];
+          this.piecePosition = this.piece.iniPos.slice(0);
+          this.pieceRotation = 0;
+          this._nextPieceId();
         }
         event.preventDefault();
         break;
