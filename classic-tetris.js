@@ -464,6 +464,7 @@ class ClassicTetris {
     this.lines = 0;
     this.score = 0;
     this.time = 60;
+    this.last_sec=0;
     this.pressDownScore = 0;
 
     // event listeners
@@ -642,7 +643,7 @@ class ClassicTetris {
     this.gameLoop = true;
 
     do {
-      this._process();
+      this._process(this.time);
       this._render();
       this.time -= this.temp_sec;
       await this._sleep();
@@ -751,7 +752,6 @@ class ClassicTetris {
   _disableUI() {
     this.canvas.style.touchAction = 'none';
   }
-
   _enableUI() {
     this.canvas.style.touchAction = 'auto';
   }
@@ -1053,11 +1053,13 @@ class ClassicTetris {
   // 
   //-----------------------------------------------------------
 
-  _process() {
+  _process(per_sec) {
 
     // game possibly paused/unpaused
     this._pauseCheck();
-
+    if(this.last_time === -1){
+      this.last_time = per_sec;
+    } 
     // process current state
     switch (this.gameState) {
       case ClassicTetris.STATE_DROP:
@@ -1274,7 +1276,10 @@ class ClassicTetris {
           downPressed: this.moveDown
         });
 
-      } else {
+      } else if(this.framesTilDrop != 0){
+        this.framesTilDrop = 36 + this._getFramesPerGridcell(this.level);
+      }
+      else{
         // lock piece if it couldn't move down
         this._lockPiece();
       }
