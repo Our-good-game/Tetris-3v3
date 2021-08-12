@@ -1,5 +1,6 @@
 'use strict';
 
+
 //-------------------------------------------------------------------------
 // 
 // ClassicTetris class
@@ -435,6 +436,12 @@ class ClassicTetris {
     this.hold = false;
     this.haveHold = false;
 
+    // items 
+    this.items_lockSpace = false;
+    this.items_lockSpaceTime = 0;
+    this.items_defense = false;
+    
+
     // pointer coords
     this.xIni = undefined;
     this.yIni = undefined;
@@ -547,6 +554,18 @@ class ClassicTetris {
     }
   }
 
+  setItemsLockSpace () {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    this.items_lockSpaceTime = this.time;
+    this.items_lockSpace = true;
+  }
+
+  setItemsDefense() {
+    this.items_defense = true;
+  }
 
   //----------------------------------------------------------------------------------------
   // 
@@ -643,7 +662,7 @@ class ClassicTetris {
     this.gameLoop = true;
 
     do {
-      this._process(this.time);
+      this._process(this.time); 
       this._render();
       this.time -= this.temp_sec;
       await this._sleep();
@@ -828,6 +847,9 @@ class ClassicTetris {
         break;
       case 32:
         // hard drop
+        if (this.items_lockSpace && this.items_lockSpaceTime - this.time <= 5) {
+          break;
+        }
         event.preventDefault();
         this.hardDrop = true;
         break;
@@ -840,6 +862,7 @@ class ClassicTetris {
         }
         break;
       case 16:
+        event.preventDefault();
         // hold piece
         if (this.haveHold) {
           if (this.hold) {
@@ -862,7 +885,6 @@ class ClassicTetris {
           this.pieceRotation = 0;
           this._nextPieceId();
         }
-        event.preventDefault();
         break;
     }
   }
@@ -1748,8 +1770,9 @@ class ClassicTetris {
     }
   }
 
-  _drawBackground() { 
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  _drawBackground() {
+    // PlayerInterface.nextX = 810
+    this.context.clearRect(0, 0, 810, this.canvas.height);
     this.context.lineWidth = 1;
 
     // if burning a tetris, make background color flash
