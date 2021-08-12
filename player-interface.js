@@ -434,6 +434,10 @@ class PlayerInterface {
     this.hold = false;
     this.haveHold = false;
 
+    // items 
+    this.items_lockSpace = false;
+    this.items_defense = false;
+
     // pointer coords
     this.xIni = undefined;
     this.yIni = undefined;
@@ -545,6 +549,18 @@ class PlayerInterface {
     }
   }
 
+  setItemsLockSpace() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    this.items_lockSpaceTime = this.time;
+    this.items_lockSpace = true;
+  }
+
+  setItemsDefense() {
+    this.items_defense = true;
+  }
 
   //----------------------------------------------------------------------------------------
   // 
@@ -827,6 +843,9 @@ class PlayerInterface {
         break;
       case 32:
         // hard drop
+        if (this.items_lockSpace && this.items_lockSpaceTime - this.time <= 5) {
+          break;
+        }
         event.preventDefault();
         this.hardDrop = true;
         break;  
@@ -1744,7 +1763,7 @@ class PlayerInterface {
   }
 
   _drawBackground() {
-    // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(this.timeX, 0, this.canvas.width, this.canvas.height);
     this.context.lineWidth = 1;
 
     // if burning a tetris, make background color flash
