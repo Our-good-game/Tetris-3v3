@@ -24,6 +24,16 @@
     document.getElementById('defense-btn').addEventListener('click', event => {
       tetris2.setItemsDefense();
     });
+    
+    document.getElementById('hard_hold_on').addEventListener('click', event => {
+      tetris2.setHardHoldOn();
+    });
+    document.getElementById('change_left_right').addEventListener('click', event => {
+      tetris2.setLeftRightChange();
+    });
+    document.getElementById('block_preview').addEventListener('click', event => {
+      tetris2.block_preview();
+    });
   });
   </script>
 </head>
@@ -36,6 +46,11 @@
           <button id='lock-space-btn' style="width:100px;height:30px;">lock-space</button>
           <button id='bonus-btn' style="width:100px;height:30px;">bonus</button>
           <button id='defense-btn' style="width:100px;height:30px;">defense</button>
+        </div>
+        <div style='padding: 0px 200px;'>
+          <button id='hard_hold_on' style="width:100px;height:30px;">強制hold on</button> 
+          <button id='change_left_right' style="width:100px;height:30px;">左右交換</button>
+          <button id='block_preview' style="width:100px;height:30px;">遮蔽方塊</button>
         </div>
         <!-- Play block border  (left) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>

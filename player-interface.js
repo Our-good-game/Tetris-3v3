@@ -438,6 +438,7 @@ class PlayerInterface {
     this.items_lockSpace = false;
     this.items_defense = false;
 
+    this.left_right_change = false;
     // pointer coords
     this.xIni = undefined;
     this.yIni = undefined;
@@ -560,6 +561,53 @@ class PlayerInterface {
 
   setItemsDefense() {
     this.items_defense = true;
+  }
+
+  setHardHoldOn() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    if (this.haveHold) {
+      if (this.hold) {
+        var tempPiece = this.holdPiece;
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.holdPiece = this.piece;
+        this.piece = tempPiece;
+        this.hold = false;
+      } else return;//can't hold
+    } else {
+      this.holdPiece = Object.assign({}, this.piece);
+      this.piecePosition = this.piece.iniPos.slice(0);
+      this.pieceRotation = 0;
+      this.haveHold = true;
+      this.hold = false;
+      // get next piece
+      this.piece = this.next[0];
+      this.piecePosition = this.piece.iniPos.slice(0);
+      this.pieceRotation = 0;
+      this._nextPieceId();
+    }
+    event.preventDefault();
+  }
+
+  setLeftRightChange() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    this.left_right_time = this.time;
+    this.left_right_change = true;
+  }
+
+  block_preview() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    this.block_preview_time = this.time;
+    this.if_block_preview = true;
   }
 
   //----------------------------------------------------------------------------------------
@@ -740,7 +788,6 @@ class PlayerInterface {
     this.gameState = PlayerInterface.STATE_DROP;
   }
 
-
   // add and remove event listeners
   _addEventListeners() {
     this.canvas.addEventListener('contextmenu', this._handleContextMenu, { capture: true, passive: false });
@@ -813,13 +860,21 @@ class PlayerInterface {
       case 65:
         // left
         event.preventDefault();
-        this.moveRight = !(this.moveLeft = true);
+        if (this.left_right_change && this.left_right_time - this.time <= 5) {
+          this.moveLeft = !(this.moveRight = true);
+        } else {
+          this.moveRight = !(this.moveLeft = true);
+        }
         break;
       case 39:
       case 68:
         // right
         event.preventDefault();
-        this.moveLeft = !(this.moveRight = true);
+        if (this.left_right_change && this.left_right_time - this.time <= 5) {
+          this.moveRight = !(this.moveLeft = true);
+        } else {
+          this.moveLeft = !(this.moveRight = true);
+        }
         break;
       case 38:
       case 75:
@@ -884,7 +939,6 @@ class PlayerInterface {
         break;
     }
   }
-
 
   //
   // pointer device inputs:
@@ -1754,12 +1808,17 @@ class PlayerInterface {
     this._drawGhost();
     this._drawPiece();
     this._drawHUD();
-    this._drawNext();
-    this._drawNext2();
-    this._drawNext3();
-    if (this.haveHold) {
-      this._drawHold();
+    if (this.if_block_preview && this.block_preview_time - this.time <= 5) {
+      
+    } else {
+      this._drawNext();
+      this._drawNext2();
+      this._drawNext3();
+      if (this.haveHold) {
+        this._drawHold();
+      }
     }
+    
   }
 
   _drawBackground() {
