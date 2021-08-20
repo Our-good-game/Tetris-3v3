@@ -606,8 +606,8 @@ class ClassicTetris {
   togglePlayPause() {
     if (this.playing) {
       this.doUndoPause = true;
-      if (tetris.gameState !== ClassicTetris.STATE_PAUSE &&
-        tetris.gameState !== ClassicTetris.STATE_GAME_OVER){
+      if (this.gameState !== ClassicTetris.STATE_PAUSE &&
+          this.gameState !== ClassicTetris.STATE_GAME_OVER){
           return false;
       }
     } else {

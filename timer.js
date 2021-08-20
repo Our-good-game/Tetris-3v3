@@ -23,7 +23,7 @@ class  timecount{
         this.run=false;
         this.loop=false;
         this.running();
-        GameCountTime = 120;
+        this.GameCountTime = 120;
     }
     secondcount() { 
         return new Promise(resolve => {

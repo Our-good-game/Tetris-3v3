@@ -707,7 +707,7 @@ class PlayerInterface {
     do {
       this._process();
       this._render();
-      this.time -= this.temp_sec;
+      this.time = timer.GameCountTime;
       await this._sleep();
       if (this.time <= 0.1) {
         this.quit();

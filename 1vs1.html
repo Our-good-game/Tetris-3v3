@@ -1,41 +1,8 @@
 <head>
+  <script src='timer.js'></script>
   <script src='player-interface.js'></script>
   <script src='classic-tetris.js'></script>
-  <script>
-
-  window.addEventListener('load', event => {
-    const canvas = document.getElementById('tetris-canvas');
-    const tetris = new ClassicTetris(canvas);
-    const tetris2 = new PlayerInterface(canvas);
-    document.getElementById('start-stop-btn').addEventListener('click', event => {
-      const startLevel = document.getElementById('level-input').value;
-      tetris.setStartLevel(startLevel);
-      tetris.togglePlayPause();
-	    tetris2.setStartLevel(startLevel);
-      tetris2.togglePlayPause();
-    });
-    document.getElementById('quit-btn').addEventListener('click', event => {
-      tetris.quit();
-	    tetris2.quit();
-    });
-    document.getElementById('lock-space-btn').addEventListener('click', event => {
-      tetris2.setItemsLockSpace();
-    });
-    document.getElementById('defense-btn').addEventListener('click', event => {
-      tetris2.setItemsDefense();
-    });
-    
-    document.getElementById('hard_hold_on').addEventListener('click', event => {
-      tetris2.setHardHoldOn();
-    });
-    document.getElementById('change_left_right').addEventListener('click', event => {
-      tetris2.setLeftRightChange();
-    });
-    document.getElementById('block_preview').addEventListener('click', event => {
-      tetris2.block_preview();
-    });
-  });
-  </script>
+  
 </head>
 <body>
   <div style='user-select:none; color:rgb(85, 83, 211); background-color:rgb(83, 165, 110); font:17px georgia'>
@@ -79,3 +46,40 @@
     </div>
   </div>
 </body>
+<script>
+  const canvas = document.getElementById('tetris-canvas');
+  const timer = new timecount();
+  const tetris = new ClassicTetris(canvas);
+  const tetris2 = new PlayerInterface(canvas);
+window.addEventListener('load', event => {
+  
+  document.getElementById('start-stop-btn').addEventListener('click', event => {
+    const startLevel = document.getElementById('level-input').value;
+    tetris.setStartLevel(startLevel);
+    timer.settime(tetris.togglePlayPause());
+    tetris2.setStartLevel(startLevel);
+    tetris2.togglePlayPause();
+  });
+  document.getElementById('quit-btn').addEventListener('click', event => {
+    tetris.quit();
+    tetris2.quit();
+    timer.resettime()
+  });
+  document.getElementById('lock-space-btn').addEventListener('click', event => {
+    tetris2.setItemsLockSpace();
+  });
+  document.getElementById('defense-btn').addEventListener('click', event => {
+    tetris2.setItemsDefense();
+  });
+  
+  document.getElementById('hard_hold_on').addEventListener('click', event => {
+    tetris2.setHardHoldOn();
+  });
+  document.getElementById('change_left_right').addEventListener('click', event => {
+    tetris2.setLeftRightChange();
+  });
+  document.getElementById('block_preview').addEventListener('click', event => {
+    tetris2.block_preview();
+  });
+});
+</script>
