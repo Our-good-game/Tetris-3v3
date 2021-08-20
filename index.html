@@ -1,40 +1,22 @@
-<head>
-  <script src='classic-tetris.js'></script>
-  <script>
-  window.addEventListener('load', event => {
-    const canvas = document.getElementById('tetris-canvas');
-    const tetris = new ClassicTetris(canvas);
-    document.getElementById('start-stop-btn').addEventListener('click', event => {
-      const startLevel = document.getElementById('level-input').value;
-      tetris.setStartLevel(startLevel);
-      tetris.togglePlayPause();
-    });
-    document.getElementById('quit-btn').addEventListener('click', event => {
-      tetris.quit();
-    });
-  });
-  </script>
-</head>
-<body>
-  <div style='user-select:none; color:rgb(85, 83, 211); background-color:rgb(83, 165, 110); font:17px georgia'>
-    <div style='display:table; margin:0 auto;'>
-      <div style="border:0px blue solid; border-radius:5px; position:relative">
-        <canvas id='tetris-canvas' class='canvas' width='1400' height='700'></canvas>
-	    <!-- Play block border -->
-          <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
-	      <!-- Next block border -->
-	      <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:70px;"></div>
-	      <!-- Score block border -->
-	      <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:505px; left:490px;"></div>
-	      <!-- Hold block border -->
-		  <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:490px;"></div>
-	  </div>
-      <div style='padding:0px 30px 15px 30px;'>
-        <label for='level-input'>Start level:</label>
-        <input id='level-input' name='level-input' type='number' min='0' max='19' value='5'></input>
-        <button id='start-stop-btn'>Play/Pause</button>
-        <button id='quit-btn'>Quit</button>
-      </div>
-    </div>
-  </div>
-</body>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta charset="utf-8">
+        <title>Super Tetris</title>
+        <div style='padding:0px 30px 15px 30px;'>
+            <span style="font-size:3cm;">~Super Tetris~</span><br>
+        </div>
+
+        <div style='padding:50px 60px 20px 160px;'>
+            <input type="button" onclick="javascript:location.href='1vs1.html'" value="Single Mode" name="按鈕名稱" style="width:400px;height:100px;">
+        </div>
+
+        <div style='padding:0px 30px 15px 160px;'>
+            <input type="button" value="Multiplayer mode" name="按鈕名稱" style="width:400px;height:100px;">
+        </div>
+
+    </head>
+    <body background="518929.jpg">
+    </body>
+</html>

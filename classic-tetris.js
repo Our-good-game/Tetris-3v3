@@ -304,7 +304,6 @@ class ClassicTetris {
     ];
 
     // HUD stuff coordinates
-    this.temp_sec = 0.017;
     this.timeX = timeX;
     this.timeY = timeY;
     this.scoreX = scoreX;             // score coords
@@ -470,7 +469,7 @@ class ClassicTetris {
     this.level = 0;
     this.lines = 0;
     this.score = 0;
-    this.time = 60;
+    this.time = 0;
     this.last_sec=0;
     this.pressDownScore = 0;
 
@@ -606,11 +605,15 @@ class ClassicTetris {
 
   togglePlayPause() {
     if (this.playing) {
-      this.temp_sec = 0.017;
       this.doUndoPause = true;
+      if (tetris.gameState !== ClassicTetris.STATE_PAUSE &&
+        tetris.gameState !== ClassicTetris.STATE_GAME_OVER){
+          return false;
+      }
     } else {
       this.play();
     }
+    return true;
   }
 
   quit() {
@@ -623,19 +626,14 @@ class ClassicTetris {
 
   // start new game
   async play() {
-    this.temp_sec = 0.017;
     if (this.playing) return;
     this.playing = true;
-
-
     // disable UI
     // attach event listeners
     this._disableUI();
     this._addEventListeners();
-
     // reset params
     this._resetParams();
-
     // play theme song
     if (this.gameTheme) {
       this.gameTheme.currentTime = 0;
@@ -663,12 +661,13 @@ class ClassicTetris {
 
     do {
       this._process(this.time); 
-      this._render();
-      this.time -= this.temp_sec;
-      await this._sleep();
-      if (this.time <= 0.1) {
-        this.quit();
+      if (tetris.gameState !== ClassicTetris.STATE_PAUSE &&
+        tetris.gameState !== ClassicTetris.STATE_GAME_OVER){
+          this.time = timer.GameCountTime;
       }
+      if (this.time <= 0.1) {this.quit();}    
+      await this._sleep();
+      this._render();
     } while (this.gameLoop);
 
     // remove event listeners
@@ -722,7 +721,7 @@ class ClassicTetris {
     this.level = this.startLevel;
     this.lines = 0;
     this.score = 0;
-    this.time = 60;
+    this.time = timer.GameCountTime;
     this.pressDownScore = 0;
 
     // clear board
@@ -847,7 +846,7 @@ class ClassicTetris {
         break;
       case 32:
         // hard drop
-        if (this.items_lockSpace && this.items_lockSpaceTime - this.time <= 5) {
+        if (this.items_lockSpace && this.items_lockSpaceTime - this.time <= 3) {
           break;
         }
         event.preventDefault();
@@ -1097,8 +1096,6 @@ class ClassicTetris {
         this._processGameOver();
         break;
       case ClassicTetris.STATE_PAUSE:
-        this.temp_sec = 0;
-        // do nothing if paused
         break;
     }
     // clear input flags
@@ -1513,7 +1510,6 @@ class ClassicTetris {
   }
 
   _processGameOver() {
-    this.temp_sec = 0;
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.gameOverLine;
       if (this.gameOverLine < this.boardHeight) {
