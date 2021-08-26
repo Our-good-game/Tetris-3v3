@@ -610,6 +610,36 @@ class PlayerInterface {
     this.if_block_preview = true;
   }
 
+  change_opponent_tetris() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    for(let i =0; i < 7; i++) {
+      this._nextPieceId();
+    }
+  }
+
+  lock_opponent_tetris() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    this.lock_opponent_time = this.time;
+    this.lock_opponent_judge = true;
+  }
+
+  block_one_line() {
+    if (this.items_defense) {
+      this.items_defense = false;
+      return;
+    } 
+    for (let i = 0; i < 10; ++i) {
+        this.board[21][i] = -1;
+    }
+    this.boardHeight--;
+  }
+
   //----------------------------------------------------------------------------------------
   // 
   // helper functions
@@ -1133,7 +1163,10 @@ class PlayerInterface {
     // process current state
     switch (this.gameState) {
       case PlayerInterface.STATE_DROP:
-        this._processDrop();
+        if (this.lock_opponent_judge && this.lock_opponent_time - this.time <= 5) {
+        } else {
+          this._processDrop();
+        }
         break;
       case PlayerInterface.STATE_BURN:
         this._processBurn();

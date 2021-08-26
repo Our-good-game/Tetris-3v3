@@ -19,6 +19,11 @@
           <button id='change_left_right' style="width:100px;height:30px;">左右交換</button>
           <button id='block_preview' style="width:100px;height:30px;">遮蔽方塊</button>
         </div>
+        <div style='padding: 0px 200px;'>
+          <button id='change_opponent_tetris' style="width:100px;height:30px;">換掉對手方塊</button> 
+          <button id='lock_opponent_tetris' style="width:100px;height:30px;">鎖住對手方塊</button>
+          <button id='block_one_line' style="width:100px;height:30px;">長高高1行</button>
+        </div>
         <!-- Play block border  (left) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
         <!-- Next block border  (left) -->
@@ -80,6 +85,16 @@ window.addEventListener('load', event => {
   });
   document.getElementById('block_preview').addEventListener('click', event => {
     tetris2.block_preview();
+  });
+
+  document.getElementById('change_opponent_tetris').addEventListener('click', event => {
+    tetris2.change_opponent_tetris();
+  });
+  document.getElementById('lock_opponent_tetris').addEventListener('click', event => {
+    tetris2.lock_opponent_tetris();
+  });
+  document.getElementById('block_one_line').addEventListener('click', event => {
+    tetris2.block_one_line();
   });
 });
 </script>
