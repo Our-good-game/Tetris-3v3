@@ -995,30 +995,30 @@ class ClassicTetris {
           if(this.pieceRotation===0){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
-            else if(this._canMovePiece(-1,-1)){canrot=true;--this.piecePosition[0];--this.piecePosition[1];}
-            else if(this._canMovePiece(0,2)){canrot=true;this.piecePosition[1]+=2;}
-            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
-          }
-          else if(this.pieceRotation===1){
-            if(this._canMovePiece(0,0)){canrot=true;}
-            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
             else if(this._canMovePiece(-1,1)){canrot=true;--this.piecePosition[0];++this.piecePosition[1];}
             else if(this._canMovePiece(0,-2)){canrot=true;this.piecePosition[1]-=2;}
             else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
           }
+          else if(this.pieceRotation===1){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
+            else if(this._canMovePiece(-1,-1)){canrot=true;--this.piecePosition[0];--this.piecePosition[1];}
+            else if(this._canMovePiece(0,2)){canrot=true;this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
+          }
           else if(this.pieceRotation===2){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
-            else if(this._canMovePiece(+1,-1)){canrot=true;++this.piecePosition[0];--this.piecePosition[1];}
-            else if(this._canMovePiece(0,+2)){canrot=true;this.piecePosition[1]+=2;}
-            else if(this._canMovePiece(+1,+2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(1,1)){canrot=true;++this.piecePosition[0];++this.piecePosition[1];}
+            else if(this._canMovePiece(0,-2)){canrot=true;this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
           }
           else if(this.pieceRotation===3){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
-            else if(this._canMovePiece(+1,+1)){canrot=true;++this.piecePosition[0];++this.piecePosition[1];}
-            else if(this._canMovePiece(0,-2)){canrot=true;this.piecePosition[1]-=2;}
-            else if(this._canMovePiece(+1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(1,-1)){canrot=true;++this.piecePosition[0];--this.piecePosition[1];}
+            else if(this._canMovePiece(0,2)){canrot=true;this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
           }
         break;
         case 6:
@@ -1026,29 +1026,29 @@ class ClassicTetris {
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
             else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]+=2;}
-            else if(this._canMovePiece(1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
-            else if(this._canMovePiece(-2,1)){canrot=true;this.piecePosition[0]-=2;++this.piecePosition[1];}
+            else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(-2,-1)){canrot=true;this.piecePosition[0]-=2;--this.piecePosition[1];}
           }
           else if(this.pieceRotation===1){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]-=2;}
             else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
-            else if(this._canMovePiece(-2,-1)){canrot=true;this.piecePosition[0]-=2;--this.piecePosition[1];}
-            else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(-2,1)){canrot=true;this.piecePosition[0]-=2;++this.piecePosition[1];}
+            else if(this._canMovePiece(1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
           }
           else if(this.pieceRotation===2){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
             else if(this._canMovePiece(2,0)){canrot=true;this.piecePosition[0]+=2;}
-            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
-            else if(this._canMovePiece(2,-1)){canrot=true;this.piecePosition[0]+=2;--this.piecePosition[1];}
+            else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(2,+1)){canrot=true;this.piecePosition[0]+=2;+this.piecePosition[1];}
           }
           else if(this.pieceRotation===3){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(2,0)){canrot=true;this.piecePosition[0]+=2;}
             else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
-            else if(this._canMovePiece(2,1)){canrot=true;this.piecePosition[0]+=2;++this.piecePosition[1];}
-            else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(2,-1)){canrot=true;this.piecePosition[0]+=2;--this.piecePosition[1];}
+            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
           }
         break;
       }
