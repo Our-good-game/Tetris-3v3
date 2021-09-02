@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>WeAreTalking</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src=" https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    </head>
+    <body style='background-color:rgb(83, 165, 110);'>
+      <div id="app">
+        <div style='padding:0px 50px 0px 170px;' >
+          <div style="border:4px rgb(200, 223, 99) solid;
+                      border-radius:15px;
+                      width:700px; height:460px;
+                      position: relative;
+                      left: 0;
+                      right:0;
+                      overflow: auto"
+                @scroll="handlescroll">
+            <ul>
+                <li v-for="m in messages">
+                    <h4>{{m.message}}<span>-----{{m.name}}</span></h4>
+                </li>
+            </ul>
+          </div>
+        </div>
+            <input v-model="temp.name" placeholder="請留下你的名子" 
+                style="height: 16px; position:relative;  left: 200px; top: 10px; "/>
+            <input v-model="temp.message" placeholder="請輸入訊息" @keydown.enter="sendMessage" 
+                style="width: 300px; height: 16px; position:relative;  left: 200px; top: 10px; "/><br>
+            <button @click="sendMessage()"
+                style="width: 200px; height: 50px; position:relative; left: 280px; top: 20px; ">送出
+            </button><br>
+            <input type="button" onclick="javascript:location.href='index.html'" value ="返回首頁"
+                style="width: 200px; height: 50px; position:relative; left: 280px; top: 25px; "> 
+            </input>
+      </div>
+    </body>
+    <script>
+    Vue.directive('scroll', {
+      inserted: function (el, binding) {
+      let f = function (evt) {
+          if (binding.value(evt, el)) {
+            window.removeEventListener('scroll', f)
+          }
+        }
+        window.addEventListener('scroll', f)
+      }
+    })
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            messages: [],
+            temp: {},
+            socket: null,
+            typing: false
+            
+        },
+        mounted() {
+            this.socket = socket = io()
+            // 進入聊天室時，會收到之前的全部訊息，並更新到 messages
+            this.socket.on("allMessage", obj => {
+                console.log('received all messages')
+                //console.log(obj)
+                this.messages = obj
+            })
+            // 設定接收到新訊息的監聽器
+            this.socket.on("newMessage", obj => {
+                console.log('received new message')
+                this.messages.push(obj)
+            })
+            this.socket.on("someoneIsTyping", value => {
+                this.typing = value
+            })
+        },
+        methods: {
+            sendMessage() {
+                console.log('sending new message')
+                this.socket.emit("sendMessage", this.temp)
+                this.temp.message = ""
+            },
+            sendTyping() {
+                this.socket.emit("sendTyping")
+            },
+            handlescroll(ev){
+              if (window.scrollY > 50) {
+                el.setAttribute("style", "opacity: 1; transform: translate3d(0, -10px, 0)")
+              }console.log(event);
+              return window.scrollY > 100;
+              
+            }
+        }
+    })
+</script>
+</html>

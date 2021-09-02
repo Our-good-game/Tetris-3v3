@@ -1,8 +1,9 @@
 <head>
   <script src='timer.js'></script>
+  <script src='render.js'></script>
   <script src='player-interface.js'></script>
   <script src='classic-tetris.js'></script>
-  
+  <script src='/socket.io/socket.io.js'></script>
 </head>
 <body>
   <div style='user-select:none; color:rgb(85, 83, 211); background-color:rgb(83, 165, 110); font:17px georgia'>
@@ -43,10 +44,10 @@
         <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:1195px;"></div>
       </div>
       <div style='padding:0px 30px 15px 30px;'>
-        <label for='level-input'>Start level:</label>
-        <input id='level-input' name='level-input' type='number' min='0' max='19' value='5'></input>
         <button id='start-stop-btn'>Play/Pause</button>
-        <button id='quit-btn'>Quit</button>
+        <button id='GameOver-btn'>GameOver</button>
+        <input type="button" onclick="javascript:location.href='index.html'" value="Quit" />
+        <button id='find'>find</button>
       </div>
     </div>
   </div>
@@ -54,20 +55,23 @@
 <script>
   const canvas = document.getElementById('tetris-canvas');
   const timer = new timecount();
+  const draw = new Render();
+  const draw2 = new Render();
   const tetris = new ClassicTetris(canvas);
-  const tetris2 = new PlayerInterface(canvas);
+  var tetris2 = new PlayerInterface(canvas);
+  var socket = io()
+  var id={player:'unknow' , pid: 000 , status: 'nan'}
+  var p2;
+  socket.emit('login',id)
+  socket.on('login',function(profile){id.pid= profile.pid;console.log(id)})
 window.addEventListener('load', event => {
   
   document.getElementById('start-stop-btn').addEventListener('click', event => {
-    const startLevel = document.getElementById('level-input').value;
-    tetris.setStartLevel(startLevel);
     timer.settime(tetris.togglePlayPause());
-    tetris2.setStartLevel(startLevel);
-    tetris2.togglePlayPause();
+    if(p2!== undefined)socket.emit('fight',p2);
   });
-  document.getElementById('quit-btn').addEventListener('click', event => {
-    tetris.quit();
-    tetris2.quit();
+  document.getElementById('GameOver-btn').addEventListener('click', event => {
+    tetris.quit()
     timer.resettime()
   });
   document.getElementById('lock-space-btn').addEventListener('click', event => {
@@ -96,5 +100,33 @@ window.addEventListener('load', event => {
   document.getElementById('block_one_line').addEventListener('click', event => {
     tetris2.block_one_line();
   });
-});
+  
+  document.getElementById('find').addEventListener('click',function (event){
+    id.status='find';
+    socket.emit('find',id)
+  })
+})
+function SendData(){
+  if(p2!== undefined )socket.emit('gamming',tetris,p2);
+};
+socket.on('gamming',function(data){
+  tetris2.gameState =data.gameState 
+  tetris2.board=data.board;
+  tetris2.linesCleared=data.linesCleared
+  tetris2.piecePosition=data.piecePosition
+  tetris2.pieceRotation=data.pieceRotation
+  tetris2.piece=data.piece
+  for(let i=0;i<3;++i)tetris2.next[i]=data.next[i];
+  tetris2.haveHold=data.haveHold;
+  tetris2.holdPiece=data.holdPiece
+  tetris2.lines=data.lines
+  draw2._renderLite(tetris2);
+})
+socket.on('fight',function(opponent){
+  timer.settime(tetris.togglePlayPause());
+})
+socket.on('find',function (opponent){
+  p2=opponent;
+  console.log(opponent);match=false
+})
 </script>

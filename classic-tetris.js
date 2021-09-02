@@ -14,12 +14,11 @@ class ClassicTetris {
   // piece rotations
   // 
   //-----------------------------------------------------------------------
-
   static Z_ROT = [
     [
-      [0, 0, 0],
       [1, 1, 0],
-      [0, 1, 1]
+      [0, 1, 1],
+      [0, 0, 0]
     ],
     [
       [0, 0, 1],
@@ -30,9 +29,9 @@ class ClassicTetris {
 
   static S_ROT = [
     [
-      [0, 0, 0],
       [0, 1, 1],
-      [1, 1, 0]
+      [1, 1, 0],
+      [0, 0, 0]
     ],
     [
       [0, 1, 0],
@@ -50,16 +49,6 @@ class ClassicTetris {
 
   static L_ROT = [
     [
-      [0, 0, 0],
-      [1, 1, 1],
-      [1, 0, 0]
-    ],
-    [
-      [1, 1, 0],
-      [0, 1, 0],
-      [0, 1, 0]
-    ],
-    [
       [0, 0, 1],
       [1, 1, 1],
       [0, 0, 0]
@@ -68,20 +57,20 @@ class ClassicTetris {
       [0, 1, 0],
       [0, 1, 0],
       [0, 1, 1]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 1],
+      [1, 0, 0]
+    ],
+    [
+      [1, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0]
     ]
   ];
 
   static J_ROT = [
-    [
-      [0, 0, 0],
-      [1, 1, 1],
-      [0, 0, 1]
-    ],
-    [
-      [0, 1, 0],
-      [0, 1, 0],
-      [1, 1, 0]
-    ],
     [
       [1, 0, 0],
       [1, 1, 1],
@@ -91,6 +80,16 @@ class ClassicTetris {
       [0, 1, 1],
       [0, 1, 0],
       [0, 1, 0]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 1],
+      [0, 0, 1]
+    ],
+    [
+      [0, 1, 0],
+      [0, 1, 0],
+      [1, 1, 0]
     ]
   ];
 
@@ -120,8 +119,8 @@ class ClassicTetris {
   static I_ROT = [
     [
       [0, 0, 0, 0],
-      [0, 0, 0, 0],
       [1, 1, 1, 1],
+      [0, 0, 0, 0],
       [0, 0, 0, 0]
     ],
     [
@@ -142,13 +141,13 @@ class ClassicTetris {
   static T_INI_POS = [4, 2];
   static I_INI_POS = [3, 0];
 
-  static Z_BOX = [1, 0, 2, 3]; // x y hei wid
-  static S_BOX = [1, 0, 2, 3];
-  static O_BOX = [0, 0, 2, 2];
-  static L_BOX = [1, 0, 2, 3];
-  static J_BOX = [1, 0, 2, 3];
+  static Z_BOX = [0, 0, 2, 3]; // x y hei wid
+  static S_BOX = [0, 0, 2, 3];
+  static O_BOX = [0, 1, 2, 2];
+  static L_BOX = [0, 0, 2, 3];
+  static J_BOX = [0, 0, 2, 3];
   static T_BOX = [0, 0, 2, 3];
-  static I_BOX = [2, 0, 1, 4];
+  static I_BOX = [1, 0, 1, 4];
 
 
   // piece names
@@ -197,7 +196,6 @@ class ClassicTetris {
   static LINE_CLEAR_END = 'line-clear-end';
 
   static LINE_CLEAR = 'line-clear';
-  static ch = 'null';//檢查旋轉時撞牆問題
 
   // doard size in terms of squares
   // this is typically 10x20, but we are adding 2 invisible rows
@@ -210,28 +208,18 @@ class ClassicTetris {
   constructor(canvas, {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
-
+    paintposA=0,paintposB=0,
+    paintposC=700,paintposD=650,
     boardX = 210,
     boardY = 39,
     squareSide = 28,
-    //+75
-    timeX = 620,
-    timeY = 60,
     scoreX = 510,
     scoreY = 545,
-    //levelX = 440,
-    //levelY = 120,
-    //linesX = 440,
-    //linesY = 150,
     nextX = 105,
     nextY = 130,
     nextOffsetX = 95,
     nextOffsetY = 150,
-    //add two next off set
-    nextOffsetX2 = 95,
-    nextOffsetY2 = 270,
-    nextOffsetX3 = 95,
-    nextOffsetY3 = 390,
+    nextOffsetvec=120,
     pauseX = 290,
     pauseY = 290,
     holdX = 510,
@@ -288,7 +276,11 @@ class ClassicTetris {
       for (let j = 0; j < this.boardWidth; ++j) row.push(7);
       this.board.push(row);
     }
-
+    //canvaes paint
+    this.paintposA = paintposA;
+    this.paintposB = paintposB;
+    this.paintposC = paintposC;
+    this.paintposD = paintposD;
     // render parameters
     this.boardX = boardX;           // board's left
     this.boardY = boardY;           // board's top
@@ -304,22 +296,13 @@ class ClassicTetris {
     ];
 
     // HUD stuff coordinates
-    this.timeX = timeX;
-    this.timeY = timeY;
     this.scoreX = scoreX;             // score coords
     this.scoreY = scoreY;
-    //this.levelX = levelX;             // level coords
-    //this.levelY = levelY;
-    //this.linesX = linesX;             // lines coords
-    //this.linesY = linesY;
     this.nextX = nextX;               // next text coords
     this.nextY = nextY;
     this.nextOffsetX = nextOffsetX;   // next piece coords
     this.nextOffsetY = nextOffsetY;
-    this.nextOffsetX2 = nextOffsetX2;
-    this.nextOffsetY2 = nextOffsetY2;
-    this.nextOffsetX3 = nextOffsetX3;
-    this.nextOffsetY3 = nextOffsetY3;
+    this.nextOffsetvec = nextOffsetvec;
     this.pauseX = pauseX;             // pause text coords
     this.pauseY = pauseY;
     this.holdX = holdX;
@@ -465,7 +448,7 @@ class ClassicTetris {
     this.holdPiece = undefined;       // holding poece
 
     // game parameters
-    this.startLevel = 0;
+    this.startLevel = 5;
     this.level = 0;
     this.lines = 0;
     this.score = 0;
@@ -513,7 +496,7 @@ class ClassicTetris {
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
 
     // paint something for the user to see
-    this._render();
+    draw._render(this,timer.GameCountTime);
   }
 
   //----------------------------------------------------------------------------------------
@@ -521,14 +504,6 @@ class ClassicTetris {
   // setters 
   // 
   //----------------------------------------------------------------------------------------
-
-  // set the starting level
-  // does nothing if playing
-  setStartLevel(level) {
-    if (this.gameState === ClassicTetris.STATE_GAME_OVER) {
-      this.startLevel = Math.max(0, Math.min(19, level));  // between 0 and 19
-    }
-  }
 
   // set the border and fill colors for game-over squares
   setGameOverColor(color) {
@@ -572,27 +547,6 @@ class ClassicTetris {
   // 
   //----------------------------------------------------------------------------------------
 
-  // frames before the piece drops 1 tile
-  // depends on the level
-  _getFramesPerGridcell(level) {
-    if (level === 0) return 96;  //48;
-    else if (level === 1) return 86;  //43;
-    else if (level === 2) return 76;  //38;
-    else if (level === 3) return 66;  //33;
-    else if (level === 4) return 56;  //28;
-    else if (level === 5) return 46;  //23;
-    else if (level === 6) return 36;  //18;
-    else if (level === 7) return 26;  //13;
-    else if (level === 8) return 16;  //8;
-    else if (level === 9) return 12;  //6;
-    else if (level <= 12) return 10;  //5;
-    else if (level <= 15) return 8;  //4;
-    else if (level <= 18) return 6;  //3;
-    else if (level <= 28) return 4;  //2;
-    return 2;  //1;
-  }
-
-
   //----------------------------------------------------------------------------------------
   // 
   // public functions
@@ -608,7 +562,7 @@ class ClassicTetris {
       this.doUndoPause = true;
       if (this.gameState !== ClassicTetris.STATE_PAUSE &&
           this.gameState !== ClassicTetris.STATE_GAME_OVER){
-          return false;
+        return false;
       }
     } else {
       this.play();
@@ -616,14 +570,7 @@ class ClassicTetris {
     return true;
   }
 
-  quit() {
-    if (this.playing && this.gameState != ClassicTetris.STATE_GAME_OVER) {
-      this._triggerGameOver();
-    }
-  }
-
-
-
+  quit() {if (this.playing && this.gameState != ClassicTetris.STATE_GAME_OVER) {this._triggerGameOver();}}
   // start new game
   async play() {
     if (this.playing) return;
@@ -660,14 +607,11 @@ class ClassicTetris {
     this.gameLoop = true;
 
     do {
-      this._process(this.time); 
-      if (tetris.gameState !== ClassicTetris.STATE_PAUSE &&
-        tetris.gameState !== ClassicTetris.STATE_GAME_OVER){
-          this.time = timer.GameCountTime;
-      }
-      if (this.time <= 0.1) {this.quit();}    
+      this._process(this.time);
+      if (this.time <= 0.1) {this.quit();}
+      draw._render(this,timer.GameCountTime);    
+      if(p2!= undefined)SendData();
       await this._sleep();
-      this._render();
     } while (this.gameLoop);
 
     // remove event listeners
@@ -737,7 +681,7 @@ class ClassicTetris {
     this.gameOverLine = -1;
     this.cheakwall = false;
     // frames until the piece automatically moves down
-    this.framesTilDrop = 36 + this._getFramesPerGridcell(this.level);   // 18 + this._getFramesPerGridcell(this.level);
+    this.framesTilDrop = 90
 
     // initial state
     this.previousGameState = ClassicTetris.STATE_DROP;
@@ -1283,8 +1227,7 @@ class ClassicTetris {
         ++this.piecePosition[1];
 
         // reset auto-drop frames
-        this.framesTilDrop = this._getFramesPerGridcell(this.level);
-
+        this.framesTilDrop = 50
         // fire move down event
         this._dispatch(ClassicTetris.PIECE_MOVE_DOWN, {
           type: ClassicTetris.PIECE_MOVE_DOWN,
@@ -1296,7 +1239,7 @@ class ClassicTetris {
         });
 
       } else if(this.framesTilDrop != 0){
-        this.framesTilDrop = 36 + this._getFramesPerGridcell(this.level);
+        this.framesTilDrop = 90
       }
       else{
         // lock piece if it couldn't move down
@@ -1354,7 +1297,7 @@ class ClassicTetris {
 
       // update score
       const oldScore = this.score;
-      this.score += this.pressDownScore;
+      this.score += this.linesCleared.length
 
       // fire score change event
       this._dispatch(ClassicTetris.SCORE_CHANGE, {
@@ -1417,26 +1360,7 @@ class ClassicTetris {
           newScore: this.score
         });
 
-        // increase level?
-        const levelTemp = this._getLevel();
-        if (this.level != levelTemp) {
-          const oldLevel = this.level;
-          this.level = levelTemp;
-
-          // play level change sound
-          if (this.levelChangeSound) {
-            this.levelChangeSound.currentTime = 0;
-            this.levelChangeSound.play();
-          }
-
-          // fire level change event
-          this._dispatch(ClassicTetris.LEVEL_CHANGE, {
-            type: ClassicTetris.LEVEL_CHANGE,
-            oldLevel: oldLevel,
-            newLevel: this.level
-          });
-
-        }
+       
 
         // entry delay for next piece
         this.areFrames = this._getARE();
@@ -1466,7 +1390,7 @@ class ClassicTetris {
 
       // try to place current piece
       if (this._canMovePiece(0, 0)) {
-        this.framesTilDrop = this._getFramesPerGridcell(this.level);
+        this.framesTilDrop = 50
         this.gameState = ClassicTetris.STATE_DROP;
 
         // fire new piece placed event
@@ -1671,13 +1595,6 @@ class ClassicTetris {
     return this.boardHeight - 1 - h;
   }
 
-  // when the player clears (startLevel × 10 + 10) or max(100, (startLevel × 10 - 50)) lines, 
-  // whatever comes first, the level advances by 1. After this, the level advances by 1 for every 10 lines.
-  _getLevel() {
-    const a = this.lines - Math.min(this.startLevel * 10 + 10, Math.max(100, this.startLevel * 10 - 50));
-    return this.startLevel + (a >= 0 ? ((a / 10) | 0) + 1 : 0);
-  }
-
   // line clear delay is an additional 17~20 frames depending on the frame that the piece locks; 
   // the animation has 5 steps that advance when the global frame counter modulo 4 equals 0. 
   // As a consequence, the first step of the line clear animation is not always a set number of frames
@@ -1745,268 +1662,6 @@ class ClassicTetris {
     }
     return true;
   }
-
-  //-----------------------------------------------------------
-  // 
-  // render
-  // 
-  //-----------------------------------------------------------
-
-  _render() {
-    this._drawBackground();
-    this._drawBoard();
-    this._drawGhost();
-    this._drawPiece();
-    this._drawHUD();
-    this._drawNext();
-    this._drawNext2();
-    this._drawNext3();
-    if (this.haveHold) {
-      this._drawHold();
-    }
-  }
-
-  _drawBackground() {
-    // PlayerInterface.nextX = 810
-    this.context.clearRect(0, 0, 810, this.canvas.height);
-    this.context.lineWidth = 1;
-
-    // if burning a tetris, make background color flash
-    const fillColor = this.gameState === ClassicTetris.STATE_BURN &&
-      this.linesCleared.length === 4 &&
-      this.frameCounter % 8 ?   //4 ?
-      this.tetrisBackgroundColor :
-      this.backgroundColor;
-
-    // draw background and border
-    this.context.beginPath();
-    this.context.moveTo(this.boardBorder[0], this.boardBorder[1]);
-    this.context.lineTo(this.boardBorder[2], this.boardBorder[1]);
-    this.context.lineTo(this.boardBorder[2], this.boardBorder[3]);
-    this.context.lineTo(this.boardBorder[0], this.boardBorder[3]);
-    this.context.closePath();
-    this.context.fillStyle = fillColor;
-    this.context.strokeStyle = this.borderColor;
-    this.context.fill();
-    this.context.stroke();
-
-
-    if (this.gameState === ClassicTetris.STATE_PAUSE) {
-      // pause overlay:
-      // write PAUSE on the board if game is paused
-      this.context.font = this.canvasFont;
-      this.context.fillStyle = this.canvasFontColor;
-      this.context.fillText('PAUSE', this.pauseX, this.pauseY);
-
-    } else {
-      // draw grid if not paused
-      this.context.lineWidth = 0.5;
-
-      // horizontal lines
-      this.context.strokeStyle = this.gridColor;
-      const boardRight = this.boardX + this.squareSide * this.boardWidth;
-      for (let i = 3; i < this.boardHeight; ++i) {
-        const height = this.boardY + i * this.squareSide;
-        this.context.beginPath();
-        this.context.moveTo(this.boardX, height);
-        this.context.lineTo(boardRight, height);
-        this.context.closePath();
-        this.context.stroke();
-      }
-      // vertical lines
-      const boardTop = this.boardY + 2 * this.squareSide;
-      const boardBottom = this.boardY + this.boardHeight * this.squareSide;
-      for (let j = 0; j < this.boardWidth; ++j) {
-        const width = this.boardX + j * this.squareSide;
-        this.context.beginPath();
-        this.context.moveTo(width, boardTop);
-        this.context.lineTo(width, boardBottom);
-        this.context.closePath();
-        this.context.stroke();
-      }
-
-      // back to regular line width
-      this.context.lineWidth = 1;
-    } 
-  }
-
-  _drawBoard() { 
-    if (!(this.gameState === ClassicTetris.STATE_PAUSE)) {
-      // draw the game board if the game is not paused
-      for (let i = 2; i < this.boardHeight; ++i) {
-        for (let j = 0; j < this.boardWidth; ++j) {
-          if (this.board[i][j] != -1) {
-            const col = this.board[i][j] == 7 ?
-              this.gameOverColor :
-              this.pieces[this.board[i][j]].col;
-            this._drawSquare(
-              this.boardX + j * this.squareSide,
-              this.boardY + i * this.squareSide,
-              col[0], col[1]);
-          }
-        }
-      }
-    } 
-  }
-
-  // draw current piece
-  _drawPiece() {
-    if (this.gameState === ClassicTetris.STATE_DROP) {
-      // current piece is only drawn in drop state
-      const p = this.piece.rot[this.pieceRotation];
-      for (let i = 0; i < p.length; ++i) {
-        for (let j = 0; j < p[i].length; ++j) {
-          if (p[i][j] != 0 && this.piecePosition[1] + i > 1) {
-            this._drawSquare(
-              this.boardX + (this.piecePosition[0] + j) * this.squareSide,
-              this.boardY + (this.piecePosition[1] + i) * this.squareSide,
-              this.piece.col[0], this.piece.col[1]);
-          }
-        }
-      }
-    }
-  }
-
-  // draw ghost piece
-  // it is a representation of where a tetromino or other piece will land if allowed to drop into the playfield
-  _drawGhost() {
-    if (this.gameState === ClassicTetris.STATE_DROP) {
-
-      // find ghost piece position, which is lowest position for current piece
-      const piecePos = [this.piecePosition[0], this.piecePosition[1]];
-      while (this._canMove(this.piece, this.pieceRotation, piecePos, 0, 1)) {
-        ++piecePos[1];
-      }
-
-      // draw ghost piece
-      const p = this.piece.rot[this.pieceRotation];
-      for (let i = 0; i < p.length; ++i) {
-        for (let j = 0; j < p[i].length; ++j) {
-          if (p[i][j] != 0 && piecePos[1] + i > 1) {
-            this._drawSquare(
-              this.boardX + (piecePos[0] + j) * this.squareSide,
-              this.boardY + (piecePos[1] + i) * this.squareSide,
-              this.ghostColor[0], this.ghostColor[1]);
-          }
-        }
-      }
-    }
-  }
-
-  // draw heads-up display
-  _drawHUD() {
-    let timesStr = 'Time:    ';
-    let scoreStr = 'Score:   ';
-    let levelStr = 'Level:   ';
-    let linesStr = 'Lines:   ';
-    let nextStr = 'Next';
-    let holdStr = 'Hold';
-    // if (this.gameState != ClassicTetris.STATE_PAUSE) {
-    // show data only if game is not paused
-    let tmp_time = this.time;
-    tmp_time = parseInt(tmp_time);
-    // scoreStr += this.score;
-    levelStr += this.level;
-    linesStr += this.lines;
-    timesStr += tmp_time;
-    //}
-
-    this.context.font = this.canvasFont;
-    this.context.fillStyle = this.canvasFontColor;
-    this.context.fillText(timesStr, this.timeX, this.timeY);
-    this.context.fillText(scoreStr, this.scoreX, this.scoreY);
-    this.context.fillText(this.score, this.scoreX, this.scoreY + 50);
-    //this.context.fillText(levelStr, this.levelX, this.levelY);
-    //this.context.fillText(linesStr, this.linesX, this.linesY);
-    this.context.fillText(nextStr, this.nextX, this.nextY);
-    this.context.fillText(holdStr, this.holdX, this.holdY);
-  }
-
-  // draw next piece
-  _drawNext() {
-    if (this.gameState === ClassicTetris.STATE_PAUSE ||
-      this.gameState === ClassicTetris.STATE_GAME_OVER) return;
-
-    const p = this.next[0].rot[0];
-    const b = this.next[0].box;
-    for (let i = b[0]; i < b[0] + b[2]; ++i) {
-      for (let j = b[1]; j < b[1] + b[3]; ++j) {
-        if (p[i][j] != 0) {
-          this._drawSquare(
-            this.nextOffsetX + (j - b[1]) * this.squareSide,
-            this.nextOffsetY + (i - b[0]) * this.squareSide,
-            this.next[0].col[0], this.next[0].col[1]);
-        }
-      }
-    }
-  }
-  _drawNext2() {
-    if (this.gameState === ClassicTetris.STATE_PAUSE ||
-      this.gameState === ClassicTetris.STATE_GAME_OVER) return;
-
-    const p = this.next[1].rot[0];
-    const b = this.next[1].box;
-    for (let i = b[0]; i < b[0] + b[2]; ++i) {
-      for (let j = b[1]; j < b[1] + b[3]; ++j) {
-        if (p[i][j] != 0) {
-          this._drawSquare(
-            this.nextOffsetX2 + (j - b[1]) * this.squareSide,
-            this.nextOffsetY2 + (i - b[0]) * this.squareSide,
-            this.next[1].col[0], this.next[1].col[1]);
-        }
-      }
-    }
-  }
-  _drawNext3() {
-    if (this.gameState === ClassicTetris.STATE_PAUSE ||
-      this.gameState === ClassicTetris.STATE_GAME_OVER) return;
-
-    const p = this.next[2].rot[0];
-    const b = this.next[2].box;
-    for (let i = b[0]; i < b[0] + b[2]; ++i) {
-      for (let j = b[1]; j < b[1] + b[3]; ++j) {
-        if (p[i][j] != 0) {
-          this._drawSquare(
-            this.nextOffsetX3 + (j - b[1]) * this.squareSide,
-            this.nextOffsetY3 + (i - b[0]) * this.squareSide,
-            this.next[2].col[0], this.next[2].col[1]);
-        }
-      }
-    }
-  }
-
-  // draw an individual square on the board
-  _drawSquare(x, y, color, border) {
-    this.context.beginPath();
-    this.context.moveTo(x + 1, y + 1);
-    this.context.lineTo(x + this.squareSide - 1, y + 1);
-    this.context.lineTo(x + this.squareSide - 1, y + this.squareSide - 1);
-    this.context.lineTo(x + 1, y + this.squareSide - 1);
-    this.context.closePath();
-    this.context.fillStyle = color;
-    this.context.strokeStyle = border;
-    this.context.fill();
-    this.context.stroke();
-  }
-  _drawHold() {
-
-    if (this.gameState === ClassicTetris.STATE_PAUSE ||
-      this.gameState === ClassicTetris.STATE_GAME_OVER) return;
-
-    const p = this.holdPiece.rot[0];
-    const b = this.holdPiece.box;
-    for (let i = b[0]; i < b[0] + b[2]; ++i) {
-      for (let j = b[1]; j < b[1] + b[3]; ++j) {
-        if (p[i][j] != 0) {
-          this._drawSquare(
-            this.holdX + (j - b[1]) * this.squareSide,
-            this.holdY + (i - b[0]) * this.squareSide + 30,
-            this.holdPiece.col[0], this.holdPiece.col[1]);
-        }
-      }
-    }
-  }
-
   //-----------------------------------------------------------
   // 
   // sleep function

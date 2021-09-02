@@ -3,17 +3,14 @@
   <script src='classic-tetris.js'></script>
   <script src="timer.js"></script>
   <script src="Render.js"></script>
-  <script>
-    
-  </script>
 </head>
 <body>
   <div style='user-select:none; color:rgb(82, 81, 133); background-color:rgb(83, 165, 110); font:17px georgia'>
     <div style='display:table; margin:0 auto;'>
       <div style="border:0px blue solid; border-radius:5px; position:relative">
         <canvas id='tetris-canvas' class='canvas' width='1400' height='700'></canvas>
-	    <!-- Play block border -->
-          <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
+	      <!-- Play block border -->
+        <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
 	      <!-- Next block border -->
 	      <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:70px;"></div>
 	      <!-- Score block border -->
@@ -21,9 +18,7 @@
 	      <!-- Hold block border -->
 		  <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:490px;"></div>
 	  </div>
-      <div style='padding:0px 30px 15px 30px;'>
-        <label for='level-input'>Start level:</label>
-        <input id='level-input' name='level-input' type='number' min='0' max='19' value='5'></input>
+      <div style='padding:0px 30px 15px 30px;'> 
         <button id='start-stop-btn'>Play/Pause</button>
         <button id='quit-btn'>Quit</button>
       </div>
@@ -33,12 +28,11 @@
 <script>
     const canvas = document.getElementById('tetris-canvas');
     const timer = new timecount();
+    const draw= new Render();
     const tetris = new ClassicTetris(canvas);
-    
+    var p2= undefined
     window.addEventListener('load', event => {
       document.getElementById('start-stop-btn').addEventListener('click', event => {
-        const startLevel = document.getElementById('level-input').value;
-        tetris.setStartLevel(startLevel);
         timer.settime(tetris.togglePlayPause());
       });
       document.getElementById('quit-btn').addEventListener('click', event => {
