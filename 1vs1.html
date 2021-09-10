@@ -10,7 +10,7 @@
     <div style='display:table; margin:0 auto;'>
       <div style="border:6px blue solid; border-radius:5px; position:relative;">
         <canvas id='tetris-canvas' class='canvas' width='1400' height='700'></canvas>
-        <div style='padding: 0px 200px;'>
+        <!-- <div style='padding: 0px 200px;'>
           <button id='lock-space-btn' style="width:100px;height:30px;">lock-space</button>
           <button id='bonus-btn' style="width:100px;height:30px;">bonus</button>
           <button id='defense-btn' style="width:100px;height:30px;">defense</button>
@@ -24,7 +24,7 @@
           <button id='change_opponent_tetris' style="width:100px;height:30px;">換掉對手方塊</button> 
           <button id='lock_opponent_tetris' style="width:100px;height:30px;">鎖住對手方塊</button>
           <button id='block_one_line' style="width:100px;height:30px;">長高高1行</button>
-        </div>
+        </div> -->
         <!-- Play block border  (left) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
         <!-- Next block border  (left) -->
@@ -72,34 +72,34 @@ window.addEventListener('load', event => {
   });
   document.getElementById('GameOver-btn').addEventListener('click', event => {
     tetris.quit()
-    timer.resettime()
+    
   });
-  document.getElementById('lock-space-btn').addEventListener('click', event => {
-    tetris2.setItemsLockSpace();
-  });
-  document.getElementById('defense-btn').addEventListener('click', event => {
-    tetris2.setItemsDefense();
-  });
+  // document.getElementById('lock-space-btn').addEventListener('click', event => {
+  //   tetris2.setItemsLockSpace();
+  // });
+  // document.getElementById('defense-btn').addEventListener('click', event => {
+  //   tetris2.setItemsDefense();
+  // });
   
-  document.getElementById('hard_hold_on').addEventListener('click', event => {
-    tetris2.setHardHoldOn();
-  });
-  document.getElementById('change_left_right').addEventListener('click', event => {
-    tetris2.setLeftRightChange();
-  });
-  document.getElementById('block_preview').addEventListener('click', event => {
-    tetris2.block_preview();
-  });
+  // document.getElementById('hard_hold_on').addEventListener('click', event => {
+  //   tetris2.setHardHoldOn();
+  // });
+  // document.getElementById('change_left_right').addEventListener('click', event => {
+  //   tetris2.setLeftRightChange();
+  // });
+  // document.getElementById('block_preview').addEventListener('click', event => {
+  //   tetris2.block_preview();
+  // });
 
-  document.getElementById('change_opponent_tetris').addEventListener('click', event => {
-    tetris2.change_opponent_tetris();
-  });
-  document.getElementById('lock_opponent_tetris').addEventListener('click', event => {
-    tetris2.lock_opponent_tetris();
-  });
-  document.getElementById('block_one_line').addEventListener('click', event => {
-    tetris2.block_one_line();
-  });
+  // document.getElementById('change_opponent_tetris').addEventListener('click', event => {
+  //   tetris2.change_opponent_tetris();
+  // });
+  // document.getElementById('lock_opponent_tetris').addEventListener('click', event => {
+  //   tetris2.lock_opponent_tetris();
+  // });
+  // document.getElementById('block_one_line').addEventListener('click', event => {
+  //   tetris2.block_one_line();
+  // });
   
   document.getElementById('find').addEventListener('click',function (event){
     id.status='find';

@@ -165,13 +165,13 @@ class ClassicTetris {
 
 
   // initial positions
-  static Z_INI_POS = [4, 1];
-  static S_INI_POS = [4, 1];
-  static O_INI_POS = [4, 2];
-  static L_INI_POS = [4, 1];
-  static J_INI_POS = [4, 1];
-  static T_INI_POS = [4, 2];
-  static I_INI_POS = [3, 0];
+  static Z_INI_POS = [3, 1];
+  static S_INI_POS = [3, 1];
+  static O_INI_POS = [4, 1];
+  static L_INI_POS = [3, 1];
+  static J_INI_POS = [3, 1];
+  static T_INI_POS = [3, 1];
+  static I_INI_POS = [3, 1];
 
   static Z_BOX = [0, 0, 2, 3]; // x y hei wid
   static S_BOX = [0, 0, 2, 3];
@@ -307,6 +307,9 @@ class ClassicTetris {
       const row = [];
       for (let j = 0; j < this.boardWidth; ++j) row.push(7);
       this.board.push(row);
+    }
+    for (let i = 0; i < this.boardHeight; ++i) {
+      for (let j = 0; j < this.boardWidth; ++j)this.board[i][j]=-1
     }
     //canvaes paint
     this.paintposA = paintposA;
@@ -513,7 +516,7 @@ class ClassicTetris {
     // animation frames counters
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = -1;
+    this.framesTilDrop = 50;
 
     // counters for line-clear and game-over animations
     this.columnsCleared = -1;
@@ -639,8 +642,8 @@ class ClassicTetris {
     this.gameLoop = true;
 
     do {
-      this._process(this.time);
-      if (this.time <= 0.1) {this.quit();}
+      this._process();
+      if (timer.GameCountTime <= 0.4) {this.quit();}
       draw._render(this,timer.GameCountTime);    
       if(p2!= undefined)SendData();
       await this._sleep();
@@ -677,7 +680,7 @@ class ClassicTetris {
     this.rotateAnticlockwise = false;
     this.hardDrop = false;
     this.doUndoPause = false;
-    this.hold = false;
+    this.hold = true;
     this.haveHold = false;
     this.queue = [0, 1, 2, 3, 4, 5, 6, -1, 0, 1, 2, 3, 4, 5, 6];
     //  pointer coords
@@ -708,12 +711,11 @@ class ClassicTetris {
     // frame counters
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = -1;
+    this.framesTilDrop = 50;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
     this.cheakwall = false;
     // frames until the piece automatically moves down
-    this.framesTilDrop = 90
 
     // initial state
     this.previousGameState = ClassicTetris.STATE_DROP;
@@ -827,6 +829,7 @@ class ClassicTetris {
         }
         event.preventDefault();
         this.hardDrop = true;
+        this.hold = false;
         break;
       case 27:
       case 80:
@@ -840,7 +843,7 @@ class ClassicTetris {
         event.preventDefault();
         // hold piece
         if (this.haveHold) {
-          if (this.hold) {
+          if (this.hold ) {
             var tempPiece = this.holdPiece;
             this.piecePosition = this.piece.iniPos.slice(0);
             this.pieceRotation = 0;
@@ -848,7 +851,7 @@ class ClassicTetris {
             this.piece = tempPiece;
             this.hold = false;
           } else return;//can't hold
-        } else {
+        } else if(this.hold){
           this.holdPiece = Object.assign({}, this.piece);
           this.piecePosition = this.piece.iniPos.slice(0);
           this.pieceRotation = 0;
@@ -908,13 +911,13 @@ class ClassicTetris {
   // 
   //-----------------------------------------------------------
 
-  _process(per_sec) {
-
+  _process() {
+    
     // game possibly paused/unpaused
     this._pauseCheck();
-    if(this.last_time === -1){
-      this.last_time = per_sec;
-    } 
+    if(this.last_sec){
+      
+    }
     // process current state
     switch (this.gameState) {
       case ClassicTetris.STATE_DROP:
@@ -1025,7 +1028,7 @@ class ClassicTetris {
           if(this.pieceRotation===0){
             if(this._canMovePiece(0,0)){canrot=true;}
             else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
-            else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]+=2;}
+            else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]-=2;}
             else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
             else if(this._canMovePiece(-2,-1)){canrot=true;this.piecePosition[0]-=2;--this.piecePosition[1];}
           }
@@ -1041,7 +1044,7 @@ class ClassicTetris {
             else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
             else if(this._canMovePiece(2,0)){canrot=true;this.piecePosition[0]+=2;}
             else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
-            else if(this._canMovePiece(2,+1)){canrot=true;this.piecePosition[0]+=2;+this.piecePosition[1];}
+            else if(this._canMovePiece(2,1)){canrot=true;this.piecePosition[0]+=2;++this.piecePosition[1];}
           }
           else if(this.pieceRotation===3){
             if(this._canMovePiece(0,0)){canrot=true;}
@@ -1063,58 +1066,86 @@ class ClassicTetris {
     }
 
     if (this.rotateAnticlockwise) {
-      if (this._canRot((this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length)) {
-        const oldRotation = this.pieceRotation;
-        this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
-
-        // play rotation sound
-        if (this.rotateSound) {
-          this.rotateSound.currentTime = 0;
-          this.rotateSound.play();
-        }
-
-        // fire clockwise rotation event
-        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
-          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
-          piece: this.piece.name,
-          position: [...this.piecePosition],
-          oldRotation: oldRotation,
-          newRotation: this.pieceRotation
-        });
-      } else if (this.cheakwall) {
-        if (this.piece.id < 6 &&
-          this._canMove(this.piece, (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length, this.piecePosition, 1, 0)) {
-          ++this.piecePosition[0];
-        } else if (this.piece.id == 6 &&
-          this._canMove(this.piece, (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length, this.piecePosition, 2, 0)) {
-          this.piecePosition[0] = this.piecePosition[0] + 2;
-        } else if (this._canMove(this.piece, (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length, this.piecePosition, -1, 0)) {
-          --this.piecePosition[0];
-        } else return;
-        const oldRotation = this.pieceRotation;
-        this.pieceRotation = (this.pieceRotation + this.piece.rot.length - 1) % this.piece.rot.length;
-        // play rotation sound
-        if (this.rotateSound) {
-          this.rotateSound.currentTime = 0;
-          this.rotateSound.play();
-        }
-        // fire clockwise rotation event
-        this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
-          type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
-          piece: this.piece.name,
-          position: [...this.piecePosition],
-          oldRotation: oldRotation,
-          newRotation: this.pieceRotation
-        });
+      const oldRotation = this.pieceRotation;
+      this.pieceRotation = (this.pieceRotation - 1 + this.piece.rot.length ) % this.piece.rot.length;
+      let canrot=false
+      switch(this.piece.id){
+        case 0:case 1:case 3:case 4:case 5:
+          if(this.pieceRotation===2){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
+            else if(this._canMovePiece(-1,1)){canrot=true;--this.piecePosition[0];++this.piecePosition[1];}
+            else if(this._canMovePiece(0,-2)){canrot=true;this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
+          }
+          else if(this.pieceRotation===3){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
+            else if(this._canMovePiece(1,-1)){canrot=true;++this.piecePosition[0];--this.piecePosition[1];}
+            else if(this._canMovePiece(0,2)){canrot=true;this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
+          }
+          else if(this.pieceRotation===0){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
+            else if(this._canMovePiece(1,1)){canrot=true;++this.piecePosition[0];++this.piecePosition[1];}
+            else if(this._canMovePiece(0,-2)){canrot=true;this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
+          }
+          else if(this.pieceRotation===1){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
+            else if(this._canMovePiece(-1,-1)){canrot=true;--this.piecePosition[0];--this.piecePosition[1];}
+            else if(this._canMovePiece(0,2)){canrot=true;this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
+          }
+        break;
+        case 6:
+          if(this.pieceRotation===2){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
+            else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]-=2;}
+            else if(this._canMovePiece(1,2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]+=2;}
+            else if(this._canMovePiece(-2,-1)){canrot=true;this.piecePosition[0]-=2;--this.piecePosition[1];}
+          }
+          else if(this.pieceRotation===3){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(-2,0)){canrot=true;this.piecePosition[0]-=2;}
+            else if(this._canMovePiece(1,0)){canrot=true;++this.piecePosition[0];}
+            else if(this._canMovePiece(-2,1)){canrot=true;this.piecePosition[0]-=2;++this.piecePosition[1];}
+            else if(this._canMovePiece(1,-2)){canrot=true;++this.piecePosition[0];this.piecePosition[1]-=2;}
+          }
+          else if(this.pieceRotation===0){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
+            else if(this._canMovePiece(2,0)){canrot=true;this.piecePosition[0]+=2;}
+            else if(this._canMovePiece(-1,-2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]-=2;}
+            else if(this._canMovePiece(2,1)){canrot=true;this.piecePosition[0]+=2;++this.piecePosition[1];}
+          }
+          else if(this.pieceRotation===1){
+            if(this._canMovePiece(0,0)){canrot=true;}
+            else if(this._canMovePiece(2,0)){canrot=true;this.piecePosition[0]+=2;}
+            else if(this._canMovePiece(-1,0)){canrot=true;--this.piecePosition[0];}
+            else if(this._canMovePiece(2,-1)){canrot=true;this.piecePosition[0]+=2;--this.piecePosition[1];}
+            else if(this._canMovePiece(-1,2)){canrot=true;--this.piecePosition[0];this.piecePosition[1]+=2;}
+          }
+        break;
       }
-
+      if(!canrot)this.pieceRotation = oldRotation
+      this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
+        type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+        piece: this.piece.name,
+        position: [...this.piecePosition],
+        oldRotation: oldRotation,
+        newRotation: this.pieceRotation
+      });
     }
 
     // hard drop or move down
     // move down: if drop counter says so
     //            or player pushed down
     if (this.hardDrop) {
-
+      
       // hard drop = push piece as far down as possible
       // score increase is 2x the numer of dropped lines
       const oldPosition = [...this.piecePosition];
@@ -1138,10 +1169,6 @@ class ClassicTetris {
     } else if (this.moveDown || this.framesTilDrop === 0) {
       if (this._canMovePiece(0, 1)) {
 
-        if (this.moveDown) {
-          // soft drop makes 1 point per dropped line
-          ++this.pressDownScore;
-        }
         const oldPosition = [...this.piecePosition];
         ++this.piecePosition[1];
 
@@ -1158,7 +1185,7 @@ class ClassicTetris {
         });
 
       } else if(this.framesTilDrop != 0){
-        this.framesTilDrop = 90
+        this.framesTilDrop = 50
       }
       else{
         // lock piece if it couldn't move down
@@ -1168,6 +1195,7 @@ class ClassicTetris {
   }
 
   _lockPiece() {
+    this.hold = false;
     this.framesTilDrop = -1;
     this._setPiece();
 
@@ -1292,11 +1320,10 @@ class ClassicTetris {
   _processARE() {
     // wait are frames
     --this.areFrames;
-    // 調整為can hold
-    this.hold = true;
     if (this.areFrames === 0) {
       this.areFrames = -1;
-
+      this.hold = true;// 調整為can hold
+      
       // reset drop points
       this.pressDownScore = 0;
       this.pointerMoveDownEnabled = false;
@@ -1324,6 +1351,7 @@ class ClassicTetris {
         this._setPiece();
         this._triggerGameOver();
       }
+      
     }
   }
 
@@ -1332,7 +1360,7 @@ class ClassicTetris {
     if (this.gameTheme) {
       this.gameTheme.pause();
     }
-
+    
     // play game over sound
     if (this.gameOverSound) {
       this.gameOverSound.currentTime = 0;
@@ -1355,10 +1383,11 @@ class ClassicTetris {
   _processGameOver() {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.gameOverLine;
+      timer.resettime()
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
-
+        draw._render(this);
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;
@@ -1484,8 +1513,6 @@ class ClassicTetris {
       this.next[p] = this.pieces[this.queue[i]];
       ++i;
     }
-    
-    console.log(this.queue);
   }
 
   // score for lines cleared

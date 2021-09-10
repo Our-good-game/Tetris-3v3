@@ -20,7 +20,6 @@ class  timecount{
         this.running()
     }
     resettime(){
-        this.run=false;
         this.loop=false;
         this.running();
         this.GameCountTime = 120;

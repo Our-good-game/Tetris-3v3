@@ -1,4 +1,5 @@
 class Render{
+  
     _renderLite(tetris){
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
@@ -47,9 +48,12 @@ class Render{
         if (tetris.gameState === ClassicTetris.STATE_PAUSE) {
           // pause overlay:
           // write PAUSE on the board if game is paused
+          
           tetris.context.font = tetris.canvasFont;
           tetris.context.fillStyle = tetris.canvasFontColor;
-          tetris.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
+          //tetris.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
+          let pauseImg=new Image();pauseImg.src='pauseitem.png'
+          tetris.context.drawImage(pauseImg,270, 250,160,160)
         } else {
         // draw grid if not paused
         tetris.context.lineWidth = 0.5;
@@ -81,7 +85,7 @@ class Render{
       }
     _drawBoard(tetris) { 
       if(tetris.gameState === ClassicTetris.STATE_PAUSE)return;
-      if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)return;
+      //if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)return;
       for (let i = 2; i < tetris.boardHeight; ++i) {
         for (let j = 0; j < tetris.boardWidth; ++j) {
           if (tetris.board[i][j] != -1) {
@@ -205,4 +209,5 @@ class Render{
           }
         }
       }
+  
 }
