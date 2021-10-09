@@ -241,20 +241,20 @@ class ClassicTetris {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
     paintposA=0,paintposB=0,
-    paintposC=700,paintposD=650,
+    paintposC=700,paintposD=700,
     boardX = 210,
     boardY = 39,
     squareSide = 28,
     scoreX = 510,
-    scoreY = 545,
-    nextX = 105,
+    scoreY = 600,
+    nextX = 510,
     nextY = 130,
-    nextOffsetX = 95,
+    nextOffsetX = 510,
     nextOffsetY = 150,
     nextOffsetvec=120,
     pauseX = 290,
     pauseY = 290,
-    holdX = 510,
+    holdX = 85,
     holdY = 130,
     //字體屬性
     canvasFont = '36px georgia',
@@ -454,10 +454,49 @@ class ClassicTetris {
     this.haveHold = false;
 
     // items 
-    this.items_lockSpace = false;
-    this.items_lockSpaceTime = 0;
-    this.items_defense = false;
-    
+    this.items=[
+      {
+        id: 0,
+        name: 'LockSpace',
+      },
+      {
+        id: 1,
+        name: 'Defense',
+      },
+      {
+        id: 2,
+        name: 'HoldOn',
+      },
+      {
+        id: 3,
+        name: 'LeftRightChange',
+      },
+      {
+        id: 4,
+        name: 'BlockPreview',
+      },
+      {
+        id: 5,
+        name: 'ChangeTetris',
+      },
+      {
+        id: 6,
+        name: 'LockTetris',
+      },
+      {
+        id: 7,
+        name :'BlockALine',
+      },
+    ];
+    this.itemuse=false;
+    this.send_item= undefined;
+    this.get_item= undefined
+    this.blockHeight=0;
+    this.item_defense=false
+    this.lock_opponent_time = 0
+    this.block_preview_time = 0
+    this.left_right_time = 0
+    this.item_lockSpaceTime = 0
 
     // pointer coords
     this.xIni = undefined;
@@ -486,11 +525,12 @@ class ClassicTetris {
     this.startLevel = 5;
     this.level = 0;
     this.lines = 0;
+    this.oldlines = this.lines;
     this.score = 0;
     this.time = 0;
     this.last_sec=0;
     this.pressDownScore = 0;
-
+    
     // event listeners
     this.handlers = new Map();
     this.handlers.set(ClassicTetris.GAME_START, []);
@@ -563,18 +603,6 @@ class ClassicTetris {
     }
   }
 
-  setItemsLockSpace () {
-    if (this.items_defense) {
-      this.items_defense = false;
-      return;
-    } 
-    this.items_lockSpaceTime = this.time;
-    this.items_lockSpace = true;
-  }
-
-  setItemsDefense() {
-    this.items_defense = true;
-  }
 
   //----------------------------------------------------------------------------------------
   // 
@@ -643,10 +671,12 @@ class ClassicTetris {
 
     do {
       this._process();
-      if (timer.GameCountTime <= 0.4) {this.quit();}
-      draw._render(this,timer.GameCountTime);    
-      if(p2!= undefined)SendData();
+      this._processItems();
+      if(this.lines-this.oldlines >= 1)this._getItem();
+      draw._render(this,timer.GameCountTime,this.block_preview_time);    
+      if(p2!= undefined)SendData();this.send_item=undefined;
       await this._sleep();
+      if (timer.GameCountTime <= 0.4) {this.quit();}
     } while (this.gameLoop);
 
     // remove event listeners
@@ -794,13 +824,21 @@ class ClassicTetris {
       case 65:
         // left
         event.preventDefault();
-        this.moveRight = !(this.moveLeft = true);
+        if ( this.left_right_time > 0) {
+          this.moveLeft = !(this.moveRight = true);
+        } else {
+          this.moveRight = !(this.moveLeft = true);
+        }
         break;
       case 39:
       case 68:
         // right
         event.preventDefault();
-        this.moveLeft = !(this.moveRight = true);
+        if ( this.left_right_time > 0) {
+          this.moveRight = !(this.moveLeft = true);
+        } else {
+          this.moveLeft = !(this.moveRight = true);
+        }
         break;
       case 38:
       case 75:
@@ -824,9 +862,7 @@ class ClassicTetris {
         break;
       case 32:
         // hard drop
-        if (this.items_lockSpace && this.items_lockSpaceTime - this.time <= 3) {
-          break;
-        }
+        if (this.item_lockSpaceTime > 0) {break;}
         event.preventDefault();
         this.hardDrop = true;
         this.hold = false;
@@ -920,8 +956,10 @@ class ClassicTetris {
     }
     // process current state
     switch (this.gameState) {
-      case ClassicTetris.STATE_DROP:
-        this._processDrop();
+      case ClassicTetris.STATE_DROP:if (this.lock_opponent_time > 0) {
+        } else {
+          this._processDrop();
+        }
         break;
       case ClassicTetris.STATE_BURN:
         this._processBurn();
@@ -1354,7 +1392,8 @@ class ClassicTetris {
       
     }
   }
-
+  
+  
   _triggerGameOver() {
     // stop theme song
     if (this.gameTheme) {
@@ -1529,7 +1568,7 @@ class ClassicTetris {
   _getARE() {
     const h = this._getLockHeight();
     const are = 10 + (((h + 2) / 4) | 0) * 2;
-    return are * 2;   //return are;
+    return 1//are * 2;   //return are;
   }
 
   // height at which the piece locked
@@ -1614,10 +1653,97 @@ class ClassicTetris {
   }
   //-----------------------------------------------------------
   // 
+  // items function
+  // 
+  //-----------------------------------------------------------
+  _getItem(){
+    let id=Math.floor(Math.random() * 8)-1
+    this.send_item=this.items[7].name;
+    this.oldlines=(this.lines%10)*10;
+  }
+  async _processItems(){
+    if(this.lock_opponent_time > 0) this.lock_opponent_time--;
+    if(this.left_right_time > 0)    this.left_right_time--;
+    if(this.block_preview_time > 0) this.block_preview_time--;
+    if(this.item_lockSpaceTime > 0) this.item_lockSpaceTime--;
+    if(this.itemuse)return;
+    if(this.get_item!==undefined)this.itemuse=true;
+    else return; 
+    if(!this.item_defense){
+      this.itemuse=true;
+      switch(this.get_item){
+        case 'LockSpace':this.setItemLockSpace();break;
+        case 'Defense':break;
+        case 'HoldOn':this.setHardHoldOn();break;
+        case 'LeftRightChange':this.setLeftRightChange();break;
+        case 'BlockPreview':this.setBlockPreview();break;
+        case 'ChangeTetris':this.setChangeOpponentTetris();break;
+        case 'LockTetris':this.setLockOpponentTetris();break;
+        case 'BlockALine':this.setBlockLine();break;
+      }
+    }else {this.item_defense=false;}
+    this.itemuse=false
+    this.get_item=undefined
+  }
+  setItemLockSpace() {this.item_lockSpaceTime = 300;}
+
+  setItemDefense() {this.item_defense = true;}
+
+  setHardHoldOn() {
+    if (this.haveHold) {
+      if (this.hold) {
+        var tempPiece = this.holdPiece;
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.holdPiece = this.piece;
+        this.piece = tempPiece;
+        this.hold = false;
+      } else return;//can't hold
+    } else {
+      this.holdPiece = Object.assign({}, this.piece);
+      this.piecePosition = this.piece.iniPos.slice(0);
+      this.pieceRotation = 0;
+      this.haveHold = true;
+      this.hold = false;
+      // get next piece
+      this.piece = this.next[0];
+      this.piecePosition = this.piece.iniPos.slice(0);
+      this.pieceRotation = 0;
+      this._nextPieceId();
+    }
+  }
+
+  setLeftRightChange() {this.left_right_time = 300;}
+
+  setBlockPreview() {this.block_preview_time = 300;}
+
+  setChangeOpponentTetris() {
+    for(let i =0; i < 7; i++) {
+      this._nextPieceId();
+    }
+  }
+
+  setLockOpponentTetris() {this.lock_opponent_time = 300;}
+
+  setBlockLine() {
+    console.log("getitem")
+    if(this.blockHeight>10)return;
+    for (let i = 0; i < this.boardWidth; ++i) {
+      for(let j = 1; j < this.boardHeight; ++j){
+        this.board[j][i]=this.board[j-1][i]
+      }
+    }
+    for (let i = 0; i < this.boardWidth; ++i) {
+      this.board[this.boardHeight-this.blockHeight-1][i] = -1;
+    }
+    this.blockHeight++;
+  }
+  
+  //-----------------------------------------------------------
+  // 
   // sleep function
   // 
   //-----------------------------------------------------------
-
   _sleep() { return new Promise(requestAnimationFrame); }
 
 

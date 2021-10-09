@@ -28,20 +28,16 @@
         <!-- Play block border  (left) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
         <!-- Next block border  (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:70px;"></div>
-        <!-- Score block border (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:505px; left:490px;"></div>
+        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:490px;"></div>
         <!-- Hold block border  (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:490px;"></div>
+        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:67px;"></div>
 
         <!-- Play block border  (right) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:910px;"></div>
         <!-- Next block border  (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:775px;"></div>
-        <!-- Score block border (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:505px; left:1195px;"></div>
+        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:1195px;"></div>
         <!-- Hold block border  (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:1195px;"></div>
+        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:772px;"></div>
       </div>
       <div style='padding:0px 30px 15px 30px;'>
         <button id='start-stop-btn'>Play/Pause</button>
@@ -56,13 +52,18 @@
   const canvas = document.getElementById('tetris-canvas');
   const timer = new timecount();
   const draw = new Render();
-  const draw2 = new Render();
   const tetris = new ClassicTetris(canvas);
   var tetris2 = new PlayerInterface(canvas);
   var socket = io()
   var id={player:'unknow' , pid: 000 , status: 'nan'}
   var p2;
-  socket.emit('login',id)
+  socket.on('change',function(data){
+    console.log(data)
+    id.player=data.player
+    id.pid=data.pid
+    id.status='nan'
+  })
+  if(id.pid== 0 )socket.emit('login',id)
   socket.on('login',function(profile){id.pid= profile.pid;console.log(id)})
 window.addEventListener('load', event => {
   
@@ -72,39 +73,16 @@ window.addEventListener('load', event => {
   });
   document.getElementById('GameOver-btn').addEventListener('click', event => {
     tetris.quit()
-    
   });
-  // document.getElementById('lock-space-btn').addEventListener('click', event => {
-  //   tetris2.setItemsLockSpace();
-  // });
-  // document.getElementById('defense-btn').addEventListener('click', event => {
-  //   tetris2.setItemsDefense();
-  // });
-  
-  // document.getElementById('hard_hold_on').addEventListener('click', event => {
-  //   tetris2.setHardHoldOn();
-  // });
-  // document.getElementById('change_left_right').addEventListener('click', event => {
-  //   tetris2.setLeftRightChange();
-  // });
-  // document.getElementById('block_preview').addEventListener('click', event => {
-  //   tetris2.block_preview();
-  // });
-
-  // document.getElementById('change_opponent_tetris').addEventListener('click', event => {
-  //   tetris2.change_opponent_tetris();
-  // });
-  // document.getElementById('lock_opponent_tetris').addEventListener('click', event => {
-  //   tetris2.lock_opponent_tetris();
-  // });
-  // document.getElementById('block_one_line').addEventListener('click', event => {
-  //   tetris2.block_one_line();
-  // });
   
   document.getElementById('find').addEventListener('click',function (event){
     id.status='find';
     socket.emit('find',id)
   })
+})
+socket.on('find',function (opponent){
+  p2=opponent;
+  console.log(opponent);match=false
 })
 function SendData(){
   if(p2!== undefined )socket.emit('gamming',tetris,p2);
@@ -119,14 +97,13 @@ socket.on('gamming',function(data){
   for(let i=0;i<3;++i)tetris2.next[i]=data.next[i];
   tetris2.haveHold=data.haveHold;
   tetris2.holdPiece=data.holdPiece
-  tetris2.lines=data.lines
-  draw2._renderLite(tetris2);
+  tetris2.lines=data.lines;
+  tetris2.items=data.items;
+  tetris.get_item=data.send_item;
+  draw._renderLite(tetris2);
 })
 socket.on('fight',function(opponent){
   timer.settime(tetris.togglePlayPause());
 })
-socket.on('find',function (opponent){
-  p2=opponent;
-  console.log(opponent);match=false
-})
+
 </script>

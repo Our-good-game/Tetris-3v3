@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta charset="utf-8">
+        <title>Super Tetris</title>
+        <div style='padding:0px 30px 15px 30px;'>
+            <span style="font-size:3cm;">~Super Tetris~</span><br>
+        </div>
+
+        <div style='padding:50px 60px 20px 160px; '>
+          <button id='1vs1-btn' style="width:400px;height:100px;">Battle mode </button>
+          </br>
+          <button id='talking-btn' style="width:400px;height:100px;margin:20px 0px 0px 0px">Talking mode </button>
+          </br>
+          <canvas id='player-id' class='canvas' width='200' height='100'></canvas>
+        </div>
+        <script src='/socket.io/socket.io.js'></script>
+        <script>
+            var socket = io()
+            var id={player:'unknow' , pid: 000 , status: 'nan'}
+            socket.on('change',function(data){
+              console.log(data)
+              id.player=data.player
+              id.pid=data.pid
+              id.status='nan'
+            })
+            if(id.pid== 0 )socket.emit('login',id)
+            socket.on('login',function(profile){id.pid= profile.pid;console.log(id)})
+            document.getElementById('talking-btn').addEventListener('click', event => {
+              socket.emit('change',id)
+              document.location.href="talking.html"
+            });
+            document.getElementById('1vs1-btn').addEventListener('click', event => {
+              socket.emit('change',id)
+              document.location.href="1vs1.html"
+            }); 
+
+        </script>
+    </head>
+    <body background="518929.jpg">
+    </body>
+</html>

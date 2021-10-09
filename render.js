@@ -1,5 +1,4 @@
 class Render{
-  
     _renderLite(tetris){
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
@@ -11,7 +10,7 @@ class Render{
       if (tetris.haveHold) {this._drawHold(tetris);}
       
     }
-    _render(tetris,time) {
+    _render(tetris,time,blockpreview) {
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
       this._drawBoard(tetris);
@@ -19,8 +18,10 @@ class Render{
       this._drawPiece(tetris);
       this._drawHUD(tetris);
       this._rendertime(tetris,time);
-      this._drawNext(tetris);
-      if (tetris.haveHold) {this._drawHold(tetris);}
+      if(blockpreview == 0){
+        this._drawNext(tetris);
+        if (tetris.haveHold) {this._drawHold(tetris);}
+      }
     }    
     _rendertime(tetris,time){
       let timeStr = 'Time:    '+Math.floor(time);

@@ -214,15 +214,15 @@ class PlayerInterface {
     boardY = 39,
     squareSide = 28,
     scoreX = 1215,
-    scoreY = 545,
-    nextX = 810,
+    scoreY = 600,
+    nextX = 1215,
     nextY = 130,
-    nextOffsetX = 800,
+    nextOffsetX = 1215,
     nextOffsetY = 150,
     nextOffsetvec = 120,
     pauseX = 995,
     pauseY = 290,
-    holdX = 1215,
+    holdX = 790,
     holdY = 130,
     //字體屬性
     canvasFont = '36px georgia',
@@ -275,6 +275,9 @@ class PlayerInterface {
       const row = [];
       for (let j = 0; j < this.boardWidth; ++j) row.push(7);
       this.board.push(row);
+    }
+    for (let i = 0; i < this.boardHeight; ++i) {
+      for (let j = 0; j < this.boardWidth; ++j)this.board[i][j]=-1
     }
     //canvaes paint
     this.paintposA = paintposA;
@@ -406,6 +409,47 @@ class PlayerInterface {
         box: PlayerInterface.I_BOX
       },
     ];
+
+    // items 
+    this.items=[
+      {
+        id: 0,
+        name: 'LockSpace',
+      },
+      {
+        id: 1,
+        name: 'Defense',
+      },
+      {
+        id: 2,
+        name: 'HoldOn',
+      },
+      {
+        id: 3,
+        name: 'LeftRightChange',
+      },
+      {
+        id: 4,
+        name: 'BlockPreview',
+      },
+      {
+        id: 5,
+        name: 'ChangeTetris',
+      },
+      {
+        id: 6,
+        name: 'LockTetris',
+      },
+      {
+        id: 7,
+        name :'BlockALine',
+      },
+    ];
+    this.send_item= undefined;
+    this.get_item= undefined
+    this.blockHeight=0;
+    this.item_defense=false
+    
     // pointer coords
     this.xIni = undefined;
     this.yIni = undefined;
@@ -475,7 +519,7 @@ class PlayerInterface {
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
 
     // paint something for the user to see
-    draw2._renderLite(this);
+    draw._renderLite(this);
   }
 
  
