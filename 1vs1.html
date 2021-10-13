@@ -5,26 +5,12 @@
   <script src='classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
 </head>
-<body>
-  <div style='user-select:none; color:rgb(85, 83, 211); background-color:rgb(83, 165, 110); font:17px georgia'>
-    <div style='display:table; margin:0 auto;'>
-      <div style="border:6px blue solid; border-radius:5px; position:relative;">
-        <canvas id='tetris-canvas' class='canvas' width='1400' height='700'></canvas>
-        <!-- <div style='padding: 0px 200px;'>
-          <button id='lock-space-btn' style="width:100px;height:30px;">lock-space</button>
-          <button id='bonus-btn' style="width:100px;height:30px;">bonus</button>
-          <button id='defense-btn' style="width:100px;height:30px;">defense</button>
-        </div>
-        <div style='padding: 0px 200px;'>
-          <button id='hard_hold_on' style="width:100px;height:30px;">強制hold on</button> 
-          <button id='change_left_right' style="width:100px;height:30px;">左右交換</button>
-          <button id='block_preview' style="width:100px;height:30px;">遮蔽方塊</button>
-        </div>
-        <div style='padding: 0px 200px;'>
-          <button id='change_opponent_tetris' style="width:100px;height:30px;">換掉對手方塊</button> 
-          <button id='lock_opponent_tetris' style="width:100px;height:30px;">鎖住對手方塊</button>
-          <button id='block_one_line' style="width:100px;height:30px;">長高高1行</button>
-        </div> -->
+<body style="margin: 0px;">
+  <div style='user-select:none; color:rgb(85, 83, 211);  font:17px georgia'>
+    <div>
+      <div style="display:table; border:6px blue solid; border-radius:5px; position:absolute; display:flex;z-index: 3;">
+        <canvas id='tetris-canvas' class='canvas' width="1400" height="700" style="display:flex;z-index: 3;position:absolute;"></canvas>
+        <canvas id="js-background" style="display:flex;z-index: 2;position:absolute;"></canvas>
         <!-- Play block border  (left) -->
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
         <!-- Next block border  (left) -->
@@ -38,8 +24,9 @@
         <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:1195px;"></div>
         <!-- Hold block border  (right) -->
         <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:772px;"></div>
+        
       </div>
-      <div style='padding:0px 30px 15px 30px;'>
+      <div style='padding:0px 30px 15px 30px;z-index: 3;display:flex;position:relative;'>
         <button id='start-stop-btn'>Play/Pause</button>
         <button id='GameOver-btn'>GameOver</button>
         <input type="button" onclick="javascript:location.href='index.html'" value="Quit" />
@@ -48,8 +35,11 @@
     </div>
   </div>
 </body>
+<script src="background.js"></script>
 <script>
-  const canvas = document.getElementById('tetris-canvas');
+  var canvas = document.getElementById('tetris-canvas');
+    //canvas.width=window.innerWidth;
+    //canvas.height=window.innerHeight;
   const timer = new timecount();
   const draw = new Render();
   const tetris = new ClassicTetris(canvas);

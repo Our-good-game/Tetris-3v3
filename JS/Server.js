@@ -1,34 +1,44 @@
-var app = require('express')()
+var express = require('express')
+var app = express()
 var session = require('express-session')
-var FileStore = require('session-file-store')(session);
 var server = require('http').createServer(app)
 var {Server} = require('socket.io')
 var io = new Server (server);
 app.use(session({
-  secret: 'Secret',
-  name: 'user',
-  store: new FileStore(),
+  secret:'secret',
+  username: '',
   saveUninitialized: false,
   resave: true,
-  cookie : {
-    maxAge : 1000 * 60 * 10,
-  },
+  cookie : {maxAge : 1000 * 60 * 10},
 }))
-//http & socket port
+app.use(express.urlencoded({ extended: false }))
+
+
+//http & socket 
+app.get('/', function (req, res) {
+  var username = req.session.username;
+  if(username==undefined){res.redirect('/login');}
+  else res.sendFile(__dirname +'/index.html');
+})
+app.get('/index.html', function (req, res) {res.redirect('/')})
+app.get('/518929.jpg', function (req, res) {res.sendFile(__dirname +'/518929.jpg')})
+
 app.get('/login', function (req, res) {
   res.sendFile(__dirname +'/login.html');
-  app.get('/518929.jpg', function (req, res) {res.sendFile(__dirname +'/518929.jpg')})
 })
-app.get('/', function (req, res) {
-  console.log(req.session)
-  console.log(req.sessionID) 
-  res.sendFile(__dirname +'/index.html');
-  app.get('/518929.jpg', function (req, res) {res.sendFile(__dirname +'/518929.jpg')})
+app.post('/login', function(req, res) {
+  var user = req.body
+  console.log(user)
+  if (user.username !== '' ) {
+    req.session.username = user.username;
+    res.redirect('/');
+  }else{
+    res.send("name error")
+  }
+  
 })
-app.get('/index.html', function (req, res) {
-    res.sendFile(__dirname +'/index.html');
-    app.get('/518929.jpg', function (req, res) {res.sendFile(__dirname +'/518929.jpg')})
-})
+
+
 app.get('/1vs1.html', function (req, res) {
   res.sendFile(__dirname + '/1vs1.html');
   app.get('/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/classic-tetris.js');})
@@ -37,6 +47,7 @@ app.get('/1vs1.html', function (req, res) {
   app.get('/render.js', function (req, res) {res.sendFile(__dirname + '/render.js');})
   app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/pauseitem.png');})
 })
+app.get('/background.js', function (req, res) {res.sendFile(__dirname + '/background.js');})
 app.get('/talking.html', function (req, res) {
     res.sendFile(__dirname + '/talking.html');
 })
