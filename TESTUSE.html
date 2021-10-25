@@ -9,16 +9,22 @@
     <div style='display:table; margin:0 auto;'>
       <div style="border:0px blue solid; border-radius:5px; position:relative">
         <canvas id='tetris-canvas' class='canvas' width='1400' height='700'></canvas>
-	      <!-- Play block border -->
+	      <div
+          style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:5px; left: 300px;">
+          <img id="itemIcon" src="picture/Item/default.png" width="70px" height="70px">
+        </div>
+        <!-- Play block border --
         <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
-	      <!-- Next block border -->
+	      <!-- Next block border --
 	      <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:490px;"></div>
-	      <!-- Hold block border -->
+	      <!-- Hold block border --
 		    <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:67px; "></div>
+        -->
 	  </div>
       <div style='padding:0px 30px 15px 30px;'> 
         <button id='start-stop-btn'>Play/Pause</button>
         <button id='quit-btn'>Quit</button>
+        <button id='item-btn'>item</button>
       </div>
     </div>
   </div>
@@ -36,6 +42,9 @@
       document.getElementById('quit-btn').addEventListener('click', event => {
         tetris.quit();
         timer.resettime()
+      });
+      document.getElementById('item-btn').addEventListener('click', event => {
+        tetris.changeItemIcon();
       });
     });
 </script>
