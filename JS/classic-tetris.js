@@ -229,12 +229,14 @@ class ClassicTetris {
 
   static LINE_CLEAR = 'line-clear';
 
-  // doard size in terms of squares
+  // board size in terms of squares
   // this is typically 10x20, but we are adding 2 invisible rows
   // at the top to have enough room to spawn all pieces
   static BOARD_WIDTH = 10;
   static BOARD_HEIGHT = 22;
 
+  static ITEM_URL = ["picture/Item/compulsory hold.png", "picture/Item/higher.png", "picture/Item/move change.png", "picture/Item/piece chain.png",
+    "picture/Item/piece change.png", "picture/Item/shadow.png", "picture/Item/space chain.png"];
 
   // constructor needs a canvas
   constructor(canvas, {
@@ -264,13 +266,15 @@ class ClassicTetris {
 
     rotateSound = undefined,
     moveSound = undefined,
-    setSound = undefined,
+    setSound = new Audio ("audio/hard drop.wav"),
     gameOverSound = undefined,
     lineSound = undefined,
     tetrisSound = undefined,
     levelChangeSound = undefined,
     pauseSound = undefined,
-    gameTheme = undefined
+    takingItemSound = new Audio ("audio/item taking.wav"),
+    takeEndItemSound = new Audio ("audio/item takeEnd2.wav"),
+    gameTheme = new Audio ("audio/Stellar Wind - Unicorn Heads.mp3")
 
   } = {}) {
 
@@ -341,7 +345,14 @@ class ClassicTetris {
     this.tetrisSound = tetrisSound;             // tetris
     this.levelChangeSound = levelChangeSound;   // level increase
     this.pauseSound = pauseSound;               // game paused
+    this.takingItemSound = takingItemSound;  // taking item
+    this.takeEndItemSound = takeEndItemSound; // take end item
     this.gameTheme = gameTheme;                 // theme song
+
+     // sounds set
+     this.takingItemSound.volume = 0.3;
+     this.takingEndItemSound = 1.0;
+     this.gameTheme.volume = 0.4;
 
     // pieces
     this.pieces = [
@@ -428,6 +439,8 @@ class ClassicTetris {
     this.block_preview_time = 0
     this.left_right_time = 0
     this.item_lockSpaceTime = 0
+    // changeItemIcon
+    this.itemNumber = -1;
 
     // pointer coords
     this.xIni = undefined;
@@ -539,7 +552,55 @@ class ClassicTetris {
     return true;
   }
 
-  quit() {if (this.playing && this.gameState != ClassicTetris.STATE_GAME_OVER) {this._triggerGameOver();}}
+  quit() {
+    if (this.playing && this.gameState != ClassicTetris.STATE_GAME_OVER) {
+      this._triggerGameOver();
+    }
+  }
+
+  changeItemIcon() {
+    //console.log(ClassicTetris.ITEM_URL.length);
+    let itemIcon = document.getElementById('itemIcon');
+    let itemNumber = this.itemNumber;
+    let delayTime = 0;
+    let interval;
+    let takingItemSound = this.takingItemSound;
+    let takeEndItemSound = this.takeEndItemSound;
+
+    changeIcon();
+    this.itemNumber = itemNumber;
+
+    function random() {
+      let random = itemNumber;
+      while (random === itemNumber) {
+        random = Math.floor(Math.random() * ClassicTetris.ITEM_URL.length);
+      }
+      itemNumber = random;
+      return random;
+    }
+
+    // Function that run at irregular intervals
+    function changeIcon() {
+      console.log(delayTime);
+      // Clears the previous setInterval timer
+      clearInterval(interval);
+      if (delayTime < 1000) {
+        takingItemSound.currentTime = 0;
+        takingItemSound.play();
+      }
+      else if (delayTime == 1000){
+        takeEndItemSound.currentTime = 0;
+        takeEndItemSound.play();
+      }
+      else {
+        return 0;
+      }
+      itemIcon.src = ClassicTetris.ITEM_URL[random()];
+      delayTime += 100;
+      interval = setInterval(changeIcon, delayTime);
+    }
+  }
+
   // start new game
   async play() {
     if (this.playing) return;
