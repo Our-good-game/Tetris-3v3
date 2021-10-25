@@ -240,43 +240,25 @@ class ClassicTetris {
   constructor(canvas, {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
-    paintposA=0,paintposB=0,
-    paintposC=700,paintposD=700,
-    boardX = 210,
-    boardY = 39,
-    squareSide = 28,
-    scoreX = 510,
-    scoreY = 600,
-    nextX = 510,
-    nextY = 130,
-    nextOffsetX = 510,
-    nextOffsetY = 150,
-    nextOffsetvec=120,
-    pauseX = 290,
-    pauseY = 290,
-    holdX = 85,
-    holdY = 130,
-    //字體屬性
-    canvasFont = '36px georgia',
-    canvasFontColor = '#000',
-    //方塊顏色
-    zColor = ['#fe103c', '#f890a7'],
-    sColor = ['#66fd00', '#c4fe93'],
-    oColor = ['#ffde00', '#fff88a'],
-    lColor = ['#ff7308', '#ffca9b'],
-    jColor = ['#1801ff', '#5a95ff'],
-    tColor = ['#b802fd', '#f591fe'],
-    iColor = ['#00e6fe', '#86fefe'],
-
-    gameOverColor = ['#fff', '#ddd'],
-    ghostColor = ['#aaaaaa', '#fafafa'],//落下顏色
-
-
-    backgroundColor = '#345',//背景
-    tetrisBackgroundColor = '#000000',//
-    borderColor = '#fff',//外框
-    gridColor = '#ddd',//網線
-
+    paintposA=0,
+    paintposB=0,
+    paintposC=canvas.width,
+    paintposD=canvas.height,
+    boardX = canvas.width * 0.2,
+    boardY = canvas.height * 0.01,
+    squareSide = canvas.height * 0.04,
+    scoreX = boardX + squareSide * 10.5,
+    scoreY = boardY + squareSide * 18,
+    nextX = boardX + squareSide * 10.5,
+    nextY = boardY + squareSide * 3,
+    nextOffsetX = boardX + squareSide * 10.5,
+    nextOffsetY = nextY + squareSide * 0.5,
+    nextOffsetvec = squareSide * 3,
+    pauseX = boardX + squareSide * 3,
+    pauseY = boardY + squareSide * 12,
+    holdX = boardX - squareSide * 2.5,
+    holdY = boardY + squareSide * 3,
+    
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
 
@@ -343,27 +325,6 @@ class ClassicTetris {
     this.holdX = holdX;
     this.holdY = holdY;
 
-    // canvas font 
-    this.canvasFont = canvasFont;
-    this.canvasFontColor = canvasFontColor;
-
-    // piece colors
-    this.zColor = [...zColor];
-    this.sColor = [...sColor];
-    this.oColor = [...oColor];
-    this.lColor = [...lColor];
-    this.jColor = [...jColor];
-    this.tColor = [...tColor];
-    this.iColor = [...iColor];
-
-    // game over tile colors
-    this.gameOverColor = [...gameOverColor];
-    this.ghostColor = [...ghostColor];
-
-    this.backgroundColor = backgroundColor;
-    this.tetrisBackgroundColor = tetrisBackgroundColor;
-    this.borderColor = borderColor;
-    this.gridColor = gridColor;
 
     // max time between pointerdown and pointerup for the game to count it as click
     this.tapClickMaxDuration = tapClickMaxDuration;   // grandpa's tap/click duration!
@@ -389,7 +350,6 @@ class ClassicTetris {
         name: ClassicTetris.Z_PIECE,
         rot: ClassicTetris.Z_ROT,
         iniPos: ClassicTetris.Z_INI_POS,
-        col: this.zColor,
         box: ClassicTetris.Z_BOX
       },
       {
@@ -397,7 +357,6 @@ class ClassicTetris {
         name: ClassicTetris.S_PIECE,
         rot: ClassicTetris.S_ROT,
         iniPos: ClassicTetris.S_INI_POS,
-        col: this.sColor,
         box: ClassicTetris.S_BOX
       },
       {
@@ -405,7 +364,6 @@ class ClassicTetris {
         name: ClassicTetris.O_PIECE,
         rot: ClassicTetris.O_ROT,
         iniPos: ClassicTetris.O_INI_POS,
-        col: this.oColor,
         box: ClassicTetris.O_BOX
       },
       {
@@ -413,7 +371,7 @@ class ClassicTetris {
         name: ClassicTetris.L_PIECE,
         rot: ClassicTetris.L_ROT,
         iniPos: ClassicTetris.L_INI_POS,
-        col: this.lColor,
+
         box: ClassicTetris.L_BOX
       },
       {
@@ -421,7 +379,6 @@ class ClassicTetris {
         name: ClassicTetris.J_PIECE,
         rot: ClassicTetris.J_ROT,
         iniPos: ClassicTetris.J_INI_POS,
-        col: this.jColor,
         box: ClassicTetris.J_BOX
       },
       {
@@ -429,7 +386,6 @@ class ClassicTetris {
         name: ClassicTetris.T_PIECE,
         rot: ClassicTetris.T_ROT,
         iniPos: ClassicTetris.T_INI_POS,
-        col: this.tColor,
         box: ClassicTetris.T_BOX
       },
       {
@@ -437,7 +393,6 @@ class ClassicTetris {
         name: ClassicTetris.I_PIECE,
         rot: ClassicTetris.I_ROT,
         iniPos: ClassicTetris.I_INI_POS,
-        col: this.iColor,
         box: ClassicTetris.I_BOX
       },
     ];
@@ -455,42 +410,18 @@ class ClassicTetris {
 
     // items 
     this.items=[
-      {
-        id: 0,
-        name: 'LockSpace',
-      },
-      {
-        id: 1,
-        name: 'Defense',
-      },
-      {
-        id: 2,
-        name: 'HoldOn',
-      },
-      {
-        id: 3,
-        name: 'LeftRightChange',
-      },
-      {
-        id: 4,
-        name: 'BlockPreview',
-      },
-      {
-        id: 5,
-        name: 'ChangeTetris',
-      },
-      {
-        id: 6,
-        name: 'LockTetris',
-      },
-      {
-        id: 7,
-        name :'BlockALine',
-      },
+      {id: 0,name: 'LockSpace',},
+      {id: 1,name: 'Defense',},
+      {id: 2,name: 'HoldOn',},
+      {id: 3,name: 'LeftRightChange',},
+      {id: 4,name: 'BlockPreview',},
+      {id: 5,name: 'ChangeTetris',},
+      {id: 6,name: 'LockTetris',},
+      {id: 7,name: 'BlockALine',},
     ];
-    this.itemuse=false;
-    this.send_item= undefined;
-    this.get_item= undefined
+    this.item_count=0;
+    this.send_item= [0,'undefined'];
+    this.get_item= [0,'undefined']
     this.blockHeight=0;
     this.item_defense=false
     this.lock_opponent_time = 0
@@ -518,8 +449,10 @@ class ClassicTetris {
       this.pieces[0],
       this.pieces[0],
     ];       // next piece
-    this.queue = [0, 1, 2, 3, 4, 5, 6, -1, 0, 1, 2, 3, 4, 5, 6]; //for rondom of pieces rule
-    this.holdPiece = undefined;       // holding poece
+    this.queue = [0, 1, 2, 3, 4, 5, 6, -1, 0, 1, 2, 3, 4, 5, 6]; 
+    //for rondom of pieces rule
+    this.holdPiece = undefined;       
+    // holding piece
 
     // game parameters
     this.startLevel = 5;
@@ -580,16 +513,6 @@ class ClassicTetris {
   // 
   //----------------------------------------------------------------------------------------
 
-  // set the border and fill colors for game-over squares
-  setGameOverColor(color) {
-    this.gameOverColor = [...color];
-  }
-
-  // set ghost piece colors
-  setGhostColor(color) {
-    this.ghostColor = [...color];
-  }
-
   // set the border and fill colors for a piece
   setPieceColor(piece, color) {
     switch (piece) {
@@ -602,23 +525,6 @@ class ClassicTetris {
       case ClassicTetris.I_PIECE: this.iColor = [...color]; break;
     }
   }
-
-
-  //----------------------------------------------------------------------------------------
-  // 
-  // helper functions
-  // 
-  //----------------------------------------------------------------------------------------
-
-  //----------------------------------------------------------------------------------------
-  // 
-  // public functions
-  // 
-  //  - play
-  // 
-  //----------------------------------------------------------------------------------------
-
-  // t = 60;
 
   togglePlayPause() {
     if (this.playing) {
@@ -671,10 +577,14 @@ class ClassicTetris {
 
     do {
       this._process();
-      this._processItems();
-      if(this.lines-this.oldlines >= 1)this._getItem();
+      if(p2!= undefined){
+        this._processItems();
+        if(this.item_count!=this.get_item[0])this._itemattack();
+        if(this.lines-this.oldlines >= 10)this._getItem();
+        SendData();
+      }
       draw._render(this,timer.GameCountTime,this.block_preview_time);    
-      if(p2!= undefined)SendData();this.send_item=undefined;
+      
       await this._sleep();
       if (timer.GameCountTime <= 0.4) {this.quit();}
     } while (this.gameLoop);
@@ -744,7 +654,6 @@ class ClassicTetris {
     this.framesTilDrop = 50;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
-    this.cheakwall = false;
     // frames until the piece automatically moves down
 
     // initial state
@@ -956,10 +865,9 @@ class ClassicTetris {
     }
     // process current state
     switch (this.gameState) {
-      case ClassicTetris.STATE_DROP:if (this.lock_opponent_time > 0) {
-        } else {
-          this._processDrop();
-        }
+      case ClassicTetris.STATE_DROP:
+        if (this.lock_opponent_time > 0) {
+        }else {this._processDrop();}
         break;
       case ClassicTetris.STATE_BURN:
         this._processBurn();
@@ -1529,7 +1437,8 @@ class ClassicTetris {
         this.queue[i] = temp;
       }
     }
-    if (this.queue[0] == 7) {//random queue
+    //random queue
+    if (this.queue[0] == 7) {
       for (let i = 0; i < 7; ++i) {
         this.queue[i] = this.queue[i + 1];
       } this.queue[7] = 7;
@@ -1592,7 +1501,7 @@ class ClassicTetris {
     for (let i = 0; i < this.boardHeight; ++i) {
       let b = true;
       for (let j = 0; b && j < this.boardWidth; ++j)
-        if (this.board[i][j] === -1) b = false;
+        if (this.board[i][j] === -1 || this.board[i][j] === 7) b = false;
       if (b) arr.push(i);
     }
     return arr;
@@ -1629,28 +1538,6 @@ class ClassicTetris {
     }
     return true;
   }
-
-  // can the piece rotate
-  _canRot(rotation) {
-    const p = this.piece.rot[rotation];
-    for (let i = 0; i < p.length; ++i) {
-      for (let j = 0; j < p[i].length; ++j) {
-        if (p[i][j] != 0) {
-          const x = this.piecePosition[0] + j;
-          const y = this.piecePosition[1] + i;
-          if (x < 0 || x >= this.boardWidth || this.board[y][x] != -1) {
-            this.cheakwall = true;
-            return false;
-          }
-          if (y >= this.boardHeight) {
-            this.cheakwall = false;
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }
   //-----------------------------------------------------------
   // 
   // items function
@@ -1658,20 +1545,13 @@ class ClassicTetris {
   //-----------------------------------------------------------
   _getItem(){
     let id=Math.floor(Math.random() * 8)-1
-    this.send_item=this.items[7].name;
-    this.oldlines=(this.lines%10)*10;
+    this.send_item[1]=this.items[id].name;
+    this.send_item[0]++;
+    this.oldlines=(this.lines/10)*10;
   }
-  async _processItems(){
-    if(this.lock_opponent_time > 0) this.lock_opponent_time--;
-    if(this.left_right_time > 0)    this.left_right_time--;
-    if(this.block_preview_time > 0) this.block_preview_time--;
-    if(this.item_lockSpaceTime > 0) this.item_lockSpaceTime--;
-    if(this.itemuse)return;
-    if(this.get_item!==undefined)this.itemuse=true;
-    else return; 
+  _itemattack(){
     if(!this.item_defense){
-      this.itemuse=true;
-      switch(this.get_item){
+      switch(this.get_item[1]){
         case 'LockSpace':this.setItemLockSpace();break;
         case 'Defense':break;
         case 'HoldOn':this.setHardHoldOn();break;
@@ -1682,10 +1562,15 @@ class ClassicTetris {
         case 'BlockALine':this.setBlockLine();break;
       }
     }else {this.item_defense=false;}
-    this.itemuse=false
-    this.get_item=undefined
+    this.item_count++;
   }
-  setItemLockSpace() {this.item_lockSpaceTime = 300;}
+  _processItems(){
+    if(this.lock_opponent_time > 0) this.lock_opponent_time--;
+    if(this.left_right_time > 0)    this.left_right_time--;
+    if(this.block_preview_time > 0) this.block_preview_time--;
+    if(this.item_lockSpaceTime > 0) this.item_lockSpaceTime--;
+  }
+  setItemLockSpace() {this.item_lockSpaceTime = 3000;}
 
   setItemDefense() {this.item_defense = true;}
 
@@ -1713,9 +1598,9 @@ class ClassicTetris {
     }
   }
 
-  setLeftRightChange() {this.left_right_time = 300;}
+  setLeftRightChange() {this.left_right_time = 3000;}
 
-  setBlockPreview() {this.block_preview_time = 300;}
+  setBlockPreview() {this.block_preview_time = 3000;}
 
   setChangeOpponentTetris() {
     for(let i =0; i < 7; i++) {
@@ -1723,18 +1608,17 @@ class ClassicTetris {
     }
   }
 
-  setLockOpponentTetris() {this.lock_opponent_time = 300;}
+  setLockOpponentTetris() {this.lock_opponent_time = 3000;}
 
   setBlockLine() {
     console.log("getitem")
-    if(this.blockHeight>10)return;
     for (let i = 0; i < this.boardWidth; ++i) {
-      for(let j = 1; j < this.boardHeight; ++j){
-        this.board[j][i]=this.board[j-1][i]
+      for(let j = 3; j < this.boardHeight; ++j){
+        this.board[j-1][i]=this.board[j][i]
       }
     }
     for (let i = 0; i < this.boardWidth; ++i) {
-      this.board[this.boardHeight-this.blockHeight-1][i] = -1;
+      this.board[this.boardHeight-this.blockHeight-1][i] = 7;
     }
     this.blockHeight++;
   }
@@ -1745,8 +1629,6 @@ class ClassicTetris {
   // 
   //-----------------------------------------------------------
   _sleep() { return new Promise(requestAnimationFrame); }
-
-
 
   //-----------------------------------------------------------
   // 
@@ -1780,16 +1662,4 @@ class ClassicTetris {
       }
     }
   }
-
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,60 +1,47 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <script src='timer.js'></script>
-  <script src='render.js'></script>
-  <script src='player-interface.js'></script>
-  <script src='classic-tetris.js'></script>
+  <script src='/JS/timer.js'></script>
+  <script src='/JS/render.js'></script>
+  <script src='/JS/player-interface.js'></script>
+  <script src='/JS/classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
+  <style> @import"/CSS/style.css";</style>
 </head>
-<body style="margin: 0px;">
+<body>
   <div style='user-select:none; color:rgb(85, 83, 211);  font:17px georgia'>
+    <canvas id='js-background'></canvas>
     <div>
-      <div style="display:table; border:6px blue solid; border-radius:5px; position:absolute; display:flex;z-index: 3;">
-        <canvas id='tetris-canvas' class='canvas' width="1400" height="700" style="display:flex;z-index: 3;position:absolute;"></canvas>
+      <div class='container'>
+        <canvas id='player' class='tetris-canvas'></canvas>
+        <div class='text'></div>
+        <canvas id='opponent' class='tetris-canvas'></canvas>
         <canvas id="js-background" style="display:flex;z-index: 2;position:absolute;"></canvas>
-        <!-- Play block border  (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:205px;"></div>
-        <!-- Next block border  (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:490px;"></div>
-        <!-- Hold block border  (left) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:67px;"></div>
-
-        <!-- Play block border  (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:278px; height:554px; position:absolute; top:90px; left:910px;"></div>
-        <!-- Next block border  (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:129px; height:380px; position:absolute; top:90px; left:1195px;"></div>
-        <!-- Hold block border  (right) -->
-        <div style="border:6px orange solid; border-radius:5px; width:130px; height:140px; position:absolute; top:90px; left:772px;"></div>
         
       </div>
-      <div style='padding:0px 30px 15px 30px;z-index: 3;display:flex;position:relative;'>
-        <button id='start-stop-btn'>Play/Pause</button>
-        <button id='GameOver-btn'>GameOver</button>
-        <input type="button" onclick="javascript:location.href='index.html'" value="Quit" />
-        <button id='find'>find</button>
-      </div>
+    </div>
+    <div style='padding:0px 30px 15px 30px;z-index: 3;position:relative;'>
+      <button id='start-stop-btn'>Play/Pause</button>
+      <button id='GameOver-btn'>GameOver</button>
+      <input type="button" onclick="javascript:location.href='index.html'" value="Quit" />
+      <button id='find'>find</button>
     </div>
   </div>
 </body>
-<script src="background.js"></script>
+<script src="/JS/background.js"></script>
 <script>
-  var canvas = document.getElementById('tetris-canvas');
-    //canvas.width=window.innerWidth;
-    //canvas.height=window.innerHeight;
+  var canvas_player = document.getElementById('player');
+  canvas_player.height=window.innerHeight
+  canvas_player.width=window.innerWidth*0.4
+  var canvas_opponent = document.getElementById('opponent');
+  canvas_opponent.height=window.innerHeight
+  canvas_opponent.width=window.innerWidth*0.4
   const timer = new timecount();
   const draw = new Render();
-  const tetris = new ClassicTetris(canvas);
-  var tetris2 = new PlayerInterface(canvas);
+  var tetris = new ClassicTetris(canvas_player);
+  var tetris2 = new PlayerInterface(canvas_opponent);
   var socket = io()
-  var id={player:'unknow' , pid: 000 , status: 'nan'}
   var p2;
-  socket.on('change',function(data){
-    console.log(data)
-    id.player=data.player
-    id.pid=data.pid
-    id.status='nan'
-  })
-  if(id.pid== 0 )socket.emit('login',id)
-  socket.on('login',function(profile){id.pid= profile.pid;console.log(id)})
 window.addEventListener('load', event => {
   
   document.getElementById('start-stop-btn').addEventListener('click', event => {
@@ -66,8 +53,6 @@ window.addEventListener('load', event => {
   });
   
   document.getElementById('find').addEventListener('click',function (event){
-    id.status='find';
-    socket.emit('find',id)
   })
 })
 socket.on('find',function (opponent){
@@ -89,7 +74,7 @@ socket.on('gamming',function(data){
   tetris2.holdPiece=data.holdPiece
   tetris2.lines=data.lines;
   tetris2.items=data.items;
-  tetris.get_item=data.send_item;
+  tetris.get_item=data.send_item
   draw._renderLite(tetris2);
 })
 socket.on('fight',function(opponent){
@@ -97,3 +82,4 @@ socket.on('fight',function(opponent){
 })
 
 </script>
+</html>

@@ -1,6 +1,7 @@
 var express = require('express')
 var app = express()
 var session = require('express-session')
+const { appendFileSync } = require('fs')
 var server = require('http').createServer(app)
 var {Server} = require('socket.io')
 var io = new Server (server);
@@ -21,7 +22,6 @@ app.get('/', function (req, res) {
   else res.sendFile(__dirname +'/index.html');
 })
 app.get('/index.html', function (req, res) {res.redirect('/')})
-app.get('/518929.jpg', function (req, res) {res.sendFile(__dirname +'/518929.jpg')})
 
 app.get('/login', function (req, res) {
   res.sendFile(__dirname +'/login.html');
@@ -32,25 +32,23 @@ app.post('/login', function(req, res) {
   if (user.username !== '' ) {
     req.session.username = user.username;
     res.redirect('/');
-  }else{
-    res.send("name error")
-  }
-  
+  }else res.send("name error")
 })
-
-
+app.get('/talking.html', function (req, res) {res.sendFile(__dirname + '/talking.html');})
 app.get('/1vs1.html', function (req, res) {
+  
   res.sendFile(__dirname + '/1vs1.html');
-  app.get('/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/classic-tetris.js');})
-  app.get('/player-interface.js', function (req, res) {res.sendFile(__dirname + '/player-interface.js');})
-  app.get('/timer.js', function (req, res) {res.sendFile(__dirname + '/timer.js');})
-  app.get('/render.js', function (req, res) {res.sendFile(__dirname + '/render.js');})
-  app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/pauseitem.png');})
 })
-app.get('/background.js', function (req, res) {res.sendFile(__dirname + '/background.js');})
-app.get('/talking.html', function (req, res) {
-    res.sendFile(__dirname + '/talking.html');
-})
+app.get('/CSS/style.css', function (req, res){res.sendFile(__dirname + '/CSS/style.css');})
+app.get('/picture/background.jpg', function (req, res) {res.sendFile(__dirname +'/picture/background.jpg')})
+app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/picture/pauseitem.png');})
+
+  app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
+  app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
+  app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
+  app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/render.js');})
+  app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
+
 
 
 //socket
@@ -105,9 +103,6 @@ io.on('connection', function (socket) {
     socket.on('gamming',function(data,p2){
       ids.get(p2.pid).socket.emit('gamming',data)
     })
-    socket.on('change',function(id){
-      ids.get(id.pid).socket.emit('change',id);
-    })
     
     
     
@@ -116,4 +111,4 @@ io.on('connection', function (socket) {
       console.log(people+' user disconnected')
     })
 })
-server.listen(8000,function(){console.log("Server socket 8000")})
+server.listen(8800,function(){console.log("Server socket 8800")})

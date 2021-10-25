@@ -1,4 +1,24 @@
 class Render{
+  constructor(){
+    this.canvasFont = '36px georgia',
+    this.canvasFontColor = '#FFF',
+    this.piececolor = [
+      ['#fe103c', '#f890a7'], //z-0
+      ['#66fd00', '#c4fe93'], //s-1
+      ['#ffde00', '#fff88a'], //o-2
+      ['#ff7308', '#ffca9b'], //l-3
+      ['#1801ff', '#5a95ff'], //j-4
+      ['#b802fd', '#f591fe'], //t-5
+      ['#00e6fe', '#86fefe'], //i-6
+      ['#fff', '#ddd']        //lock-7
+    ]
+    this.gameOverColor = ['#fff', '#ddd']
+    this.ghostColor = ['#aaaaaa', '#fafafa']
+    this.backgroundColor = '#111'
+    this.tetrisBackgroundColor = '#000000'
+    this.borderColor = '#fff'
+    this.gridColor = '#ddd'
+  }
     _renderLite(tetris){
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
@@ -30,11 +50,12 @@ class Render{
     _drawBackground(tetris) {
         tetris.context.lineWidth = 1;
         // if burning a this, make background color flash
-        const fillColor = tetris.gameState === ClassicTetris.STATE_BURN &&
+        const fillColor = 
+        tetris.gameState === ClassicTetris.STATE_BURN &&
         tetris.linesCleared.length === 4 &&
         tetris.frameCounter % 8 ?   //4 ?
-        tetris.tetrisBackgroundColor :
-        tetris.backgroundColor;
+        this.tetrisBackgroundColor :
+        this.backgroundColor;
         // draw background and border
         tetris.context.beginPath();
         tetris.context.moveTo(tetris.boardBorder[0], tetris.boardBorder[1]);
@@ -43,15 +64,15 @@ class Render{
         tetris.context.lineTo(tetris.boardBorder[0], tetris.boardBorder[3]);
         tetris.context.closePath();
         tetris.context.fillStyle = fillColor;
-        tetris.context.strokeStyle = tetris.borderColor;
+        tetris.context.strokeStyle = this.borderColor;
         tetris.context.fill();
         tetris.context.stroke();
         if (tetris.gameState === ClassicTetris.STATE_PAUSE) {
           // pause overlay:
           // write PAUSE on the board if game is paused
           
-          tetris.context.font = tetris.canvasFont;
-          tetris.context.fillStyle = tetris.canvasFontColor;
+          tetris.context.font = this.canvasFont;
+          tetris.context.fillStyle = this.canvasFontColor;
           //tetris.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
           let pauseImg=new Image();pauseImg.src='pauseitem.png'
           tetris.context.drawImage(pauseImg,270, 250,160,160)
@@ -59,7 +80,7 @@ class Render{
         // draw grid if not paused
         tetris.context.lineWidth = 0.5;
         // horizontal lines
-        tetris.context.strokeStyle = tetris.gridColor;
+        tetris.context.strokeStyle =　this.gridColor;
         const boardRight = tetris.boardX + tetris.squareSide * tetris.boardWidth;
         for (let i = 3; i < tetris.boardHeight; ++i) {
             const height = tetris.boardY + i * tetris.squareSide;
@@ -86,17 +107,14 @@ class Render{
       }
     _drawBoard(tetris) { 
       if(tetris.gameState === ClassicTetris.STATE_PAUSE)return;
-      //if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)return;
       for (let i = 2; i < tetris.boardHeight; ++i) {
         for (let j = 0; j < tetris.boardWidth; ++j) {
           if (tetris.board[i][j] != -1) {
-            const col = tetris.board[i][j] == 7 ?
-                        tetris.gameOverColor :
-                        tetris.pieces[tetris.board[i][j]].col;
             this._drawSquare(
-                        tetris.boardX + j * tetris.squareSide,
-                        tetris.boardY + i * tetris.squareSide,
-                        col[0], col[1]);
+              tetris.boardX + j * tetris.squareSide,
+              tetris.boardY + i * tetris.squareSide,
+              this.piececolor[tetris.board[i][j]][0], 
+              this.piececolor[tetris.board[i][j]][1]);
           }
         }
       }
@@ -115,7 +133,8 @@ class Render{
               this._drawSquare(
                 tetris.boardX + (tetris.piecePosition[0] + j) * tetris.squareSide,
                 tetris.boardY + (tetris.piecePosition[1] + i) * tetris.squareSide,
-                tetris.piece.col[0], tetris.piece.col[1]);
+                this.piececolor[tetris.piece.id][0],
+                this.piececolor[tetris.piece.id][1]);
             }
           }
         }
@@ -142,7 +161,8 @@ class Render{
                 this._drawSquare(
                   tetris.boardX + (piecePos[0] + j) * tetris.squareSide,
                   tetris.boardY + (piecePos[1] + i) * tetris.squareSide,
-                  tetris.ghostColor[0], tetris.ghostColor[1]);
+                  this.ghostColor[0], 
+                  this.ghostColor[1]);
               }
             }
           }
@@ -153,8 +173,8 @@ class Render{
         let scoreStr = 'Lines:   ';
         let nextStr = 'Next';
         let holdStr = 'Hold';
-        tetris.context.font = tetris.canvasFont;
-        tetris.context.fillStyle = tetris.canvasFontColor;
+        tetris.context.font = this.canvasFont;
+        tetris.context.fillStyle = this.canvasFontColor;
         tetris.context.fillText(scoreStr, tetris.scoreX, tetris.scoreY);
         tetris.context.fillText(tetris.lines, tetris.scoreX, tetris.scoreY + 50);
         tetris.context.fillText(nextStr, tetris.nextX, tetris.nextY);
@@ -174,7 +194,8 @@ class Render{
                 this._drawSquare(
                   tetris.nextOffsetX + (j - b[1]) * tetris.squareSide,
                   tetris.nextOffsetY + (tetris.nextOffsetvec * num)+ (i - b[0]) * tetris.squareSide,
-                  tetris.next[num].col[0], tetris.next[num].col[1]);
+                  this.piececolor[tetris.next[num].id][0],
+                  this.piececolor[tetris.next[num].id][1]);
               }
             }
           }
@@ -205,7 +226,8 @@ class Render{
               this._drawSquare(
                 tetris.holdX + (j - b[1]) * tetris.squareSide,
                 tetris.holdY + (i - b[0]) * tetris.squareSide + 30,
-                tetris.holdPiece.col[0], tetris.holdPiece.col[1]);
+                this.piececolor[tetris.holdPiece.id][0],
+                this.piececolor[tetris.holdPiece.id][1]);
             }
           }
         }
