@@ -19,6 +19,14 @@ class Render{
     this.borderColor = '#fff'
     this.gridColor = '#ddd'
   }
+    _rendertime(canvas,time){
+      canvas.context.clearRect(0,0,canvas.canvas.width,canvas.canvas.height);
+      let timeStr = Math.floor(time);
+      canvas.context.font = this.canvasFont;
+      canvas.context.fillStyle = this.canvasFontColor;
+      canvas.context.fillText('Time：',0,130);
+      canvas.context.fillText(timeStr,15,170);
+    }
     _renderLite(tetris){
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
@@ -28,25 +36,19 @@ class Render{
       this._drawHUD(tetris);
       this._drawNext(tetris);
       if (tetris.haveHold) {this._drawHold(tetris);}
-      
     }
-    _render(tetris,time,blockpreview) {
+    _render(tetris,blockpreview) {
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
       this._drawBoard(tetris);
       this._drawGhost(tetris);
       this._drawPiece(tetris);
       this._drawHUD(tetris);
-      this._rendertime(tetris,time);
       if(blockpreview == 0){
         this._drawNext(tetris);
         if (tetris.haveHold) {this._drawHold(tetris);}
       }
-    }    
-    _rendertime(tetris,time){
-      let timeStr = 'Time:    '+Math.floor(time);
-      tetris.context.fillText(timeStr,440, 60);
-    }
+    }   
     _drawBackground(tetris) {
         tetris.context.lineWidth = 1;
         // if burning a this, make background color flash

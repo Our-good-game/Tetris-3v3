@@ -9,15 +9,16 @@
   <style> @import"/CSS/style.css";</style>
 </head>
 <body>
-  <div style='user-select:none; color:rgb(85, 83, 211);  font:17px georgia'>
+  <div style='user-select:none; '>
     <canvas id='js-background'></canvas>
     <div>
+      <div id='player-name' style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia"></div>
       <div class='container'>
         <canvas id='player' class='tetris-canvas'></canvas>
-        <div class='text'></div>
+        <div class='text'>
+          <canvas id='HUD' style='width: 100%; height: 100%; '></canvas>
+        </div>
         <canvas id='opponent' class='tetris-canvas'></canvas>
-        <canvas id="js-background" style="display:flex;z-index: 2;position:absolute;"></canvas>
-        
       </div>
     </div>
     <div style='padding:0px 30px 15px 30px;z-index: 3;position:relative;'>
@@ -32,18 +33,31 @@
 <script>
   var canvas_player = document.getElementById('player');
   canvas_player.height=window.innerHeight
-  canvas_player.width=window.innerWidth*0.4
+  canvas_player.width=window.innerWidth*0.45
   var canvas_opponent = document.getElementById('opponent');
   canvas_opponent.height=window.innerHeight
-  canvas_opponent.width=window.innerWidth*0.4
-  const timer = new timecount();
+  canvas_opponent.width=window.innerWidth*0.45
+  var HUD = document.getElementById('HUD');
+  HUD.height=window.innerHeight
+  HUD.width=window.innerWidth*0.1
   const draw = new Render();
+  var timer = new timecount(HUD);
   var tetris = new ClassicTetris(canvas_player);
   var tetris2 = new PlayerInterface(canvas_opponent);
+  var id=undefined
   var socket = io()
-  var p2;
+  var p2=undefined; 
 window.addEventListener('load', event => {
   
+  fetch('id')
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(data){
+      id=data
+      let abc=document.getElementById('player-name')
+      abc.innerHTML = '<span>'+data+'</span>'
+    })
   document.getElementById('start-stop-btn').addEventListener('click', event => {
     timer.settime(tetris.togglePlayPause());
     if(p2!== undefined)socket.emit('fight',p2);
@@ -53,11 +67,12 @@ window.addEventListener('load', event => {
   });
   
   document.getElementById('find').addEventListener('click',function (event){
+    socket.emit('find',id)
   })
 })
 socket.on('find',function (opponent){
   p2=opponent;
-  console.log(opponent);match=false
+  console.log(opponent)
 })
 function SendData(){
   if(p2!== undefined )socket.emit('gamming',tetris,p2);
@@ -80,6 +95,5 @@ socket.on('gamming',function(data){
 socket.on('fight',function(opponent){
   timer.settime(tetris.togglePlayPause());
 })
-
 </script>
 </html>

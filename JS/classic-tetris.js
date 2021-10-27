@@ -246,9 +246,9 @@ class ClassicTetris {
     paintposB=0,
     paintposC=canvas.width,
     paintposD=canvas.height,
-    boardX = canvas.width * 0.2,
-    boardY = canvas.height * 0.01,
-    squareSide = canvas.height * 0.04,
+    boardX = canvas.width * 0.25,
+    boardY = canvas.height * 0.15,
+    squareSide = canvas.height * 0.035,
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -258,7 +258,7 @@ class ClassicTetris {
     nextOffsetvec = squareSide * 3,
     pauseX = boardX + squareSide * 3,
     pauseY = boardY + squareSide * 12,
-    holdX = boardX - squareSide * 2.5,
+    holdX = boardX - squareSide * 3,
     holdY = boardY + squareSide * 3,
     
     tapClickMaxDuration = 30000,
@@ -266,15 +266,15 @@ class ClassicTetris {
 
     rotateSound = undefined,
     moveSound = undefined,
-    setSound = new Audio ("audio/hard drop.wav"),
+    setSound = new Audio ("audio/hard_drop.wav"),
     gameOverSound = undefined,
     lineSound = undefined,
     tetrisSound = undefined,
     levelChangeSound = undefined,
     pauseSound = undefined,
-    takingItemSound = new Audio ("audio/item taking.wav"),
-    takeEndItemSound = new Audio ("audio/item takeEnd2.wav"),
-    gameTheme = new Audio ("audio/Stellar Wind - Unicorn Heads.mp3")
+    takingItemSound = new Audio ("audio/item_taking.wav"),
+    takeEndItemSound = new Audio ("audio/item_takeEnd.wav"),
+    gameTheme = new Audio ("audio/gamesound.mp3")
 
   } = {}) {
 
@@ -352,7 +352,7 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0.4;
+     this.gameTheme.volume = 0//0.4;
 
     // pieces
     this.pieces = [
@@ -644,7 +644,7 @@ class ClassicTetris {
         if(this.lines-this.oldlines >= 10)this._getItem();
         SendData();
       }
-      draw._render(this,timer.GameCountTime,this.block_preview_time);    
+      draw._render(this,this.block_preview_time);    
       
       await this._sleep();
       if (timer.GameCountTime <= 0.4) {this.quit();}
@@ -1606,7 +1606,7 @@ class ClassicTetris {
   //-----------------------------------------------------------
   _getItem(){
     let id=Math.floor(Math.random() * 8)-1
-    this.send_item[1]=this.items[id].name;
+    this.send_item[1]=this.items[7].name;
     this.send_item[0]++;
     this.oldlines=(this.lines/10)*10;
   }
