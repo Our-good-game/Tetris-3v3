@@ -418,31 +418,27 @@ class ClassicTetris {
 
     // items 
     this.items=[
-      {id: 0,name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
-      {id: 1,name: 'Defense',         url:'picture/Item/defense.png'},
-      {id: 2,name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
-      {id: 3,name: 'LeftRightChange', url:"picture/Item/MoveChange.png"},
-      {id: 4,name: 'BlockPreview',    url:"picture/Item/shadow.png"},
-      {id: 5,name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
-      {id: 6,name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
-      {id: 7,name: 'BlockALine',      url:"picture/Item/higher.png"},
+      {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
+      {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
+      {id: 2, name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
+      {id: 3, name: 'LeftRightChange', url:"picture/Item/MoveChange.png"},
+      {id: 4, name: 'BlockPreview',    url:"picture/Item/shadow.png"},
+      {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
+      {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
+      {id: 7, name: 'BlockALine',      url:"picture/Item/higher.png"},
     ];
-    this.item_count=0;
-    this.send_item= [0,'undefined'];
-    this.get_item= [0,'undefined']
-    this.blockHeight=0;
-    this.item_defense=false
+    this.getItem = 'undefined'
     this.lock_opponent_time = 0
     this.block_preview_time = 0
-    this.left_right_time = 0
     this.item_lockSpaceTime = 0
     // changeItemIcon
     this.itemNumber = -1;
     this.itemLockSpace = false;
-    this.item_defense = false
+    this.itemDefense = false
     this.itemLeftRightChange = false;
     this.itemBlockPreview = false;
     this.itemLockTetris = false;
+    this.blockHeight=0;
 
     // pointer coords
     this.xIni = undefined;
@@ -565,7 +561,6 @@ class ClassicTetris {
     let itemIcon = document.getElementById('itemIcon');
     let delayTime = 0;
     let interval;
-    let randomIcon=this.randomIcon;
     //read-only
     let t=this
     // Clears the previous setInterval timer
@@ -574,7 +569,6 @@ class ClassicTetris {
     
     // Function that run at irregular intervals
     function changeIcon() {
-      console.log(delayTime);
       // Clears the previous setInterval timer
       clearInterval(interval);
       if (delayTime < 1000) {
@@ -585,11 +579,8 @@ class ClassicTetris {
         t.takeEndItemSound.currentTime = 0;
         t.takeEndItemSound.play();
       }
-      else {
-        return 0;
-      }
+      else {return 0;}
       itemIcon.src = t.items[t.randomIcon()].url;
-      console.log(itemIcon.src)
       delayTime += 100;
       interval = setInterval(changeIcon, delayTime);
     }
@@ -598,7 +589,7 @@ class ClassicTetris {
     let random = this.itemNumber;
     while (random === this.itemNumber) {
       random = Math.floor(Math.random() * this.items.length);
-    }
+    }this.itemNumber = random
     return random;
   }
 
@@ -793,7 +784,7 @@ class ClassicTetris {
       case 65:
         // left
         event.preventDefault();
-        if ( this.left_right_time > 0) {
+        if ( this.itemLeftRightChange ) {
           this.moveLeft = !(this.moveRight = true);
         } else {
           this.moveRight = !(this.moveLeft = true);
@@ -803,7 +794,7 @@ class ClassicTetris {
       case 68:
         // right
         event.preventDefault();
-        if ( this.left_right_time > 0) {
+        if ( this.itemLeftRightChange ) {
           this.moveRight = !(this.moveLeft = true);
         } else {
           this.moveLeft = !(this.moveRight = true);
@@ -926,8 +917,8 @@ class ClassicTetris {
     // process current state
     switch (this.gameState) {
       case ClassicTetris.STATE_DROP:
-        if (this.lock_opponent_time > 0) {
-        }else {this._processDrop();}
+        if ( this.itemLockTetris ) {
+        }else { this._processDrop(); }
         break;
       case ClassicTetris.STATE_BURN:
         this._processBurn();
@@ -1604,74 +1595,58 @@ class ClassicTetris {
   // 
   //-----------------------------------------------------------
   _getItem() {
-    /*
-      let id = Math.floor(Math.random() * 8) - 1
-      this.send_item[1] = this.items[id].name;
-      this.send_item[0]++;
-      this.oldlines = (this.lines / 10) * 10; 
-    */
       this.oldlines = (this.lines / 5) * 5;
       this.changeItemIcon();
-      // 6sec 為changeItemIcon()執行總時間
-      let items=this.items
-      let itemNumber=this.itemNumber
-      let item_defense=this.item_defense
-      setTimeout (function() {
-        if (items[itemNumber].name == 'Defense') {
-          item_defense = true; 
-          console.log ('get item-' + items[itemNumber].name);
+      setTimeout( () => {                                       this.itemNumber=6
+        if (this.items[this.itemNumber].name == 'Defense') {
+          this.itemDefense = true; 
+          console.log ('get item-' + this.items[this.itemNumber].name);
         }
         else { 
-          socket.emit('item', items[itemNumber].name, p2);
-          console.log ('emit item-' + items[itemNumber].name);
+          socket.emit('item', this.items[this.itemNumber].name, p2);
+          console.log ('emit item-' + this.items[this.itemNumber].name);
         }
-      }, 6000);
-      this.item_defense = item_defense; 
+      }, 6000 )
   }
-  _itemattack(){
-    if(!this.item_defense){
-      switch(this.get_item[1]){
-        case 'LockSpace':this.setItemLockSpace();break;
-        case 'Defense':break;
-        case 'HoldOn':this.setHardHoldOn();break;
-        case 'LeftRightChange':this.setLeftRightChange();break;
-        case 'BlockPreview':this.setBlockPreview();break;
-        case 'ChangeTetris':this.setChangeOpponentTetris();break;
-        case 'LockTetris':this.setLockOpponentTetris();break;
-        case 'BlockALine':this.setBlockLine();break;
+  // 6sec 為changeItemIcon()執行總時間
+  itemdelay() {return new Promise(resolve => { });}
+  _itemProcess(){
+    if(!this.itemDefense){
+      switch(this.getItem){
+        case 'LockSpace':       this.setItemLockSpace();break;
+        case 'Defense':         break;
+        case 'HardHoldOn':      this.setHardHoldOn();break;
+        case 'LeftRightChange': this.setLeftRightChange();break;
+        case 'BlockPreview':    this.setBlockPreview();break;
+        case 'ChangeTetris':    this.setChangeOpponentTetris();break;
+        case 'LockTetris':      this.setLockOpponentTetris();break;
+        case 'BlockALine':      this.setBlockLine();break;
       }
-    }else {this.item_defense=false;}
-    this.item_count++;
+      console.log(this.getItem)
+    }else {this.itemDefense=false}
   }
+  
   setItemLockSpace() { 
-    //this.item_lockSpaceTime = 3000; 
     this.itemLockSpace = true;
-    let itemLockSpace=this.itemLockSpace
-    setTimeout (function() {
-      itemLockSpace = false;
-    }, 3000); 
-    this.itemLockSpace=itemLockSpace
+    setTimeout( () => {
+      this.itemLockSpace = false;
+    }, 10000 );
   }
-  
-  
   
   setHardHoldOn() {
     if (this.haveHold) {
-      if (this.hold) {
         var tempPiece = this.holdPiece;
         this.piecePosition = this.piece.iniPos.slice(0);
         this.pieceRotation = 0;
         this.holdPiece = this.piece;
         this.piece = tempPiece;
         this.hold = false;
-      } else return;//can't hold
     } else {
       this.holdPiece = Object.assign({}, this.piece);
       this.piecePosition = this.piece.iniPos.slice(0);
       this.pieceRotation = 0;
       this.haveHold = true;
       this.hold = false;
-      // get next piece
       this.piece = this.next[0];
       this.piecePosition = this.piece.iniPos.slice(0);
       this.pieceRotation = 0;
@@ -1680,23 +1655,17 @@ class ClassicTetris {
   }
   
   setLeftRightChange() { 
-    //this.left_right_time = 3000; 
     this.itemLeftRightChange = true;
-    let itemLeftRightChange=this.itemLeftRightChange
-    setTimeout (function() {
-      itemLeftRightChange = false;
-    }, 3000); 
-    this.itemLeftRightChange=itemLeftRightChange
+    setTimeout( () => {
+      this.itemLeftRightChange = false;
+    }, 8000 );
   }
   
   setBlockPreview() { 
-    // this.block_preview_time = 3000; 
     this.itemBlockPreview = true;
-    let itemBlockPreview=this.itemBlockPreview
-    setTimeout (function() {
-      itemBlockPreview = false;
-    }, 3000); 
-    this.itemBlockPreview=itemBlockPreview
+    setTimeout( () => {
+      this.itemBlockPreview = false;
+    }, 10000 );
   }
   
   setChangeOpponentTetris() {
@@ -1706,24 +1675,18 @@ class ClassicTetris {
   }
   
   setLockOpponentTetris() { 
-    // this.lock_opponent_time = 3000; 
     this.itemLockTetris = true;
-    let itemLockTetris=this.itemLockTetris
-    setTimeout (function() {
-      itemLockTetris = false;
-    }, 3000); 
-    this.itemLockTetris=itemLockTetris
+    setTimeout( () => {
+      this.itemLockTetris = false;
+    }, 3000 );
   }
-  
   setBlockLine() {
-    // console.log("getitem")
+    //board 0=background
     for (let i = 0; i < this.boardWidth; ++i) {
       for (let j = 3; j < this.boardHeight; ++j) {
         this.board[j - 1][i] = this.board[j][i]
       }
-    }
-    for (let i = 0; i < this.boardWidth; ++i) {
-      this.board[this.boardHeight - this.blockHeight - 1][i] = 7;
+      this.board[this.boardHeight - 1][i] = 7;
     }
     this.blockHeight++;
   }

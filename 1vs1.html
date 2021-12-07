@@ -106,9 +106,10 @@ socket.on('fight',function(opponent){
   timer.settime(P1canvas.togglePlayPause());
 })
 socket.on('item', function (itemName) {
-  P1canvas.get_item[1] = itemName;
-  P1canvas._itemattack();
-  console.log("on item-" + itemName);
+  P1canvas.getItem = itemName;
+  P1canvas._itemProcess();
+  P1canvas._sleep()
+  P1canvas.getItem = 'undefined'
 })
 </script>
 </html>
