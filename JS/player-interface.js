@@ -208,55 +208,29 @@ class PlayerInterface {
   constructor(canvas, {
     boardWidth = PlayerInterface.BOARD_WIDTH,
     boardHeight = PlayerInterface.BOARD_HEIGHT,
-    paintposA=700,paintposB=0,
-    paintposC=700,paintposD=650,
-    boardX = 915,
-    boardY = 39,
-    squareSide = 28,
-    scoreX = 1215,
-    scoreY = 600,
-    nextX = 1215,
-    nextY = 130,
-    nextOffsetX = 1215,
-    nextOffsetY = 150,
-    nextOffsetvec = 120,
-    pauseX = 995,
-    pauseY = 290,
-    holdX = 790,
-    holdY = 130,
-    //字體屬性
-    canvasFont = '36px georgia',
-    canvasFontColor = '#000',
-    //方塊顏色
-    zColor = ['#fe103c', '#f890a7'],
-    sColor = ['#66fd00', '#c4fe93'],
-    oColor = ['#ffde00', '#fff88a'],
-    lColor = ['#ff7308', '#ffca9b'],
-    jColor = ['#1801ff', '#5a95ff'],
-    tColor = ['#b802fd', '#f591fe'],
-    iColor = ['#00e6fe', '#86fefe'],
-
-    gameOverColor = ['#fff', '#ddd'],
-    ghostColor = ['#aaaaaa', '#fafafa'],//落下顏色
-
-
-    backgroundColor = '#345',//背景
-    tetrisBackgroundColor = '#000000',//
-    borderColor = '#fff',//外框
-    gridColor = '#ddd',//網線
+    paintposA=0,
+    paintposB=0,
+    paintposC = canvas.width,
+    paintposD = canvas.height,
+    boardX = canvas.width * 0.25,
+    boardY = canvas.height * 0.15,
+    squareSide = canvas.height * 0.035,
+    
+    scoreX = boardX + squareSide * 10.5,
+    scoreY = boardY + squareSide * 18,
+    nextX = boardX + squareSide * 10.5,
+    nextY = boardY + squareSide * 3,
+    nextOffsetX = boardX + squareSide * 10.5,
+    nextOffsetY = nextY + squareSide * 0.5,
+    nextOffsetvec = squareSide * 3,
+    pauseX = boardX + squareSide * 3,
+    pauseY = boardY + squareSide * 12,
+    holdX = boardX - squareSide * 3,
+    holdY = boardY + squareSide * 3,
 
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
 
-    rotateSound = undefined,
-    moveSound = undefined,
-    setSound = undefined,
-    gameOverSound = undefined,
-    lineSound = undefined,
-    tetrisSound = undefined,
-    levelChangeSound = undefined,
-    pauseSound = undefined,
-    gameTheme = undefined
 
   } = {}) {
 
@@ -311,27 +285,8 @@ class PlayerInterface {
     this.holdX = holdX;
     this.holdY = holdY;
 
-    // canvas font 
-    this.canvasFont = canvasFont;
-    this.canvasFontColor = canvasFontColor;
-
-    // piece colors
-    this.zColor = [...zColor];
-    this.sColor = [...sColor];
-    this.oColor = [...oColor];
-    this.lColor = [...lColor];
-    this.jColor = [...jColor];
-    this.tColor = [...tColor];
-    this.iColor = [...iColor];
-
-    // game over tile colors
-    this.gameOverColor = [...gameOverColor];
-    this.ghostColor = [...ghostColor];
-
-    this.backgroundColor = backgroundColor;
-    this.tetrisBackgroundColor = tetrisBackgroundColor;
-    this.borderColor = borderColor;
-    this.gridColor = gridColor;
+    
+   
 
     // max time between pointerdown and pointerup for the game to count it as click
     this.tapClickMaxDuration = tapClickMaxDuration;   // grandpa's tap/click duration!
@@ -339,16 +294,7 @@ class PlayerInterface {
     // for the game to count it as a click/tap
     this.tapClickMaxDistance = tapClickMaxDistance;
 
-    // sounds
-    this.rotateSound = rotateSound;             // rotation
-    this.moveSound = moveSound;                 // move
-    this.setSound = setSound;                   // piece lock
-    this.gameOverSound = gameOverSound;         // game over
-    this.lineSound = lineSound;                 // line burn
-    this.tetrisSound = tetrisSound;             // tetris
-    this.levelChangeSound = levelChangeSound;   // level increase
-    this.pauseSound = pauseSound;               // game paused
-    this.gameTheme = gameTheme;                 // theme song
+    
 
     // pieces
     this.pieces = [
@@ -519,7 +465,7 @@ class PlayerInterface {
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
 
     // paint something for the user to see
-    draw._renderLite(this);
+    draw._render(this,0);
   }
 
  

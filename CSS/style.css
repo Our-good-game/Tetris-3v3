@@ -15,7 +15,7 @@ body{
   position:absolute;
 }
 .tetris-canvas{
-  width: 40%;
+  width: 45%;
   height: 100%;
   display:block;
   z-index: 2;
@@ -30,7 +30,7 @@ body{
   flex-direction: row;
 }
 .text{
-  width: 20%;
+  width: 10%;
   height: 100%;
   z-index: 3;
 }

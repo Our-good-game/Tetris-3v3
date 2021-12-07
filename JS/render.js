@@ -19,34 +19,24 @@ class Render{
     this.borderColor = '#fff'
     this.gridColor = '#ddd'
   }
-    _renderLite(tetris){
+    _rendertime(canvas,time){
+      canvas.context.clearRect(0,0,canvas.canvas.width,canvas.canvas.height);
+      let timeStr = Math.floor(time);
+      canvas.context.font = this.canvasFont;
+      canvas.context.fillStyle = this.canvasFontColor;
+      canvas.context.fillText('Time：',0,130);
+      canvas.context.fillText(timeStr,15,170);
+    }
+    _render(tetris) {
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
       this._drawBackground(tetris);
       this._drawBoard(tetris);
       this._drawGhost(tetris);
       this._drawPiece(tetris);
       this._drawHUD(tetris);
-      this._drawNext(tetris);
-      if (tetris.haveHold) {this._drawHold(tetris);}
-      
-    }
-    _render(tetris,time,blockpreview) {
-      tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
-      this._drawBackground(tetris);
-      this._drawBoard(tetris);
-      this._drawGhost(tetris);
-      this._drawPiece(tetris);
-      this._drawHUD(tetris);
-      this._rendertime(tetris,time);
-      if(blockpreview == 0){
-        this._drawNext(tetris);
-        if (tetris.haveHold) {this._drawHold(tetris);}
-      }
-    }    
-    _rendertime(tetris,time){
-      let timeStr = 'Time:    '+Math.floor(time);
-      tetris.context.fillText(timeStr,440, 60);
-    }
+      if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
+      if ( tetris.haveHold ) {this._drawHold(tetris);}
+    }   
     _drawBackground(tetris) {
         tetris.context.lineWidth = 1;
         // if burning a this, make background color flash
@@ -114,7 +104,8 @@ class Render{
               tetris.boardX + j * tetris.squareSide,
               tetris.boardY + i * tetris.squareSide,
               this.piececolor[tetris.board[i][j]][0], 
-              this.piececolor[tetris.board[i][j]][1]);
+              this.piececolor[tetris.board[i][j]][1],
+              tetris);
           }
         }
       }
@@ -134,7 +125,8 @@ class Render{
                 tetris.boardX + (tetris.piecePosition[0] + j) * tetris.squareSide,
                 tetris.boardY + (tetris.piecePosition[1] + i) * tetris.squareSide,
                 this.piececolor[tetris.piece.id][0],
-                this.piececolor[tetris.piece.id][1]);
+                this.piececolor[tetris.piece.id][1],
+                tetris);
             }
           }
         }
@@ -162,7 +154,8 @@ class Render{
                   tetris.boardX + (piecePos[0] + j) * tetris.squareSide,
                   tetris.boardY + (piecePos[1] + i) * tetris.squareSide,
                   this.ghostColor[0], 
-                  this.ghostColor[1]);
+                  this.ghostColor[1],
+                  tetris);
               }
             }
           }
@@ -195,7 +188,8 @@ class Render{
                   tetris.nextOffsetX + (j - b[1]) * tetris.squareSide,
                   tetris.nextOffsetY + (tetris.nextOffsetvec * num)+ (i - b[0]) * tetris.squareSide,
                   this.piececolor[tetris.next[num].id][0],
-                  this.piececolor[tetris.next[num].id][1]);
+                  this.piececolor[tetris.next[num].id][1],
+                  tetris);
               }
             }
           }
@@ -203,7 +197,7 @@ class Render{
       }
     
       // draw an individual square on the board
-      _drawSquare(x, y, color, border) {
+      _drawSquare(x, y, color, border,tetris) {
         tetris.context.beginPath();
         tetris.context.moveTo(x + 1, y + 1);
         tetris.context.lineTo(x + tetris.squareSide - 1, y + 1);
@@ -227,7 +221,8 @@ class Render{
                 tetris.holdX + (j - b[1]) * tetris.squareSide,
                 tetris.holdY + (i - b[0]) * tetris.squareSide + 30,
                 this.piececolor[tetris.holdPiece.id][0],
-                this.piececolor[tetris.holdPiece.id][1]);
+                this.piececolor[tetris.holdPiece.id][1],
+                tetris);
             }
           }
         }

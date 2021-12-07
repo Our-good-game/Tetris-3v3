@@ -9,15 +9,24 @@
   <style> @import"/CSS/style.css";</style>
 </head>
 <body>
-  <div style='user-select:none; color:rgb(85, 83, 211);  font:17px georgia'>
+  <div style='user-select:none;'>
     <canvas id='js-background'></canvas>
+    <div
+          style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:300px;">
+          <img id="itemIcon" src="/picture/Item/default.png" width="70" height="70">
+    </div>
+    <div
+          style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:1200px;">
+          <img id="itemIcon2" src="/picture/Item/default.png" width="70" height="70">
+    </div>
     <div>
+      <div id='player-name' style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia"></div>
       <div class='container'>
         <canvas id='player' class='tetris-canvas'></canvas>
-        <div class='text'></div>
+        <div class='text'>
+          <canvas id='HUD' style='width: 100%; height: 100%; '></canvas>
+        </div>
         <canvas id='opponent' class='tetris-canvas'></canvas>
-        <canvas id="js-background" style="display:flex;z-index: 2;position:absolute;"></canvas>
-        
       </div>
     </div>
     <div style='padding:0px 30px 15px 30px;z-index: 3;position:relative;'>
@@ -32,54 +41,74 @@
 <script>
   var canvas_player = document.getElementById('player');
   canvas_player.height=window.innerHeight
-  canvas_player.width=window.innerWidth*0.4
+  canvas_player.width=window.innerWidth*0.45
   var canvas_opponent = document.getElementById('opponent');
   canvas_opponent.height=window.innerHeight
-  canvas_opponent.width=window.innerWidth*0.4
-  const timer = new timecount();
+  canvas_opponent.width=window.innerWidth*0.45
+  var HUD = document.getElementById('HUD');
+  HUD.height=window.innerHeight
+  HUD.width=window.innerWidth*0.1
   const draw = new Render();
-  var tetris = new ClassicTetris(canvas_player);
-  var tetris2 = new PlayerInterface(canvas_opponent);
+  var P1canvas = new ClassicTetris(canvas_player);
+  var P2canvas = new PlayerInterface(canvas_opponent);
+  var timer = new timecount(HUD);
+  
+  var id=undefined
   var socket = io()
-  var p2;
+  var p2=undefined; 
 window.addEventListener('load', event => {
   
+  fetch('id')
+    .then(function(response) { return response.text(); })
+    .then(function(data){
+      id=data
+      let abc=document.getElementById('player-name')
+      abc.innerHTML = '<span>'+data+'</span>'
+    })
   document.getElementById('start-stop-btn').addEventListener('click', event => {
-    timer.settime(tetris.togglePlayPause());
+    timer.settime(P1canvas.togglePlayPause());
     if(p2!== undefined)socket.emit('fight',p2);
   });
   document.getElementById('GameOver-btn').addEventListener('click', event => {
-    tetris.quit()
+    P1canvas.quit()
   });
   
   document.getElementById('find').addEventListener('click',function (event){
+    socket.emit('find',id)
   })
 })
 socket.on('find',function (opponent){
   p2=opponent;
-  console.log(opponent);match=false
+  console.log(opponent)
 })
-function SendData(){
-  if(p2!== undefined )socket.emit('gamming',tetris,p2);
+function SendData(data){
+  if(p2!== undefined )socket.emit('gamming',data,p2);
 };
 socket.on('gamming',function(data){
-  tetris2.gameState =data.gameState 
-  tetris2.board=data.board;
-  tetris2.linesCleared=data.linesCleared
-  tetris2.piecePosition=data.piecePosition
-  tetris2.pieceRotation=data.pieceRotation
-  tetris2.piece=data.piece
-  for(let i=0;i<3;++i)tetris2.next[i]=data.next[i];
-  tetris2.haveHold=data.haveHold;
-  tetris2.holdPiece=data.holdPiece
-  tetris2.lines=data.lines;
-  tetris2.items=data.items;
-  tetris.get_item=data.send_item
-  draw._renderLite(tetris2);
+
+  P2canvas.gameState=data.gameState 
+  P2canvas.board=data.board;
+  P2canvas.linesCleared=data.linesCleared
+  P2canvas.piecePosition=data.piecePosition
+  P2canvas.pieceRotation=data.pieceRotation
+  P2canvas.piece=data.piece
+  for(let i=0;i<3;++i)P2canvas.next[i]=data.next[i];
+  P2canvas.haveHold=data.haveHold;
+  P2canvas.holdPiece=data.holdPiece
+  P2canvas.lines=data.lines;
+  P2canvas.itemNumber=data.itemNumber;
+  if (data.itemNumber !== -1) {
+    document.getElementById('itemIcon2').src = data.items[data.itemNumber].url;
+  }
+  draw._render(P2canvas,0);
 })
 socket.on('fight',function(opponent){
-  timer.settime(tetris.togglePlayPause());
+  timer.settime(P1canvas.togglePlayPause());
 })
-
+socket.on('item', function (itemName) {
+  P1canvas.get_item[1] = itemName;
+  P1canvas._itemattack();
+  console.log("on item-" + itemName);
+})
 </script>
 </html>
