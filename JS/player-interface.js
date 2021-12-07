@@ -210,11 +210,12 @@ class PlayerInterface {
     boardHeight = PlayerInterface.BOARD_HEIGHT,
     paintposA=0,
     paintposB=0,
-    paintposC=canvas.width,
-    paintposD=canvas.height,
+    paintposC = canvas.width,
+    paintposD = canvas.height,
     boardX = canvas.width * 0.25,
     boardY = canvas.height * 0.15,
     squareSide = canvas.height * 0.035,
+    
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -464,7 +465,7 @@ class PlayerInterface {
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
 
     // paint something for the user to see
-    draw._renderLite(this);
+    draw._render(this,0);
   }
 
  

@@ -29,5 +29,5 @@ class  timecount{
       this.running();
       this.GameCountTime = 120;
     }
-    secondcount() {return new Promise(resolve=> {setTimeout(()=> {resolve();}, 200);});}
+    secondcount() {return new Promise(resolve => { setTimeout( () => {resolve();}, 200 );});}
 }

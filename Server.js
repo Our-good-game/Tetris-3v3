@@ -21,9 +21,11 @@ app.get('/', function (req, res) {
   else res.sendFile(__dirname +'/index.html');
 })
 app.get('/index.html', function (req, res) {res.redirect('/')})
-
 app.get('/login', function (req, res) {
   res.sendFile(__dirname +'/login.html');
+})
+app.get('/TESTUSE.html', function (req, res) {
+  res.sendFile(__dirname +'/TESTUSE.html');
 })
 app.post('/login', function(req, res) {
   var user = req.body
@@ -51,6 +53,15 @@ app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/pictur
 app.get('/obj/hana1.png', function (req, res) {res.sendFile(__dirname + '/obj/hana1.png');})
 app.get('/obj/hana2.png', function (req, res) {res.sendFile(__dirname + '/obj/hana2.png');})
 app.get('/obj/hana3.png', function (req, res) {res.sendFile(__dirname + '/obj/hana3.png');})
+app.get('/picture/Item/default.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/default.png');})
+app.get('/picture/Item/SpaceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/SpaceChain.png');})
+app.get('/picture/Item/defense.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/defense.png');})
+app.get('/picture/Item/CompulsoryHold.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/CompulsoryHold.png');})
+app.get('/picture/Item/MoveChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/MoveChange.png');})
+app.get('/picture/Item/shadow.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/shadow.png');})
+app.get('/picture/Item/PieceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChain.png');})
+app.get('/picture/Item/PieceChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChange.png');})
+app.get('/picture/Item/higher.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/higher.png');})
 
 
 //JS mode
@@ -61,24 +72,46 @@ app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/rend
 app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
 app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
+app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
 
 app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})
 app.get('/audio/item_taking.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_taking.wav');})
 app.get('/audio/item_takeEnd.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_takeEnd.wav');})
 app.get('/audio/gamesound.mp3', function (req, res) {res.sendFile(__dirname + '/audio/gamesound.mp3');})
 
-
-app.get('/id',function(req,res){
-  res.send(req.session.username)
-})
+app.get('/id',function(req,res){res.send(req.session.username)})
 
 //socket
 var messages=[{name: "Who",message: "test message"}]
 var typing = false
 var timer = null
+var finding 
 var ids = new Map();
 var find_queue = []
 var people = 0 
+function find(){
+  if(find_queue.length < 2)return;
+  while(finding == true){
+    if(find_queue.length < 2)return;
+  }
+  finding = true;
+  let A=null,B=null;
+  find_queue.forEach(E => {
+    if(A == null )A = E;
+    if(B == null )B = E;
+    if(B != A ){
+      find_queue.splice(find_queue.indexOf(A),1)
+      find_queue.splice(find_queue.indexOf(B),1)
+      return;
+    }
+    else B = null;
+  });
+  if( A!=null && B!=null ){
+    ids.get(A).socket.emit('find',B);
+    ids.get(B).socket.emit('find',A);
+  }
+  finding = false;
+}
 io.on('connection', function (socket) {
     people++;console.log(people+' user connected');socket.emit("allMessage",messages);
     
@@ -100,11 +133,8 @@ io.on('connection', function (socket) {
     socket.on('find',function(id){
       ids.set(id,{socket:socket})
       find_queue.push(id);
-      if(find_queue.length >= 2){
-        socket.emit('find',find_queue[0])
-        ids.get(find_queue[0]).socket.emit('find',id)
-        find_queue = []
-      }
+      console.log(find_queue);
+      find();
     })
     socket.on('gamming',function(data,p2){
       ids.get(p2).socket.emit('gamming',data)
@@ -112,9 +142,15 @@ io.on('connection', function (socket) {
     socket.on('fight',function(p2){
       ids.get(p2).socket.emit('fight',p2)
     })
+    socket.on('item',function(itemName,p2){
+      ids.get(p2).socket.emit('item', itemName)
+    })
+
+
+
     socket.on('disconnect',function(){
       people--;
       console.log(people+' user disconnected')
     })
 })
-server.listen(8800,function(){console.log("Server socket 8800")})
+server.listen(22222,'::')

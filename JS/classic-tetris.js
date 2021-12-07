@@ -235,9 +235,6 @@ class ClassicTetris {
   static BOARD_WIDTH = 10;
   static BOARD_HEIGHT = 22;
 
-  static ITEM_URL = ["picture/Item/compulsory hold.png", "picture/Item/higher.png", "picture/Item/move change.png", "picture/Item/piece chain.png",
-    "picture/Item/piece change.png", "picture/Item/shadow.png", "picture/Item/space chain.png"];
-
   // constructor needs a canvas
   constructor(canvas, {
     boardWidth = ClassicTetris.BOARD_WIDTH,
@@ -352,7 +349,7 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0//0.4;
+     this.gameTheme.volume = 0.4;
 
     // pieces
     this.pieces = [
@@ -421,14 +418,14 @@ class ClassicTetris {
 
     // items 
     this.items=[
-      {id: 0,name: 'LockSpace',},
-      {id: 1,name: 'Defense',},
-      {id: 2,name: 'HoldOn',},
-      {id: 3,name: 'LeftRightChange',},
-      {id: 4,name: 'BlockPreview',},
-      {id: 5,name: 'ChangeTetris',},
-      {id: 6,name: 'LockTetris',},
-      {id: 7,name: 'BlockALine',},
+      {id: 0,name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
+      {id: 1,name: 'Defense',         url:'picture/Item/defense.png'},
+      {id: 2,name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
+      {id: 3,name: 'LeftRightChange', url:"picture/Item/MoveChange.png"},
+      {id: 4,name: 'BlockPreview',    url:"picture/Item/shadow.png"},
+      {id: 5,name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
+      {id: 6,name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
+      {id: 7,name: 'BlockALine',      url:"picture/Item/higher.png"},
     ];
     this.item_count=0;
     this.send_item= [0,'undefined'];
@@ -441,6 +438,11 @@ class ClassicTetris {
     this.item_lockSpaceTime = 0
     // changeItemIcon
     this.itemNumber = -1;
+    this.itemLockSpace = false;
+    this.item_defense = false
+    this.itemLeftRightChange = false;
+    this.itemBlockPreview = false;
+    this.itemLockTetris = false;
 
     // pointer coords
     this.xIni = undefined;
@@ -517,7 +519,7 @@ class ClassicTetris {
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
 
     // paint something for the user to see
-    draw._render(this,timer.GameCountTime);
+    draw._render(this,0);
   }
 
   //----------------------------------------------------------------------------------------
@@ -557,48 +559,47 @@ class ClassicTetris {
       this._triggerGameOver();
     }
   }
-
+  
+  
   changeItemIcon() {
-    //console.log(ClassicTetris.ITEM_URL.length);
     let itemIcon = document.getElementById('itemIcon');
-    let itemNumber = this.itemNumber;
     let delayTime = 0;
     let interval;
-    let takingItemSound = this.takingItemSound;
-    let takeEndItemSound = this.takeEndItemSound;
+    let randomIcon=this.randomIcon;
+    //read-only
+    let t=this
+    // Clears the previous setInterval timer
+    changeIcon()
 
-    changeIcon();
-    this.itemNumber = itemNumber;
-
-    function random() {
-      let random = itemNumber;
-      while (random === itemNumber) {
-        random = Math.floor(Math.random() * ClassicTetris.ITEM_URL.length);
-      }
-      itemNumber = random;
-      return random;
-    }
-
+    
     // Function that run at irregular intervals
     function changeIcon() {
       console.log(delayTime);
       // Clears the previous setInterval timer
       clearInterval(interval);
       if (delayTime < 1000) {
-        takingItemSound.currentTime = 0;
-        takingItemSound.play();
+        t.takingItemSound.currentTime = 0;
+        t.takingItemSound.play();
       }
       else if (delayTime == 1000){
-        takeEndItemSound.currentTime = 0;
-        takeEndItemSound.play();
+        t.takeEndItemSound.currentTime = 0;
+        t.takeEndItemSound.play();
       }
       else {
         return 0;
       }
-      itemIcon.src = ClassicTetris.ITEM_URL[random()];
+      itemIcon.src = t.items[t.randomIcon()].url;
+      console.log(itemIcon.src)
       delayTime += 100;
       interval = setInterval(changeIcon, delayTime);
     }
+  }
+  randomIcon() {
+    let random = this.itemNumber;
+    while (random === this.itemNumber) {
+      random = Math.floor(Math.random() * this.items.length);
+    }
+    return random;
   }
 
   // start new game
@@ -639,10 +640,8 @@ class ClassicTetris {
     do {
       this._process();
       if(p2!= undefined){
-        this._processItems();
-        if(this.item_count!=this.get_item[0])this._itemattack();
-        if(this.lines-this.oldlines >= 10)this._getItem();
-        SendData();
+        if(this.lines - this.oldlines >= 5)this._getItem();
+        SendData(this);
       }
       draw._render(this,this.block_preview_time);    
       
@@ -1604,11 +1603,30 @@ class ClassicTetris {
   // items function
   // 
   //-----------------------------------------------------------
-  _getItem(){
-    let id=Math.floor(Math.random() * 8)-1
-    this.send_item[1]=this.items[7].name;
-    this.send_item[0]++;
-    this.oldlines=(this.lines/10)*10;
+  _getItem() {
+    /*
+      let id = Math.floor(Math.random() * 8) - 1
+      this.send_item[1] = this.items[id].name;
+      this.send_item[0]++;
+      this.oldlines = (this.lines / 10) * 10; 
+    */
+      this.oldlines = (this.lines / 5) * 5;
+      this.changeItemIcon();
+      // 6sec 為changeItemIcon()執行總時間
+      let items=this.items
+      let itemNumber=this.itemNumber
+      let item_defense=this.item_defense
+      setTimeout (function() {
+        if (items[itemNumber].name == 'Defense') {
+          item_defense = true; 
+          console.log ('get item-' + items[itemNumber].name);
+        }
+        else { 
+          socket.emit('item', items[itemNumber].name, p2);
+          console.log ('emit item-' + items[itemNumber].name);
+        }
+      }, 6000);
+      this.item_defense = item_defense; 
   }
   _itemattack(){
     if(!this.item_defense){
@@ -1625,16 +1643,18 @@ class ClassicTetris {
     }else {this.item_defense=false;}
     this.item_count++;
   }
-  _processItems(){
-    if(this.lock_opponent_time > 0) this.lock_opponent_time--;
-    if(this.left_right_time > 0)    this.left_right_time--;
-    if(this.block_preview_time > 0) this.block_preview_time--;
-    if(this.item_lockSpaceTime > 0) this.item_lockSpaceTime--;
+  setItemLockSpace() { 
+    //this.item_lockSpaceTime = 3000; 
+    this.itemLockSpace = true;
+    let itemLockSpace=this.itemLockSpace
+    setTimeout (function() {
+      itemLockSpace = false;
+    }, 3000); 
+    this.itemLockSpace=itemLockSpace
   }
-  setItemLockSpace() {this.item_lockSpaceTime = 3000;}
-
-  setItemDefense() {this.item_defense = true;}
-
+  
+  
+  
   setHardHoldOn() {
     if (this.haveHold) {
       if (this.hold) {
@@ -1658,28 +1678,52 @@ class ClassicTetris {
       this._nextPieceId();
     }
   }
-
-  setLeftRightChange() {this.left_right_time = 3000;}
-
-  setBlockPreview() {this.block_preview_time = 3000;}
-
+  
+  setLeftRightChange() { 
+    //this.left_right_time = 3000; 
+    this.itemLeftRightChange = true;
+    let itemLeftRightChange=this.itemLeftRightChange
+    setTimeout (function() {
+      itemLeftRightChange = false;
+    }, 3000); 
+    this.itemLeftRightChange=itemLeftRightChange
+  }
+  
+  setBlockPreview() { 
+    // this.block_preview_time = 3000; 
+    this.itemBlockPreview = true;
+    let itemBlockPreview=this.itemBlockPreview
+    setTimeout (function() {
+      itemBlockPreview = false;
+    }, 3000); 
+    this.itemBlockPreview=itemBlockPreview
+  }
+  
   setChangeOpponentTetris() {
-    for(let i =0; i < 7; i++) {
+    for (let i = 0; i < 7; i++) {
       this._nextPieceId();
     }
   }
-
-  setLockOpponentTetris() {this.lock_opponent_time = 3000;}
-
+  
+  setLockOpponentTetris() { 
+    // this.lock_opponent_time = 3000; 
+    this.itemLockTetris = true;
+    let itemLockTetris=this.itemLockTetris
+    setTimeout (function() {
+      itemLockTetris = false;
+    }, 3000); 
+    this.itemLockTetris=itemLockTetris
+  }
+  
   setBlockLine() {
-    console.log("getitem")
+    // console.log("getitem")
     for (let i = 0; i < this.boardWidth; ++i) {
-      for(let j = 3; j < this.boardHeight; ++j){
-        this.board[j-1][i]=this.board[j][i]
+      for (let j = 3; j < this.boardHeight; ++j) {
+        this.board[j - 1][i] = this.board[j][i]
       }
     }
     for (let i = 0; i < this.boardWidth; ++i) {
-      this.board[this.boardHeight-this.blockHeight-1][i] = 7;
+      this.board[this.boardHeight - this.blockHeight - 1][i] = 7;
     }
     this.blockHeight++;
   }
