@@ -9,7 +9,7 @@ app.use(session({
   username: '',
   saveUninitialized: false,
   resave: true,
-  cookie : {maxAge : 1000 * 60 * 10},
+  cookie : {maxAge : 1000 * 600 * 10},
 }))
 app.use(express.urlencoded({ extended: false }))
 
