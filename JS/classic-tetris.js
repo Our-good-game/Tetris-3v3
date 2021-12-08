@@ -425,7 +425,6 @@ class ClassicTetris {
       {id: 4, name: 'BlockPreview',    url:"picture/Item/shadow.png"},
       {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
       {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
-      {id: 7, name: 'BlockALine',      url:"picture/Item/higher.png"},
     ];
     this.getItem = 'undefined'
     this.lock_opponent_time = 0
