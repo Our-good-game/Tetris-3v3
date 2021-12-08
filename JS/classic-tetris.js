@@ -822,7 +822,7 @@ class ClassicTetris {
         break;
       case 32:
         // hard drop
-        if (this.item_lockSpaceTime > 0) {break;}
+        if (this.itemLockSpace ) {break;}
         event.preventDefault();
         this.hardDrop = true;
         this.hold = false;
@@ -1597,7 +1597,7 @@ class ClassicTetris {
   _getItem() {
       this.oldlines = (this.lines / 5) * 5;
       this.changeItemIcon();
-      setTimeout( () => {                                       this.itemNumber=6
+      setTimeout( () => {                                       
         if (this.items[this.itemNumber].name == 'Defense') {
           this.itemDefense = true; 
           console.log ('get item-' + this.items[this.itemNumber].name);
