@@ -1,3 +1,7 @@
+@font-face {
+  font-family: huakang_girl_w5;
+  src: url(../huakang_girl_w5.ttf);
+}
 body{
   width: 100%;
   height: 100%;

@@ -6,7 +6,6 @@ class  timecount{
       this.loop=true
       this.canvas = canvas;
       this.context = this.canvas.getContext('2d');
-      draw._rendertime(this,this.GameCountTime)
     }
     async running (){
       if (this.run) return;

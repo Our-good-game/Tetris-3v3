@@ -78,6 +78,7 @@ app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/
 app.get('/audio/item_taking.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_taking.wav');})
 app.get('/audio/item_takeEnd.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_takeEnd.wav');})
 app.get('/audio/gamesound.mp3', function (req, res) {res.sendFile(__dirname + '/audio/gamesound.mp3');})
+app.get('/huakang_girl_w5.ttf', function (req, res) {res.sendFile(__dirname + '/huakang_girl_w5.ttf');})
 
 app.get('/id',function(req,res){res.send(req.session.username)})
 

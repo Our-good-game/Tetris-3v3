@@ -257,6 +257,8 @@ class ClassicTetris {
     pauseY = boardY + squareSide * 12,
     holdX = boardX - squareSide * 3,
     holdY = boardY + squareSide * 3,
+    comboX = boardX - squareSide * 5,
+    comboY = boardX + squareSide * 12,
     
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
@@ -325,6 +327,8 @@ class ClassicTetris {
     this.pauseY = pauseY;
     this.holdX = holdX;
     this.holdY = holdY;
+    this.comboX = comboX;
+    this.comboY = comboY;
 
 
     // max time between pointerdown and pointerup for the game to count it as click
@@ -512,9 +516,6 @@ class ClassicTetris {
     // an empty row used to exploit syntactic sugar
     this.emptyRow = [];
     for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
-
-    // paint something for the user to see
-    draw._render(this,0);
   }
 
   //----------------------------------------------------------------------------------------

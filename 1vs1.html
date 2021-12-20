@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <script src='/JS/timer.js'></script>
   <script src='/JS/render.js'></script>
   <script src='/JS/player-interface.js'></script>
   <script src='/JS/classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
-  <style> @import"/CSS/style.css";</style>
+  <style>
+    @import"/CSS/style.css";
+
+    @font-face {
+      font-family: huakang_girl_w5;
+      src: url(huakang_girl_w5.ttf);
+    }
+  </style>
 </head>
+
 <body>
-  <div style='user-select:none;'>
+  <div style='user-select: none;'>
+    <!-- 載入huakang_girl_w5字體 -->
+    <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
     <canvas id='js-background'></canvas>
     <div
-          style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:300px;">
-          <img id="itemIcon" src="/picture/Item/default.png" width="70" height="70">
+      style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:300px;">
+      <img id="itemIcon" src="/picture/Item/default.png" width="70" height="70">
     </div>
     <div
-          style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:1200px;">
-          <img id="itemIcon2" src="/picture/Item/default.png" width="70" height="70">
+      style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:1200px;">
+      <img id="itemIcon2" src="/picture/Item/default.png" width="70" height="70">
     </div>
     <div>
-      <div id='player-name' style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia"></div>
+      <div id='player-name'
+        style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia"></div>
       <div class='container'>
         <canvas id='player' class='tetris-canvas'></canvas>
         <div class='text'>
@@ -39,77 +51,84 @@
 </body>
 <script src="/JS/background.js"></script>
 <script>
+
   var canvas_player = document.getElementById('player');
-  canvas_player.height=window.innerHeight
-  canvas_player.width=window.innerWidth*0.45
+  canvas_player.height = window.innerHeight
+  canvas_player.width = window.innerWidth * 0.45
   var canvas_opponent = document.getElementById('opponent');
-  canvas_opponent.height=window.innerHeight
-  canvas_opponent.width=window.innerWidth*0.45
+  canvas_opponent.height = window.innerHeight
+  canvas_opponent.width = window.innerWidth * 0.45
   var HUD = document.getElementById('HUD');
-  HUD.height=window.innerHeight
-  HUD.width=window.innerWidth*0.1
-  const draw = new Render();
+  HUD.height = window.innerHeight
+  HUD.width = window.innerWidth * 0.1
+  var draw = new Render();
   var P1canvas = new ClassicTetris(canvas_player);
   var P2canvas = new PlayerInterface(canvas_opponent);
   var timer = new timecount(HUD);
-  
-  var id=undefined
-  var socket = io()
-  var p2=undefined; 
-window.addEventListener('load', event => {
-  
-  fetch('id')
-    .then(function(response) { return response.text(); })
-    .then(function(data){
-      id=data
-      let abc=document.getElementById('player-name')
-      abc.innerHTML = '<span>'+data+'</span>'
-    })
-  document.getElementById('start-stop-btn').addEventListener('click', event => {
-    timer.settime(P1canvas.togglePlayPause());
-    if(p2!== undefined)socket.emit('fight',p2);
-  });
-  document.getElementById('GameOver-btn').addEventListener('click', event => {
-    P1canvas.quit()
-  });
-  
-  document.getElementById('find').addEventListener('click',function (event){
-    socket.emit('find',id)
-  })
-})
-socket.on('find',function (opponent){
-  p2=opponent;
-  console.log(opponent)
-})
-function SendData(data){
-  if(p2!== undefined )socket.emit('gamming',data,p2);
-};
-socket.on('gamming',function(data){
-
-  P2canvas.gameState=data.gameState 
-  P2canvas.board=data.board;
-  P2canvas.linesCleared=data.linesCleared
-  P2canvas.piecePosition=data.piecePosition
-  P2canvas.pieceRotation=data.pieceRotation
-  P2canvas.piece=data.piece
-  for(let i=0;i<3;++i)P2canvas.next[i]=data.next[i];
-  P2canvas.haveHold=data.haveHold;
-  P2canvas.holdPiece=data.holdPiece
-  P2canvas.lines=data.lines;
-  P2canvas.itemNumber=data.itemNumber;
-  if (data.itemNumber !== -1) {
-    document.getElementById('itemIcon2').src = data.items[data.itemNumber].url;
+  window.onload = function () {
+    draw._render(P1canvas);
+    draw._render(P2canvas);
+    draw._rendertime(timer, 120);
   }
-  draw._render(P2canvas,0);
-})
-socket.on('fight',function(opponent){
-  timer.settime(P1canvas.togglePlayPause());
-})
-socket.on('item', function (itemName) {
-  P1canvas.getItem = itemName;
-  P1canvas._itemProcess();
-  P1canvas._sleep()
-  P1canvas.getItem = 'undefined'
-})
+  var id = undefined
+  var socket = io()
+  var p2 = undefined;
+
+  window.addEventListener('load', event => {
+
+    fetch('id')
+      .then(function (response) { return response.text(); })
+      .then(function (data) {
+        id = data
+        let abc = document.getElementById('player-name')
+        abc.innerHTML = '<span>' + data + '</span>'
+      })
+    document.getElementById('start-stop-btn').addEventListener('click', event => {
+      timer.settime(P1canvas.togglePlayPause());
+      if (p2 !== undefined) socket.emit('fight', p2);
+    });
+    document.getElementById('GameOver-btn').addEventListener('click', event => {
+      P1canvas.quit()
+    });
+    document.getElementById('find').addEventListener('click', function (event) {
+      socket.emit('find', id)
+    });
+  })
+  socket.on('find', function (opponent) {
+    p2 = opponent;
+    console.log(opponent)
+  })
+  function SendData(data) {
+    if (p2 !== undefined) socket.emit('gamming', data, p2);
+  };
+  socket.on('gamming', function (data) {
+
+    P2canvas.gameState = data.gameState
+    P2canvas.board = data.board;
+    P2canvas.linesCleared = data.linesCleared
+    P2canvas.piecePosition = data.piecePosition
+    P2canvas.pieceRotation = data.pieceRotation
+    P2canvas.piece = data.piece
+    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i];
+    P2canvas.haveHold = data.haveHold;
+    P2canvas.holdPiece = data.holdPiece
+    P2canvas.lines = data.lines;
+    P2canvas.itemNumber = data.itemNumber;
+    if (data.itemNumber !== -1) {
+      document.getElementById('itemIcon2').src = data.items[data.itemNumber].url;
+    }
+    draw._render(P2canvas, 0);
+  })
+  socket.on('fight', function (opponent) {
+    timer.settime(P1canvas.togglePlayPause());
+  })
+  socket.on('item', function (itemName) {
+    P1canvas.getItem = itemName;
+    P1canvas._itemProcess();
+    P1canvas._sleep()
+    P1canvas.getItem = 'undefined'
+  })
+
 </script>
+
 </html>

@@ -1,6 +1,6 @@
 class Render{
   constructor(){
-    this.canvasFont = '36px georgia',
+    this.canvasFont = '36px huakang_girl_w5',
     this.canvasFontColor = '#FFF',
     this.piececolor = [
       ['#fe103c', '#f890a7'], //z-0
@@ -227,5 +227,8 @@ class Render{
           }
         }
       }
-  
+      _drawCombo(tetris, number) {
+        tetris.context.fillText("Combo", tetris.comboX, tetris.comboY);
+        tetris.context.fillText(number, tetris.comboX+50, tetris.comboY + 50);
+      }
 }
