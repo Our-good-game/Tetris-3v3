@@ -419,6 +419,8 @@ class ClassicTetris {
     this.doUndoPause = false;   // pause state changed
     this.hold = false;
     this.haveHold = false;
+    this.comboTrigger = false;
+    this.combos = 0;
 
     // items 
     this.items=[
@@ -431,9 +433,6 @@ class ClassicTetris {
       {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
     ];
     this.getItem = 'undefined'
-    this.lock_opponent_time = 0
-    this.block_preview_time = 0
-    this.item_lockSpaceTime = 0
     // changeItemIcon
     this.itemNumber = -1;
     this.itemLockSpace = false;
@@ -1211,6 +1210,13 @@ class ClassicTetris {
       this.columnsCleared = 0;
       this.gameState = ClassicTetris.STATE_BURN;
 
+      // process combo
+      if(this.comboTrigger){
+        this.combos++;
+      } else {
+        this.comboTrigger = true;
+      }
+
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
       for (let i = 0; i < this.linesCleared.length; ++i) {
@@ -1224,7 +1230,7 @@ class ClassicTetris {
         sound.currentTime = 0;
         sound.play();
       }
-
+      
       // fire burn start event
       this._dispatch(ClassicTetris.LINE_CLEAR_START, {
         type: ClassicTetris.LINE_CLEAR_START,
@@ -1238,7 +1244,11 @@ class ClassicTetris {
         this.setSound.currentTime = 0;
         this.setSound.play();
       }
-
+      
+      // combo init
+      this.combos = 0;
+      this.comboTrigger = false
+      
       // update score
       const oldScore = this.score;
       this.score += this.linesCleared.length

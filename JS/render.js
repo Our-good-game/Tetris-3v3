@@ -34,6 +34,7 @@ class Render{
       this._drawGhost(tetris);
       this._drawPiece(tetris);
       this._drawHUD(tetris);
+      if ( tetris.comboTrigger )this._drawCombo(tetris)
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
     }   
@@ -227,8 +228,8 @@ class Render{
           }
         }
       }
-      _drawCombo(tetris, number) {
+      _drawCombo(tetris) {
         tetris.context.fillText("Combo", tetris.comboX, tetris.comboY);
-        tetris.context.fillText(number, tetris.comboX+50, tetris.comboY + 50);
+        tetris.context.fillText(tetris.combos, tetris.comboX+50, tetris.comboY + 50);
       }
 }
