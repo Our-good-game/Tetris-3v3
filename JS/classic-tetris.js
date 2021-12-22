@@ -1213,6 +1213,7 @@ class ClassicTetris {
       // process combo
       if(this.comboTrigger){
         this.combos++;
+        this.comboTrigger = true;
       } else {
         this.comboTrigger = true;
       }

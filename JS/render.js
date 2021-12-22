@@ -34,7 +34,7 @@ class Render{
       this._drawGhost(tetris);
       this._drawPiece(tetris);
       this._drawHUD(tetris);
-      if ( tetris.comboTrigger )this._drawCombo(tetris)
+      if ( tetris.comboTrigger && tetris.combos)this._drawCombo(tetris)
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
     }   
