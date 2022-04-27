@@ -25,3 +25,5 @@
 - [x] 擋住一次對手 -游
 
 *Last updated on: 2021/8/26 by Alvin Smith*
+
+## 3 vs 3 模式
