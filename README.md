@@ -63,4 +63,4 @@
         T轉後消除三行: 6點
       
   ### 介面 : 
-    ![image] (https://github.com/Our-good-game/tetris/blob/main/demo/3vs3%20mode.png)
+  ![image](https://github.com/Our-good-game/tetris/blob/main/demo/3vs3%20mode.png)
