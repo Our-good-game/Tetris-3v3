@@ -1,7 +1,7 @@
 # Tetris
 
 ## TO DO LIST
-- [ ] 1.T S Z 特殊旋轉 
+- [x] 1.T S Z 特殊旋轉 
 - [x] 2.tmp，shift -游
 - [x] 3.多增加兩個next view(尚未random) -廷
 - [x] 4.背景樣式設計 -游 
@@ -21,7 +21,7 @@
 - [x] 左右交換 -廷
 - [x] 時間內不能hard drop -游
 - [x] 時間內遮蔽方塊 -廷
-- [ ] 時間內分數倍增 -游
+- [x] 時間內分數倍增 -游
 - [x] 擋住一次對手 -游
 
 *Last updated on: 2021/8/26 by Alvin Smith*
