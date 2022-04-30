@@ -305,7 +305,7 @@ class ClassicTetris {
     this.boardX = boardX;           // board's left
     this.boardY = boardY;           // board's top
     this.squareSide = squareSide;   // width of individual squares
-
+    
 
     // board's bounding box
     this.boardBorder = [
@@ -383,7 +383,6 @@ class ClassicTetris {
         name: ClassicTetris.L_PIECE,
         rot: ClassicTetris.L_ROT,
         iniPos: ClassicTetris.L_INI_POS,
-
         box: ClassicTetris.L_BOX
       },
       {
@@ -419,10 +418,9 @@ class ClassicTetris {
     this.doUndoPause = false;   // pause state changed
     this.hold = false;
     this.haveHold = false;
-    this.comboTrigger = false;
-    this.combos = 0;
+    
 
-    // items 
+    // items && socre
     this.items=[
       {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
       {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
@@ -432,6 +430,11 @@ class ClassicTetris {
       {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
       {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
     ];
+    this.burnOn = 0
+    this.comboTrigger = false;
+    this.combos = 0;
+    this.backToBackTrigger = false 
+    this.cheakTspin = false 
     this.getItem = 'undefined'
     // changeItemIcon
     this.itemNumber = -1;
@@ -440,7 +443,6 @@ class ClassicTetris {
     this.itemLeftRightChange = false;
     this.itemBlockPreview = false;
     this.itemLockTetris = false;
-    this.blockHeight=0;
 
     // pointer coords
     this.xIni = undefined;
@@ -565,7 +567,7 @@ class ClassicTetris {
     // Clears the previous setInterval timer
     changeIcon()
 
-    
+
     // Function that run at irregular intervals
     function changeIcon() {
       // Clears the previous setInterval timer
@@ -629,10 +631,10 @@ class ClassicTetris {
 
     do {
       this._process();
-      if(p2!= undefined){
-        if(this.lines - this.oldlines >= 5)this._getItem();
+      if(p2!= undefined && this.frameCounter% 12 ===0)
         SendData(this);
-      }
+      
+      
       draw._render(this,this.block_preview_time);    
       
       await this._sleep();
@@ -828,11 +830,11 @@ class ClassicTetris {
         break;
       case 27:
       case 80:
-        // pause
-        event.preventDefault();
-        if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
-          this.doUndoPause = true;
-        }
+        // // pause
+        // event.preventDefault();
+        // if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
+        //   this.doUndoPause = true;
+        // }
         break;
       case 16:
         event.preventDefault();
@@ -1205,19 +1207,22 @@ class ClassicTetris {
 
     this.linesCleared = this._getLinesCleared();
     if (this.linesCleared.length > 0) {
-
       // clear those lines
       this.columnsCleared = 0;
       this.gameState = ClassicTetris.STATE_BURN;
-
-      // process combo
-      if(this.comboTrigger){
-        this.combos++;
-        this.comboTrigger = true;
-      } else {
-        this.comboTrigger = true;
-      }
-
+      
+      // process combo && burnOn
+      if(this.comboTrigger){ this.combos++; } 
+      else { this.comboTrigger = true; }
+      if(this.linesCleared.length === 4)this.burnOn += 8 + this.combos; 
+      else this.burnOn += 2*this.linesCleared.length + this.combos -1; 
+      if(this.backToBackTrigger)++this.burnOn
+      
+      // cheak special burnOn
+      if(this.linesCleared.length === 4 || this.cheakTspin)
+        this.backToBackTrigger = true
+      else this.backToBackTrigger = false
+      
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
       for (let i = 0; i < this.linesCleared.length; ++i) {
@@ -1270,7 +1275,7 @@ class ClassicTetris {
   _processBurn() {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.columnsCleared;
-      if (this.columnsCleared < 5) {
+      if (this.columnsCleared < 3) {
         // remove another columns of squares
         const mid = this.boardWidth / 2;
         for (let i = 0; i < this.linesCleared.length; ++i) {
@@ -1326,6 +1331,7 @@ class ClassicTetris {
   }
 
   _processARE() {
+    if(this.burnOn > 0)this.setBlockLine();
     // wait are frames
     --this.areFrames;
     if (this.areFrames === 0) {
@@ -1539,7 +1545,7 @@ class ClassicTetris {
   _getARE() {
     const h = this._getLockHeight();
     const are = 10 + (((h + 2) / 4) | 0) * 2;
-    return 1//are * 2;   //return are;
+    return 6//are * 2;   //return are;
   }
 
   // height at which the piece locked
@@ -1563,7 +1569,7 @@ class ClassicTetris {
     for (let i = 0; i < this.boardHeight; ++i) {
       let b = true;
       for (let j = 0; b && j < this.boardWidth; ++j)
-        if (this.board[i][j] === -1 || this.board[i][j] === 7) b = false;
+        if (this.board[i][j] === -1 ) b = false;
       if (b) arr.push(i);
     }
     return arr;
@@ -1692,14 +1698,25 @@ class ClassicTetris {
     }, 3000 );
   }
   setBlockLine() {
-    //board 0=background
-    for (let i = 0; i < this.boardWidth; ++i) {
-      for (let j = 3; j < this.boardHeight; ++j) {
-        this.board[j - 1][i] = this.board[j][i]
+    //board -1=background 7= lock
+    let temp = [0,0,1,1,2,2,3,3]
+    let raise
+    if(this.burnOn > 7) raise = 4
+    else raise = temp[ this.burnOn ]
+    if(raise === 0 )return;
+    let hole = Math.floor( Math.random() * 10 ) ;
+    
+    for (let j = 0; j < this.boardHeight - raise; ++j) {
+      for (let i = 0; i < this.boardWidth; ++i) {  
+        this.board[j][i] = this.board[j+raise][i]
       }
-      this.board[this.boardHeight - 1][i] = 7;
     }
-    this.blockHeight++;
+    for (let i = 0; i < this.boardWidth; ++i) 
+      for (let j = this.boardHeight -raise; j < this.boardHeight; ++j) 
+        if( i == hole )this.board[j][i] = -1;
+        else this.board[j][i] = 7;
+    
+    this.burnOn = 0;
   }
   
   //-----------------------------------------------------------

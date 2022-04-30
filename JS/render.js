@@ -41,12 +41,7 @@ class Render{
     _drawBackground(tetris) {
         tetris.context.lineWidth = 1;
         // if burning a this, make background color flash
-        const fillColor = 
-        tetris.gameState === ClassicTetris.STATE_BURN &&
-        tetris.linesCleared.length === 4 &&
-        tetris.frameCounter % 8 ?   //4 ?
-        this.tetrisBackgroundColor :
-        this.backgroundColor;
+        const fillColor = this.backgroundColor;
         // draw background and border
         tetris.context.beginPath();
         tetris.context.moveTo(tetris.boardBorder[0], tetris.boardBorder[1]);

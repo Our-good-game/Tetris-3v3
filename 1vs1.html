@@ -99,10 +99,22 @@
     console.log(opponent)
   })
   function SendData(data) {
-    if (p2 !== undefined) socket.emit('gamming', data, p2);
+    let datatmp = {
+      gameState: data.gameState,
+      board: data.board,
+      piecePosition: data.piecePosition,
+      pieceRotation: data.pieceRotation,
+      piece: data.piece,
+      haveHold: data.haveHold,
+      holdPiece: data.holdPiece,
+      lines: data.lines,
+      next:[data.next[0],data.next[1],data.next[2]],
+      burnOn: data.burnOn
+    }
+    
+    if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
   };
   socket.on('gamming', function (data) {
-
     P2canvas.gameState = data.gameState
     P2canvas.board = data.board;
     P2canvas.linesCleared = data.linesCleared
@@ -113,10 +125,6 @@
     P2canvas.haveHold = data.haveHold;
     P2canvas.holdPiece = data.holdPiece
     P2canvas.lines = data.lines;
-    P2canvas.itemNumber = data.itemNumber;
-    if (data.itemNumber !== -1) {
-      document.getElementById('itemIcon2').src = data.items[data.itemNumber].url;
-    }
     draw._render(P2canvas, 0);
   })
   socket.on('fight', function (opponent) {
