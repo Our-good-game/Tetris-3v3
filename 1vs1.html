@@ -22,17 +22,13 @@
     <!-- 載入huakang_girl_w5字體 -->
     <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
     <canvas id='js-background'></canvas>
-    <div
-      style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:300px;">
-      <img id="itemIcon" src="/picture/Item/default.png" width="70" height="70">
-    </div>
-    <div
-      style="border:5px black solid; border-radius:5px; width:70px; height:70px; position:absolute; top:35px; left:1200px;">
-      <img id="itemIcon2" src="/picture/Item/default.png" width="70" height="70">
-    </div>
     <div>
       <div id='player-name'
-        style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia"></div>
+        style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia">
+      </div>
+      <div id='player2-name'
+        style="position:absolute; top:100px; left:1000px; color:rgb(54, 170, 238); font:36px georgia">
+      </div>
       <div class='container'>
         <canvas id='player' class='tetris-canvas'></canvas>
         <div class='text'>
@@ -42,10 +38,10 @@
       </div>
     </div>
     <div style='padding:0px 30px 15px 30px;z-index: 3;position:relative;'>
-      <button id='start-stop-btn'>Play/Pause</button>
-      <button id='GameOver-btn'>GameOver</button>
+      <button id='start-stop-btn'>Play</button>
+      <!-- <button id='GameOver-btn'>GameOver</button> -->
       <input type="button" onclick="javascript:location.href='index.html'" value="Quit" />
-      <button id='find'>find</button>
+      <button id='find'>find</button> 
     </div>
   </div>
 </body>
@@ -79,24 +75,28 @@
     fetch('id')
       .then(function (response) { return response.text(); })
       .then(function (data) {
-        id = data
-        let abc = document.getElementById('player-name')
-        abc.innerHTML = '<span>' + data + '</span>'
+        id = data;
+        P1canvas.playerName = id;
+        draw._drawPlayerName (P1canvas);
       })
     document.getElementById('start-stop-btn').addEventListener('click', event => {
       timer.settime(P1canvas.togglePlayPause());
       if (p2 !== undefined) socket.emit('fight', p2);
     });
+    /*
     document.getElementById('GameOver-btn').addEventListener('click', event => {
       P1canvas.quit()
     });
+    */
     document.getElementById('find').addEventListener('click', function (event) {
       socket.emit('find', id)
     });
   })
   socket.on('find', function (opponent) {
     p2 = opponent;
-    console.log(opponent)
+    console.log (opponent);
+    P2canvas.playerName = p2;
+    draw._drawPlayerName (P2canvas, opponent);
   })
   function SendData(data) {
     let datatmp = {
@@ -125,6 +125,12 @@
     P2canvas.haveHold = data.haveHold;
     P2canvas.holdPiece = data.holdPiece
     P2canvas.lines = data.lines;
+    
+    if (P2canvas.gameState == ClassicTetris.STATE_GAME_OVER) {
+      P1canvas.gameState = ClassicTetris.STATE_GAME_OVER;
+      P1canvas.gameTheme.pause();
+    }
+    
     draw._render(P2canvas, 0);
   })
   socket.on('fight', function (opponent) {
@@ -136,7 +142,7 @@
     P1canvas._sleep()
     P1canvas.getItem = 'undefined'
   })
-
+  
 </script>
 
 </html>

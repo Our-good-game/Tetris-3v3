@@ -259,7 +259,11 @@ class ClassicTetris {
     holdY = boardY + squareSide * 3,
     comboX = boardX - squareSide * 5,
     comboY = boardX + squareSide * 12,
+    nameX = boardX + 3 * squareSide,
+    nameY = boardY + squareSide,
     
+    playerName = '',
+
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
 
@@ -267,13 +271,13 @@ class ClassicTetris {
     moveSound = undefined,
     setSound = new Audio ("audio/hard_drop.wav"),
     gameOverSound = undefined,
-    lineSound = undefined,
-    tetrisSound = undefined,
+    lineSound = new Audio ("audio/line.mp3"),
+    tetrisSound = new Audio ("audio/tetris.mp3"),
     levelChangeSound = undefined,
     pauseSound = undefined,
     takingItemSound = new Audio ("audio/item_taking.wav"),
     takeEndItemSound = new Audio ("audio/item_takeEnd.wav"),
-    gameTheme = new Audio ("audio/gamesound.mp3")
+    gameTheme = new Audio ("audio/gameTheme.mp3")
 
   } = {}) {
 
@@ -301,6 +305,7 @@ class ClassicTetris {
     this.paintposB = paintposB;
     this.paintposC = paintposC;
     this.paintposD = paintposD;
+
     // render parameters
     this.boardX = boardX;           // board's left
     this.boardY = boardY;           // board's top
@@ -314,6 +319,9 @@ class ClassicTetris {
       0.5 + this.boardX + this.boardWidth * this.squareSide + 1,
       0.5 + this.boardY + this.boardHeight * this.squareSide
     ];
+    
+    // player information
+    this.playerName = playerName;
 
     // HUD stuff coordinates
     this.scoreX = scoreX;             // score coords
@@ -329,6 +337,8 @@ class ClassicTetris {
     this.holdY = holdY;
     this.comboX = comboX;
     this.comboY = comboY;
+    this.nameX = nameX;
+    this.nameY = nameY;
 
 
     // max time between pointerdown and pointerup for the game to count it as click
@@ -540,7 +550,7 @@ class ClassicTetris {
 
   togglePlayPause() {
     if (this.playing) {
-      this.doUndoPause = true;
+      // this.doUndoPause = true;
       if (this.gameState !== ClassicTetris.STATE_PAUSE &&
           this.gameState !== ClassicTetris.STATE_GAME_OVER){
         return false;
@@ -830,12 +840,14 @@ class ClassicTetris {
         break;
       case 27:
       case 80:
-        // // pause
-        // event.preventDefault();
-        // if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
-        //   this.doUndoPause = true;
-        // }
+        // pause
+        /*
+        event.preventDefault();
+        if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
+          this.doUndoPause = true;
+        }
         break;
+        */
       case 16:
         event.preventDefault();
         // hold piece

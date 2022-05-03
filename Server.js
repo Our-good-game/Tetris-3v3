@@ -74,10 +74,15 @@ app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
 app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
 
+// audio
 app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})
 app.get('/audio/item_taking.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_taking.wav');})
 app.get('/audio/item_takeEnd.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_takeEnd.wav');})
-app.get('/audio/gamesound.mp3', function (req, res) {res.sendFile(__dirname + '/audio/gamesound.mp3');})
+app.get('/audio/gameTheme.mp3', function (req, res) {res.sendFile(__dirname + '/audio/gameTheme.mp3');})
+app.get('/audio/line.mp3', function (req, res) {res.sendFile(__dirname + '/audio/line.mp3');})
+app.get('/audio/tetris.mp3', function (req, res) {res.sendFile(__dirname + '/audio/tetris.mp3');})
+
+//font
 app.get('/huakang_girl_w5.ttf', function (req, res) {res.sendFile(__dirname + '/huakang_girl_w5.ttf');})
 
 app.get('/id',function(req,res){res.send(req.session.username)})
@@ -146,9 +151,7 @@ io.on('connection', function (socket) {
     socket.on('item',function(itemName,p2){
       ids.get(p2).socket.emit('item', itemName)
     })
-
-
-
+    
     socket.on('disconnect',function(){
       people--;
       console.log(people+' user disconnected')
