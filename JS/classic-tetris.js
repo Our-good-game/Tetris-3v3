@@ -363,7 +363,8 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0.4;
+     this.gameTheme.volume = 0.2;
+     this.setSound.volume = 0.3;
 
     // pieces
     this.pieces = [
@@ -649,7 +650,7 @@ class ClassicTetris {
       if(p2!= undefined && this.frameCounter% 12 ===0 ){
         SendData(this); this.burnOn=0;
       }
-      
+
       draw._render(this,this.block_preview_time);    
       
       await this._sleep();
@@ -838,8 +839,8 @@ class ClassicTetris {
         break;
       case 32:
         // hard drop
-        if (this.itemLockSpace ) {break;}
         event.preventDefault();
+        if (this.itemLockSpace ) {break;}
         this.hardDrop = true;
         this.hold = false;
         break;
@@ -1439,13 +1440,14 @@ class ClassicTetris {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.gameOverLine;
       timer.resettime()
-      this.result = false;
+      
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
-        for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
+        for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = -1;
         draw._render(this);
       } else {
         // game-over animation is done -stop the game loop
+        
         this.gameLoop = false;
         // fire game-over animation end event
         this._dispatch(ClassicTetris.GAME_OVER_END, {
