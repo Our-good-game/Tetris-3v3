@@ -72,7 +72,7 @@
   }
   var id = undefined
   var socket = io()
-  var p2 = undefined;
+  var p2 = undefined
 
   window.addEventListener('load', event => {
 
@@ -121,10 +121,11 @@
     P2canvas.piecePosition = data.piecePosition
     P2canvas.pieceRotation = data.pieceRotation
     P2canvas.piece = data.piece
-    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i];
-    P2canvas.haveHold = data.haveHold;
+    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i]
+    P2canvas.haveHold = data.haveHold
     P2canvas.holdPiece = data.holdPiece
     P2canvas.lines = data.lines;
+    P1canvas.raise += data.burnOn;
     draw._render(P2canvas, 0);
   })
   socket.on('fight', function (opponent) {

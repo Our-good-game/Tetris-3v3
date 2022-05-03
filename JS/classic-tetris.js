@@ -296,7 +296,7 @@ class ClassicTetris {
     for (let i = 0; i < this.boardHeight; ++i) {
       for (let j = 0; j < this.boardWidth; ++j)this.board[i][j]=-1
     }
-    //canvaes paint
+    // canvaes paint
     this.paintposA = paintposA;
     this.paintposB = paintposB;
     this.paintposC = paintposC;
@@ -346,8 +346,8 @@ class ClassicTetris {
     this.tetrisSound = tetrisSound;             // tetris
     this.levelChangeSound = levelChangeSound;   // level increase
     this.pauseSound = pauseSound;               // game paused
-    this.takingItemSound = takingItemSound;  // taking item
-    this.takeEndItemSound = takeEndItemSound; // take end item
+    this.takingItemSound = takingItemSound;     // taking item
+    this.takeEndItemSound = takeEndItemSound;   // take end item
     this.gameTheme = gameTheme;                 // theme song
 
      // sounds set
@@ -431,10 +431,14 @@ class ClassicTetris {
       {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
     ];
     this.burnOn = 0
+    this.raise = 0;
     this.comboTrigger = false;
     this.combos = 0;
     this.backToBackTrigger = false 
-    this.cheakTspin = false 
+    this.backToBack = false
+    this.lastRotate =  false 
+    this.cheakTspin =  false 
+    this.cheakTetris = false
     this.getItem = 'undefined'
     // changeItemIcon
     this.itemNumber = -1;
@@ -504,7 +508,7 @@ class ClassicTetris {
     // animation frames counters
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = 50;
+    this.framesTilDrop = 60;
 
     // counters for line-clear and game-over animations
     this.columnsCleared = -1;
@@ -631,9 +635,9 @@ class ClassicTetris {
 
     do {
       this._process();
-      if(p2!= undefined && this.frameCounter% 12 ===0)
-        SendData(this);
-      
+      if(p2!= undefined && this.frameCounter% 12 ===0){
+        SendData(this); this.burnOn=0;
+      }
       
       draw._render(this,this.block_preview_time);    
       
@@ -703,7 +707,7 @@ class ClassicTetris {
     // frame counters
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = 50;
+    this.framesTilDrop = 60;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
     // frames until the piece automatically moves down
@@ -950,7 +954,7 @@ class ClassicTetris {
     if (this.moveLeft && this._canMovePiece(-1, 0)) {
       const oldPosition = [...this.piecePosition];
       --this.piecePosition[0];
-
+      this.lastRotate = true
       // play move sound
       if (this.moveSound) {
         this.moveSound.currentTime = 0;
@@ -970,7 +974,7 @@ class ClassicTetris {
     if (this.moveRight && this._canMovePiece(1, 0)) {
       const oldPosition = [...this.piecePosition];
       ++this.piecePosition[0];
-
+      this.lastRotate = false
       // play move sound
       if (this.moveSound) {
         this.moveSound.currentTime = 0;
@@ -1054,6 +1058,7 @@ class ClassicTetris {
         break;
       }
       if(!canrot)this.pieceRotation = oldRotation
+      else this.lastRotate = true
       this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
         type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
         piece: this.piece.name,
@@ -1130,6 +1135,7 @@ class ClassicTetris {
         break;
       }
       if(!canrot)this.pieceRotation = oldRotation
+      else this.lastRotate = true
       this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
         type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
         piece: this.piece.name,
@@ -1171,7 +1177,7 @@ class ClassicTetris {
         ++this.piecePosition[1];
 
         // reset auto-drop frames
-        this.framesTilDrop = 50
+        this.framesTilDrop = 60
         // fire move down event
         this._dispatch(ClassicTetris.PIECE_MOVE_DOWN, {
           type: ClassicTetris.PIECE_MOVE_DOWN,
@@ -1183,7 +1189,7 @@ class ClassicTetris {
         });
 
       } else if(this.framesTilDrop != 0){
-        this.framesTilDrop = 50
+        this.framesTilDrop = 60
       }
       else{
         // lock piece if it couldn't move down
@@ -1195,8 +1201,12 @@ class ClassicTetris {
   _lockPiece() {
     this.hold = false;
     this.framesTilDrop = -1;
+    if(this.piece.id === 5){
+      if(this.lastRotate)
+        if(!this._canMovePiece(0,-1))this.cheakTspin = true
+    }
     this._setPiece();
-
+    
     // fire piece lock event
     this._dispatch(ClassicTetris.PIECE_LOCK, {
       type: ClassicTetris.PIECE_LOCK,
@@ -1211,17 +1221,28 @@ class ClassicTetris {
       this.columnsCleared = 0;
       this.gameState = ClassicTetris.STATE_BURN;
       
+      // cheak special burnOn
+      if(this.linesCleared.length === 4)this.cheakTetris = true;
+      if(this.backToBackTrigger)this.backToBack = true;
+      if( this.cheakTetris || this.cheakTspin)
+        this.backToBackTrigger = true
+      else {
+        this.backToBackTrigger = false
+        this.backToBack = false
+      }
+      
       // process combo && burnOn
       if(this.comboTrigger){ this.combos++; } 
       else { this.comboTrigger = true; }
-      if(this.linesCleared.length === 4)this.burnOn += 8 + this.combos; 
-      else this.burnOn += 2*this.linesCleared.length + this.combos -1; 
-      if(this.backToBackTrigger)++this.burnOn
+      if(this.cheakTetris)this.burnOn += 4; 
+      else if(this.cheakTspin){this.burnOn += this.linesCleared.length*2 }
+      else this.burnOn += this.linesCleared.length -1; 
+      if(this.backToBack)++this.burnOn
+      let temp = [0,1,1,2,2,3,3]
+      if(this.burnOn < 7) this.burnOn+=temp[this.combos]
+      else this.burnOn+=4;
       
-      // cheak special burnOn
-      if(this.linesCleared.length === 4 || this.cheakTspin)
-        this.backToBackTrigger = true
-      else this.backToBackTrigger = false
+      
       
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
@@ -1244,17 +1265,16 @@ class ClassicTetris {
       });
 
     } else {
-
+      // combo init
+      this.combos = 0;
+      this.comboTrigger = false
+      
       // play piece lock sound
       if (this.setSound) {
         this.setSound.currentTime = 0;
         this.setSound.play();
       }
-      
-      // combo init
-      this.combos = 0;
-      this.comboTrigger = false
-      
+
       // update score
       const oldScore = this.score;
       this.score += this.linesCleared.length
@@ -1331,13 +1351,15 @@ class ClassicTetris {
   }
 
   _processARE() {
-    if(this.burnOn > 0)this.setBlockLine();
+    if(this.raise > 0)this.setBlockLine();
     // wait are frames
     --this.areFrames;
     if (this.areFrames === 0) {
       this.areFrames = -1;
       this.hold = true;// 調整為can hold
-      
+      this.lastRotate = false
+      this.cheakTspin = false 
+      this.cheakTetris = false
       // reset drop points
       this.pressDownScore = 0;
       this.pointerMoveDownEnabled = false;
@@ -1350,7 +1372,7 @@ class ClassicTetris {
 
       // try to place current piece
       if (this._canMovePiece(0, 0)) {
-        this.framesTilDrop = 50
+        this.framesTilDrop = 60
         this.gameState = ClassicTetris.STATE_DROP;
 
         // fire new piece placed event
@@ -1698,25 +1720,24 @@ class ClassicTetris {
     }, 3000 );
   }
   setBlockLine() {
-    //board -1=background 7= lock
-    let temp = [0,0,1,1,2,2,3,3]
-    let raise
-    if(this.burnOn > 7) raise = 4
-    else raise = temp[ this.burnOn ]
-    if(raise === 0 )return;
+    /*board 
+        -1 = background 
+         7 = lock
+    */
+    this.raise = Math.min(20,this.raise)
     let hole = Math.floor( Math.random() * 10 ) ;
     
-    for (let j = 0; j < this.boardHeight - raise; ++j) {
+    for (let j = 0; j < this.boardHeight - this.raise; ++j) {
       for (let i = 0; i < this.boardWidth; ++i) {  
-        this.board[j][i] = this.board[j+raise][i]
+        this.board[j][i] = this.board[j+this.raise][i]
       }
     }
     for (let i = 0; i < this.boardWidth; ++i) 
-      for (let j = this.boardHeight -raise; j < this.boardHeight; ++j) 
+      for (let j = this.boardHeight - this.raise; j < this.boardHeight; ++j) 
         if( i == hole )this.board[j][i] = -1;
         else this.board[j][i] = 7;
     
-    this.burnOn = 0;
+    this.raise = 0;
   }
   
   //-----------------------------------------------------------
