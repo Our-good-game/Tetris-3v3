@@ -215,7 +215,6 @@ class PlayerInterface {
     boardX = canvas.width * 0.25,
     boardY = canvas.height * 0.15,
     squareSide = canvas.height * 0.035,
-    
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -227,6 +226,10 @@ class PlayerInterface {
     pauseY = boardY + squareSide * 12,
     holdX = boardX - squareSide * 3,
     holdY = boardY + squareSide * 3,
+    nameX = boardX + 3 * squareSide,
+    nameY = boardY + squareSide,
+
+    playerName = '',
 
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
@@ -272,6 +275,9 @@ class PlayerInterface {
       0.5 + this.boardY + this.boardHeight * this.squareSide
     ];
 
+    // player information
+    this.playerName = playerName;
+
     // HUD stuff coordinates
     this.scoreX = scoreX;             // score coords
     this.scoreY = scoreY;
@@ -284,6 +290,8 @@ class PlayerInterface {
     this.pauseY = pauseY;
     this.holdX = holdX;
     this.holdY = holdY;
+    this.nameX = nameX;
+    this.nameY = nameY;
 
     
    

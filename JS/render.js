@@ -24,8 +24,8 @@ class Render{
       let timeStr = Math.floor(time);
       canvas.context.font = this.canvasFont;
       canvas.context.fillStyle = this.canvasFontColor;
-      canvas.context.fillText('Time：',0,130);
-      canvas.context.fillText(timeStr,15,170);
+      canvas.context.fillText('Time：',0,100);
+      canvas.context.fillText(timeStr,15,140);
     }
     _render(tetris) {
       tetris.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
@@ -34,6 +34,7 @@ class Render{
       this._drawGhost(tetris);
       this._drawPiece(tetris);
       this._drawHUD(tetris);
+      this._drawPlayerName(tetris);
       this._drawCombo(tetris)
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
@@ -237,5 +238,9 @@ class Render{
         if(tetris.backToBack)
           tetris.context.fillText("Back-2", tetris.comboX, tetris.comboY+250);
         
+      }
+      
+      _drawPlayerName (tetris) {
+        tetris.context.fillText(tetris.playerName, tetris.nameX, tetris.nameY);
       }
 }
