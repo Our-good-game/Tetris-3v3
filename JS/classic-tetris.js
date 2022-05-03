@@ -255,7 +255,7 @@ class ClassicTetris {
     nextOffsetvec = squareSide * 3,
     pauseX = boardX + squareSide * 3,
     pauseY = boardY + squareSide * 12,
-    holdX = boardX - squareSide * 3,
+    holdX = boardX - squareSide * 4,
     holdY = boardY + squareSide * 3,
     comboX = boardX - squareSide * 5,
     comboY = boardX + squareSide * 12,
@@ -492,6 +492,7 @@ class ClassicTetris {
     this.time = 0;
     this.last_sec=0;
     this.pressDownScore = 0;
+    this.result = true;
     
     // event listeners
     this.handlers = new Map();
@@ -645,7 +646,7 @@ class ClassicTetris {
 
     do {
       this._process();
-      if(p2!= undefined && this.frameCounter% 12 ===0){
+      if(p2!= undefined && this.frameCounter% 12 ===0 ){
         SendData(this); this.burnOn=0;
       }
       
@@ -657,7 +658,7 @@ class ClassicTetris {
 
     // remove event listeners
     // enable UI
-    this._removeEventListeners();
+    //this._removeEventListeners();
     this._enableUI();
 
     // toggle playing flag
@@ -747,7 +748,7 @@ class ClassicTetris {
     document.removeEventListener('pointercancel', this._handlePointerCancel, true);
     document.removeEventListener('wheel', this._handleWheel, true);
     document.removeEventListener('keydown', this._handleKeyDown, true);
-  }
+  }         
 
   // disable/enable UI
   _disableUI() {
@@ -1243,7 +1244,7 @@ class ClassicTetris {
         this.backToBack = false
       }
       
-      // process combo && burnOn
+      // process combo && burnOn && detrash
       if(this.comboTrigger){ this.combos++; } 
       else { this.comboTrigger = true; }
       if(this.cheakTetris)this.burnOn += 4; 
@@ -1254,6 +1255,8 @@ class ClassicTetris {
       if(this.burnOn < 7) this.burnOn+=temp[this.combos]
       else this.burnOn+=4;
       
+      if(this.raise > 0)
+        this.raise -= this.burnOn
       
       
       // remove initial columns of squares for animation
@@ -1277,6 +1280,7 @@ class ClassicTetris {
       });
 
     } else {
+      if(this.raise > 0)this.setBlockLine();
       // combo init
       this.combos = 0;
       this.comboTrigger = false
@@ -1363,7 +1367,6 @@ class ClassicTetris {
   }
 
   _processARE() {
-    if(this.raise > 0)this.setBlockLine();
     // wait are frames
     --this.areFrames;
     if (this.areFrames === 0) {
@@ -1397,6 +1400,8 @@ class ClassicTetris {
       } else {
         // can't place piece -it's game over
         this._setPiece();
+        this.result = false 
+        console.log("AAAAAAAAAAAA")
         this._triggerGameOver();
       }
       
@@ -1405,11 +1410,12 @@ class ClassicTetris {
   
   
   _triggerGameOver() {
+    if(this.gameState === ClassicTetris.STATE_GAME_OVER )return;
     // stop theme song
+    console.log("BBBBBBBBBBBBBBBBB")
     if (this.gameTheme) {
       this.gameTheme.pause();
     }
-    
     // play game over sound
     if (this.gameOverSound) {
       this.gameOverSound.currentTime = 0;
@@ -1433,6 +1439,7 @@ class ClassicTetris {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.gameOverLine;
       timer.resettime()
+      this.result = false;
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
@@ -1440,7 +1447,6 @@ class ClassicTetris {
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;
-
         // fire game-over animation end event
         this._dispatch(ClassicTetris.GAME_OVER_END, {
           type: ClassicTetris.GAME_OVER_END,

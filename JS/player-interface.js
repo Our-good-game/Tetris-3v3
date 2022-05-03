@@ -224,7 +224,7 @@ class PlayerInterface {
     nextOffsetvec = squareSide * 3,
     pauseX = boardX + squareSide * 3,
     pauseY = boardY + squareSide * 12,
-    holdX = boardX - squareSide * 3,
+    holdX = boardX - squareSide * 4,
     holdY = boardY + squareSide * 3,
     nameX = boardX + 3 * squareSide,
     nameY = boardY + squareSide,
