@@ -126,10 +126,6 @@
     P2canvas.holdPiece = data.holdPiece
     P2canvas.lines = data.lines
     P1canvas.raise += data.burnOn
-    if (P2canvas.gameState == ClassicTetris.STATE_GAME_OVER) {
-      P1canvas.gameState = ClassicTetris.STATE_GAME_OVER;
-      P1canvas.gameTheme.pause();
-    }
     draw._render(P2canvas, 0);
   })
   socket.on('fight', function (opponent) {
@@ -141,7 +137,6 @@
     P1canvas._sleep()
     P1canvas.getItem = 'undefined'
   })
-  
 </script>
 
 </html>

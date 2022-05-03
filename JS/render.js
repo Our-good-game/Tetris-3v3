@@ -35,7 +35,7 @@ class Render{
       this._drawPiece(tetris);
       this._drawHUD(tetris);
       this._drawPlayerName(tetris);
-      this._drawCombo(tetris)
+      this._drawCombo(tetris);
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
     }   
@@ -242,5 +242,10 @@ class Render{
       
       _drawPlayerName (tetris) {
         tetris.context.fillText(tetris.playerName, tetris.nameX, tetris.nameY);
+      }
+
+      _drawWinner (tetris) {
+        tetris.context.fillStyle = '#F4E952';
+        tetris.context.fillText('Winner', tetris.nameX, tetris.nameY - 2 * tetris.squareSide);
       }
 }
