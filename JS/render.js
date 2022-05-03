@@ -215,8 +215,8 @@ class Render{
           for (let j = b[1]; j < b[1] + b[3]; ++j) {
             if (p[i][j] != 0) {
               this._drawSquare(
-                tetris.holdX + (j - b[1]) * tetris.squareSide,
-                tetris.holdY + (i - b[0]) * tetris.squareSide + 30,
+                tetris.holdX + (j - b[1]) * tetris.squareSide - 10,
+                tetris.holdY + (i - b[0]) * tetris.squareSide + 50,
                 this.piececolor[tetris.holdPiece.id][0],
                 this.piececolor[tetris.holdPiece.id][1],
                 tetris);
