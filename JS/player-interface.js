@@ -432,6 +432,7 @@ class PlayerInterface {
     this.score = 0;
     this.time = 60;
     this.pressDownScore = 0;
+    this.result = false;
 
     // event listeners
     this.handlers = new Map();

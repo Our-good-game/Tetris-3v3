@@ -38,6 +38,7 @@ class Render{
       this._drawCombo(tetris);
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
+      if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)this._drawWinner(tetris)
     }   
     _drawBackground(tetris) {
         tetris.context.lineWidth = 1;
@@ -245,7 +246,9 @@ class Render{
       }
 
       _drawWinner (tetris) {
-        tetris.context.fillStyle = '#F4E952';
-        tetris.context.fillText('Winner', tetris.nameX, tetris.nameY - 2 * tetris.squareSide);
+        if(tetris.result){
+          tetris.context.fillStyle = '#F4E952';
+          tetris.context.fillText('Winner', tetris.nameX, tetris.nameY - 2 * tetris.squareSide);
+        }
       }
 }

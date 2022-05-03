@@ -59,11 +59,11 @@
   var draw = new Render();
   var P1canvas = new ClassicTetris(canvas_player);
   var P2canvas = new PlayerInterface(canvas_opponent);
-  var timer = new timecount(HUD);
+  //var timer = new timecount(HUD);
   window.onload = function () {
     draw._render(P1canvas);
     draw._render(P2canvas);
-    draw._rendertime(timer, 120);
+    //draw._rendertime(timer, 120);
   }
   var id = undefined
   var socket = io()
@@ -79,7 +79,11 @@
         draw._drawPlayerName (P1canvas);
       })
     document.getElementById('start-stop-btn').addEventListener('click', event => {
+      /*
       timer.settime(P1canvas.togglePlayPause());
+      /*/
+      P1canvas.togglePlayPause()
+      //*/
       if (p2 !== undefined) socket.emit('fight', p2);
     });
     /*
@@ -125,15 +129,19 @@
     P2canvas.haveHold = data.haveHold
     P2canvas.holdPiece = data.holdPiece
     P2canvas.lines = data.lines
+    P2canvas.result = data.result
     P1canvas.raise += data.burnOn
     if(!data.result){
       P1canvas._triggerGameOver()
     }
-    console.log(data.result)
     draw._render(P2canvas, 0);
   })
   socket.on('fight', function (opponent) {
+    /*
     timer.settime(P1canvas.togglePlayPause());
+    /*/
+    P1canvas.togglePlayPause()
+    //*/
   })
   socket.on('item', function (itemName) {
     P1canvas.getItem = itemName;
