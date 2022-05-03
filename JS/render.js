@@ -35,7 +35,7 @@ class Render{
       this._drawPiece(tetris);
       this._drawHUD(tetris);
       this._drawPlayerName(tetris);
-      if ( tetris.comboTrigger && tetris.combos)this._drawCombo(tetris)
+      this._drawCombo(tetris)
       if ( !tetris.itemBlockPreview ) {this._drawNext(tetris);}
       if ( tetris.haveHold ) {this._drawHold(tetris);}
     }   
@@ -225,8 +225,19 @@ class Render{
         }
       }
       _drawCombo(tetris) {
-        tetris.context.fillText("Combo", tetris.comboX, tetris.comboY);
-        tetris.context.fillText(tetris.combos, tetris.comboX+50, tetris.comboY + 50);
+        if(tetris.combos > 0){
+          tetris.context.fillText("Combo", tetris.comboX, tetris.comboY);
+          tetris.context.fillText(tetris.combos, tetris.comboX+50, tetris.comboY + 50);
+        }
+        if(tetris.cheakTspin)
+          tetris.context.fillText("T-spin", tetris.comboX, tetris.comboY+150);
+          
+        if(tetris.cheakTetris)
+          tetris.context.fillText("Tetris", tetris.comboX-10, tetris.comboY+200);
+        
+        if(tetris.backToBack)
+          tetris.context.fillText("Back-2", tetris.comboX, tetris.comboY+250);
+        
       }
       
       _drawPlayerName (tetris) {
