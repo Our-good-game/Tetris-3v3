@@ -21,8 +21,10 @@ body{
   position:fixed;
 }
 .tetris-canvas{
+/*
   width: 45%;
   height: 100%;
+*/
   display:block;
   z-index: 2;
   position:relative;

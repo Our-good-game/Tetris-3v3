@@ -236,7 +236,7 @@ class ClassicTetris {
   static BOARD_HEIGHT = 22;
 
   // constructor needs a canvas
-  constructor(canvas, {
+  constructor(canvas, size, {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
     paintposA=0,
@@ -244,8 +244,9 @@ class ClassicTetris {
     paintposC=canvas.width,
     paintposD=canvas.height,
     boardX = canvas.width * 0.25,
-    boardY = canvas.height * 0.15,
-    squareSide = canvas.height * 0.035,
+    boardY = canvas.height * 0,
+    // squareSide = Math.sqrt (canvas.height * canvas.width * 0.3 / 200),
+    squareSide = window.innerWidth * 0.022 * size,
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -363,7 +364,7 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0.2;
+     this.gameTheme.volume = 0.1;
      this.setSound.volume = 0.3;
 
     // pieces
@@ -649,7 +650,7 @@ class ClassicTetris {
         SendData(this); this.burnOn=0;
       }
 
-      draw._render(this,this.block_preview_time);    
+      draw._render(this);    
       
       await this._sleep();
     } while (this.gameLoop);
