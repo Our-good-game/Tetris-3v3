@@ -88,20 +88,20 @@ class Render{
         formal.context.lineWidth = 0.5;
         // horizontal lines
         formal.context.strokeStyle =　this.gridColor;
-        const boardRight = tetris.boardX + tetris.squareSide * tetris.boardWidth;
-        for (let i = 3; i < tetris.boardHeight; ++i) {
-            const height = tetris.boardY + i * tetris.squareSide;
+        const boardRight = formal.boardX + formal.squareSide * formal.boardWidth;
+        for (let i = 3; i < formal.boardHeight; ++i) {
+            const height = formal.boardY + i * formal.squareSide;
             formal.context.beginPath();
-            formal.context.moveTo(tetris.boardX, height);
+            formal.context.moveTo(formal.boardX, height);
             formal.context.lineTo(boardRight, height);
             formal.context.closePath();
             formal.context.stroke();
         }
         // vertical lines
-        const boardTop = tetris.boardY + 2 * tetris.squareSide;
-        const boardBottom = tetris.boardY + tetris.boardHeight * tetris.squareSide;
-        for (let j = 0; j < tetris.boardWidth; ++j) {
-            const width = tetris.boardX + j * tetris.squareSide;
+        const boardTop = formal.boardY + 2 * formal.squareSide;
+        const boardBottom = formal.boardY + formal.boardHeight * formal.squareSide;
+        for (let j = 0; j < formal.boardWidth; ++j) {
+            const width = formal.boardX + j * formal.squareSide;
             formal.context.beginPath();
             formal.context.moveTo(width, boardTop);
             formal.context.lineTo(width, boardBottom);
@@ -113,13 +113,13 @@ class Render{
         } 
     }
     _drawBoard(tetris,formal) { 
-      if(tetris.gameState === ClassicTetris.STATE_PAUSE)return;
-      for (let i = 2; i < tetris.boardHeight; ++i) {
-        for (let j = 0; j < tetris.boardWidth; ++j) {
+      if(!tetris.gameLoop )return
+      for (let i = 2; i < formal.boardHeight; ++i) {
+        for (let j = 0; j < formal.boardWidth; ++j) {
           if (tetris.board[i][j] != -1) {
             this._drawSquare(
-              tetris.boardX + j * formal.squareSide,
-              tetris.boardY + i * formal.squareSide,
+              formal.boardX + j * formal.squareSide,
+              formal.boardY + i * formal.squareSide,
               this.piececolor[tetris.board[i][j]][0], 
               this.piececolor[tetris.board[i][j]][1],
               formal);
@@ -129,18 +129,15 @@ class Render{
     } 
       // draw current piece
       _drawPiece(tetris,formal) {
-        if(tetris.gameState === ClassicTetris.STATE_PAUSE)return;
-        if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)return;
-        if(tetris.gameState === ClassicTetris.STATE_BURN)return;
-        if(tetris.gameState === ClassicTetris.STATE_ARE)return;
+        if(tetris.gameState !== ClassicTetris.STATE_DROP)return;
         // current piece is only drawn in drop state
         const p = tetris.piece.rot[tetris.pieceRotation];
         for (let i = 0; i < p.length; ++i) {
           for (let j = 0; j < p[i].length; ++j) {
             if (p[i][j] != 0 && tetris.piecePosition[1] + i > 1) {
               this._drawSquare(
-                tetris.boardX + (tetris.piecePosition[0] + j) * formal.squareSide,
-                tetris.boardY + (tetris.piecePosition[1] + i) * formal.squareSide,
+                formal.boardX + (tetris.piecePosition[0] + j) * formal.squareSide,
+                formal.boardY + (tetris.piecePosition[1] + i) * formal.squareSide,
                 this.piececolor[tetris.piece.id][0],
                 this.piececolor[tetris.piece.id][1],
                 formal);
@@ -165,8 +162,8 @@ class Render{
             for (let j = 0; j < p[i].length; ++j) {
               if (p[i][j] != 0 && piecePos[1] + i > 1) {
                 this._drawSquare(
-                  tetris.boardX + (piecePos[0] + j) * formal.squareSide,
-                  tetris.boardY + (piecePos[1] + i) * formal.squareSide,
+                  formal.boardX + (piecePos[0] + j) * formal.squareSide,
+                  formal.boardY + (piecePos[1] + i) * formal.squareSide,
                   this.ghostColor[0], 
                   this.ghostColor[1],
                   formal);
@@ -218,8 +215,8 @@ class Render{
           for (let j = b[1]; j < b[1] + b[3]; ++j) {
             if (p[i][j] != 0) {
               this._drawSquare(
-                tetris.holdX + (j - b[1]) * formal.squareSide - 10,
-                tetris.holdY + (i - b[0]) * formal.squareSide + 50,
+                formal.holdX + (j - b[1]) * formal.squareSide - 10,
+                formal.holdY + (i - b[0]) * formal.squareSide + 50,
                 this.piececolor[tetris.holdPiece.id][0],
                 this.piececolor[tetris.holdPiece.id][1],
                 formal);

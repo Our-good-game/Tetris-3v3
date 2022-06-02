@@ -3,6 +3,8 @@ class defaultsize {
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
+    this.playerName = ' '
+    
     this.boardWidth = 10
     this.boardHeight = 22
     this.paintposA = 0

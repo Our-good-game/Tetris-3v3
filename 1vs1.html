@@ -97,7 +97,6 @@
       timer.settime(P1canvas.togglePlayPause());
       /*/
       gamecore.togglePlayPause()
-      P1canvas.togglePlayPause()
       //*/
       if (p2 !== undefined) socket.emit('fight', p2);
     });
@@ -110,9 +109,9 @@
       document.getElementById('control').style.display = "none"
       document.getElementById('room').style.display = "block"
     });
-    document.getElementById('quit').addEventListener('click', function (event) {
-      location.href="index.html";
-    });
+    // document.getElementById('quit').addEventListener('click', function (event) {
+    //   location.href="index.html";
+    // });
   })
   socket.on('find', function (opponent) {
     if(opponent === 0){alert('The room is busy')}
@@ -163,14 +162,14 @@
     P2core.holdPiece = data.holdPiece
     P2core.lines = data.lines
     P2core.result = data.result
-    P1canvas.raise += data.burnOn
+    gamecore.raise += data.burnOn
     if(!data.result){
-      P1canvas._triggerGameOver()
+      gamecore._triggerGameOver()
     }
     draw._render(P2core, P2canvas);
   })
   socket.on('fight', function (opponent) {
-    timer.settime(P1canvas.togglePlayPause());
+    timer.settime(gamecore.togglePlayPause());
     /*/
     P1canvas.togglePlayPause()
     //*/
