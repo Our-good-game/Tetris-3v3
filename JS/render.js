@@ -251,6 +251,7 @@ class Render{
         if(tetris.result){
           formal.context.fillStyle = '#F4E952';
           formal.context.fillText('Winner', formal.nameX, formal.nameY - 2 * formal.squareSide);
+
         }
       }
 }

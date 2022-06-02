@@ -236,7 +236,7 @@ class ClassicTetris {
   static BOARD_HEIGHT = 22;
 
   // constructor needs a canvas
-  constructor(canvas, {
+  constructor(canvas, size, {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
     paintposA=0,
@@ -244,8 +244,9 @@ class ClassicTetris {
     paintposC=canvas.width,
     paintposD=canvas.height,
     boardX = canvas.width * 0.25,
-    boardY = canvas.height * 0.15,
-    squareSide = canvas.height * 0.035,
+    boardY = canvas.height * 0,
+    // squareSide = Math.sqrt (canvas.height * canvas.width * 0.3 / 200),
+    squareSide = window.innerWidth * 0.022 * size,
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -363,7 +364,7 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0.2;
+     this.gameTheme.volume = 0.1;
      this.setSound.volume = 0.3;
 
     // pieces
@@ -490,10 +491,9 @@ class ClassicTetris {
     this.lines = 0;
     this.oldlines = this.lines;
     this.score = 0;
-    this.time = 0;
     this.last_sec=0;
     this.pressDownScore = 0;
-    this.result = true;
+    this.result = false;
     
     // event listeners
     this.handlers = new Map();
@@ -621,7 +621,6 @@ class ClassicTetris {
       level: this.level,
       score: this.score,
       lines: this.lines,
-      time: this.time
     });
 
     // fire new piece placed event
@@ -638,11 +637,10 @@ class ClassicTetris {
       if(p2!= undefined && this.frameCounter% 12 ===0 ){
         SendData(this); this.burnOn=0;
       }
-
+      
       draw._render(this,P1canvas);    
       
       await this._sleep();
-      if (timer.GameCountTime <= 0.4) {this.quit();}
     } while (this.gameLoop);
 
     // remove event listeners
@@ -659,7 +657,6 @@ class ClassicTetris {
       level: this.level,
       score: this.score,
       lines: this.lines,
-      time: this.time
     });
   }
 
@@ -696,7 +693,6 @@ class ClassicTetris {
     this.level = this.startLevel;
     this.lines = 0;
     this.score = 0;
-    this.time = timer.GameCountTime;
     this.pressDownScore = 0;
 
     // clear board
@@ -715,6 +711,7 @@ class ClassicTetris {
     // initial state
     this.previousGameState = ClassicTetris.STATE_DROP;
     this.gameState = ClassicTetris.STATE_DROP;
+    this.result = true
   }
 
 
@@ -956,7 +953,7 @@ class ClassicTetris {
     if (this.moveLeft && this._canMovePiece(-1, 0)) {
       const oldPosition = [...this.piecePosition];
       --this.piecePosition[0];
-      this.lastRotate = true
+      this.lastRotate = false
       // play move sound
       if (this.moveSound) {
         this.moveSound.currentTime = 0;
@@ -1391,7 +1388,6 @@ class ClassicTetris {
         // can't place piece -it's game over
         this._setPiece();
         this.result = false 
-        console.log("AAAAAAAAAAAA")
         this._triggerGameOver();
       }
       
@@ -1402,7 +1398,6 @@ class ClassicTetris {
   _triggerGameOver() {
     if(this.gameState === ClassicTetris.STATE_GAME_OVER )return;
     // stop theme song
-    console.log("BBBBBBBBBBBBBBBBB")
     if (this.gameTheme) {
       this.gameTheme.pause();
     }
@@ -1428,7 +1423,6 @@ class ClassicTetris {
   _processGameOver() {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
       ++this.gameOverLine;
-      timer.resettime()
       
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
@@ -1436,7 +1430,6 @@ class ClassicTetris {
         draw._render(this);
       } else {
         // game-over animation is done -stop the game loop
-        
         this.gameLoop = false;
         // fire game-over animation end event
         this._dispatch(ClassicTetris.GAME_OVER_END, {
@@ -1444,7 +1437,6 @@ class ClassicTetris {
           level: this.level,
           score: this.score,
           lines: this.lines,
-          time: this.time
         });
       }
     }
@@ -1453,7 +1445,6 @@ class ClassicTetris {
   // pause or unpause if requested
   _pauseCheck() {
     if (this.doUndoPause) {
-      // this.time = 60;
       if (this.gameState === ClassicTetris.STATE_PAUSE) {
         this.gameState = this.previousGameState;
 
@@ -1471,7 +1462,6 @@ class ClassicTetris {
           level: this.level,
           score: this.score,
           lines: this.lines,
-          time: this.time
         });
 
       } else {
@@ -1495,7 +1485,6 @@ class ClassicTetris {
           level: this.level,
           score: this.score,
           lines: this.lines,
-          time: this.time
         });
 
       }

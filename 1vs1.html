@@ -30,10 +30,13 @@
         style="position:absolute; top:100px; left:1000px; color:rgb(54, 170, 238); font:36px georgia">
       </div>
       <div class='container'>
+        <!-- 自己畫面 -->
         <canvas id='player' class='tetris-canvas'></canvas>
+        <!-- 中間資訊  -->
         <div class='text'>
           <canvas id='HUD' style='width: 100%; height: 100%; '></canvas>
         </div>
+         <!-- 對手畫面 -->
         <canvas id='opponent' class='tetris-canvas'></canvas>
       </div>
     </div>
@@ -55,14 +58,16 @@
 <script>
 
   var canvas_player = document.getElementById('player');
-  canvas_player.height = window.innerHeight
-  canvas_player.width = window.innerWidth * 0.45
+  canvas_player.height = window.innerHeight;
+  canvas_player.width = window.innerWidth * 0.45;
+
   var canvas_opponent = document.getElementById('opponent');
-  canvas_opponent.height = window.innerHeight
-  canvas_opponent.width = window.innerWidth * 0.45
+  canvas_opponent.height = window.innerHeight;
+  canvas_opponent.width = window.innerWidth * 0.45;
+
   var HUD = document.getElementById('HUD');
   HUD.height = window.innerHeight
-  HUD.width = window.innerWidth * 0.1
+  HUD.width = window.innerWidth
   var draw = new Render();
   var gamecore = new ClassicTetris(canvas_player);     //主遊戲邏輯
   var P1canvas = new defaultsize(canvas_player);       //自己的遊戲大小
@@ -92,6 +97,7 @@
       timer.settime(P1canvas.togglePlayPause());
       /*/
       gamecore.togglePlayPause()
+      P1canvas.togglePlayPause()
       //*/
       if (p2 !== undefined) socket.emit('fight', p2);
     });
@@ -103,6 +109,9 @@
     document.getElementById('find').addEventListener('click', function (event) {
       document.getElementById('control').style.display = "none"
       document.getElementById('room').style.display = "block"
+    });
+    document.getElementById('quit').addEventListener('click', function (event) {
+      location.href="index.html";
     });
   })
   socket.on('find', function (opponent) {
@@ -161,8 +170,10 @@
     draw._render(P2core, P2canvas);
   })
   socket.on('fight', function (opponent) {
-
     timer.settime(P1canvas.togglePlayPause());
+    /*/
+    P1canvas.togglePlayPause()
+    //*/
   })
   // socket.on('item', function (itemName) {
   //   P1canvas.getItem = itemName;

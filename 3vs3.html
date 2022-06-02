@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src='/JS/timer.js'></script>
+  <script src='/JS/render.js'></script>
+  <script src='/JS/player-interface.js'></script>
+  <script src='/JS/classic-tetris.js'></script>
+  <script src='/socket.io/socket.io.js'></script>
+  <style>
+    @import"/CSS/style.css";
+
+    @font-face {
+      font-family: huakang_girl_w5;
+      src: url(huakang_girl_w5.ttf);
+    }
+  </style>
+</head>
+
+<body>
+  <div style='user-select: none;'>
+    <!-- 載入huakang_girl_w5字體 -->
+    <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
+    <canvas id='js-background'></canvas>
+    <div>
+      <div id='player-name'
+        style="position:absolute; top:100px; left:100px; color:rgb(54, 170, 238); font:36px georgia">
+      </div>
+      <div id='player2-name'
+        style="position:absolute; top:100px; left:1000px; color:rgb(54, 170, 238); font:36px georgia">
+      </div>
+      <div class='container'>
+        <canvas id='HUD' style="position:absolute;"></canvas>
+        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
+
+        <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
+        <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
+      
+        <canvas id='opponent1' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
+        <canvas id='opponent2' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
+        <canvas id='opponent3' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
+     
+      <!--
+        <div class='text'>
+          <canvas id='HUD' style='width: 100%; height: 100%; '></canvas>
+        </div>
+      -->
+        <!-- <canvas id='opponent' class='tetris-canvas'></canvas>-->
+      </div>
+    </div>
+  <!-- 
+    <div style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center;'>
+      <button id='start-stop-btn'>Play</button><br>
+      <button id='find'>find</button><br>
+      <button id='quit'>Quit</button><br>  
+    </div>
+  -->
+  </div>
+</body>
+<script src="/JS/background.js"></script>
+<script>
+/*
+  var canvas_opponent = document.getElementById('opponent');
+  canvas_opponent.height = window.innerHeight;
+  canvas_opponent.width = window.innerHeight;
+*/
+  var HUD = document.getElementById('HUD');
+  HUD.height = window.innerHeight * 0.15;
+  HUD.width = window.innerWidth;
+
+  // document.getElementsByClassName('container')
+  var canvas_player = document.getElementById('player');
+  canvas_player.height = window.innerHeight;
+  canvas_player.width = window.innerWidth * 0.45;
+  canvas_player.style.top = HUD.height + "px";
+  canvas_player.style.left = window.innerWidth / 3.5 + "px";
+
+  var canvas_teammate1 = document.getElementById('teammate1');
+  canvas_teammate1.height = window.innerHeight;
+  canvas_teammate1.width = window.innerWidth * 0.5;
+  canvas_teammate1.style.top = HUD.height + "px";
+  canvas_teammate1.style.left = window.innerWidth / 15 + "px";
+
+  var canvas_teammate2 = document.getElementById('teammate2');
+  canvas_teammate2.height = window.innerHeight;
+  canvas_teammate2.width = window.innerWidth * 0.5;
+  canvas_teammate2.style.top = (HUD.height +  canvas_teammate2.height * 0.4) + "px";
+  canvas_teammate2.style.left = window.innerWidth / 15 + "px";
+/* ----------------------------------------------------------------------------------------------*/
+  var canvas_opponent1 = document.getElementById('opponent1');
+  canvas_opponent1.height = window.innerHeight
+  canvas_opponent1.width = window.innerWidth * 0.45;
+  canvas_opponent1.style.top = HUD.height + "px";
+  canvas_opponent1.style.left = window.innerWidth * 0.75 + "px";
+
+  var canvas_opponent2 = document.getElementById('opponent2');
+  canvas_opponent2.height = window.innerHeight;
+  canvas_opponent2.width = window.innerWidth * 0.45;
+  canvas_opponent2.style.top = (HUD.height +  canvas_opponent2.height * 0.4) + "px";
+  canvas_opponent2.style.left = window.innerWidth * 0.67 + "px";
+
+  var canvas_opponent3 = document.getElementById('opponent3');
+  canvas_opponent3.height = window.innerHeight;
+  canvas_opponent3.width = window.innerWidth * 0.45;
+  canvas_opponent3.style.top = (HUD.height +  canvas_opponent3.height * 0.4) + "px";
+  canvas_opponent3.style.left = window.innerWidth * 0.83 + "px";
+  
+  var draw = new Render();
+  var P1canvas = new ClassicTetris(canvas_player, 0.95);
+  var teammate1Canvas = new PlayerInterface(canvas_teammate1, 1);
+  var teammate2Canvas = new PlayerInterface(canvas_teammate2, 1);
+  var opponent1Canvas = new PlayerInterface(canvas_opponent1, 1);
+  var opponent2Canvas = new PlayerInterface(canvas_opponent2, 1);
+  var opponent3Canvas = new PlayerInterface(canvas_opponent3, 1);
+  // P1canvas.boardY = 0;
+//  var P2canvas = new PlayerInterface(canvas_opponent);
+  var P2canvas;
+  //var timer = new timecount(HUD);
+  window.onload = function () {
+    draw._render(P1canvas);
+    draw._render(teammate1Canvas);
+    draw._render(teammate2Canvas);
+    draw._render(opponent1Canvas);
+    draw._render(opponent2Canvas);
+    draw._render(opponent3Canvas);
+//    draw._render(P2canvas);
+    //draw._rendertime(timer, 120);
+  }
+  var id = undefined
+  var socket = io()
+  var p2 = undefined
+
+  window.addEventListener('load', event => {
+
+    fetch('id')
+      .then(function (response) { return response.text(); })
+      .then(function (data) {
+        id = data;
+        P1canvas.playerName = id;
+        draw._drawPlayerName (P1canvas);
+      })
+    document.getElementById('start-stop-btn').addEventListener('click', event => {
+      /*
+      timer.settime(P1canvas.togglePlayPause());
+      /*/
+      P1canvas.togglePlayPause()
+      //*/
+      if (p2 !== undefined) socket.emit('fight', p2);
+    });
+    /*
+    document.getElementById('GameOver-btn').addEventListener('click', event => {
+      P1canvas.quit()
+    });
+    */
+    document.getElementById('find').addEventListener('click', function (event) {
+      socket.emit('find', id)
+    });
+    document.getElementById('quit').addEventListener('click', function (event) {
+      location.href="index.html";
+    });
+    
+  });
+  socket.on('find', function (opponent) {
+    p2 = opponent;
+    console.log (opponent);
+    P2canvas.playerName = p2;
+    draw._drawPlayerName (P2canvas, opponent);
+  })
+  function SendData(data) {
+    let datatmp = {
+      gameState: data.gameState,
+      board: data.board,
+      piecePosition: data.piecePosition,
+      pieceRotation: data.pieceRotation,
+      piece: data.piece,
+      haveHold: data.haveHold,
+      holdPiece: data.holdPiece,
+      lines: data.lines,
+      next:[data.next[0],data.next[1],data.next[2]],
+      burnOn: data.burnOn,
+      result: data.result
+    }
+    
+    if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
+  };
+  socket.on('gamming', function (data) {
+    P2canvas.gameState = data.gameState
+    P2canvas.board = data.board;
+    P2canvas.linesCleared = data.linesCleared
+    P2canvas.piecePosition = data.piecePosition
+    P2canvas.pieceRotation = data.pieceRotation
+    P2canvas.piece = data.piece
+    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i]
+    P2canvas.haveHold = data.haveHold
+    P2canvas.holdPiece = data.holdPiece
+    P2canvas.lines = data.lines
+    P2canvas.result = data.result
+    P1canvas.raise += data.burnOn
+    if(!data.result){
+      P1canvas._triggerGameOver()
+    }
+    draw._render(P2canvas, 0);
+  })
+  socket.on('fight', function (opponent) {
+    /*
+    timer.settime(P1canvas.togglePlayPause());
+    /*/
+    P1canvas.togglePlayPause()
+    //*/
+  })
+  socket.on('item', function (itemName) {
+    P1canvas.getItem = itemName;
+    P1canvas._itemProcess();
+    P1canvas._sleep()
+    P1canvas.getItem = 'undefined'
+  })
+</script>
+
+</html>

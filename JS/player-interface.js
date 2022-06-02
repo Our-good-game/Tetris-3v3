@@ -205,7 +205,7 @@ class PlayerInterface {
   static BOARD_HEIGHT = 22;
 
   // constructor needs a canvas
-  constructor(canvas, {
+  constructor(canvas, size, {
     boardWidth = PlayerInterface.BOARD_WIDTH,
     boardHeight = PlayerInterface.BOARD_HEIGHT,
     paintposA=0,
@@ -213,8 +213,8 @@ class PlayerInterface {
     paintposC = canvas.width,
     paintposD = canvas.height,
     boardX = canvas.width * 0.25,
-    boardY = canvas.height * 0.15,
-    squareSide = canvas.height * 0.035,
+    boardY = canvas.height * 0 * size,
+    squareSide = window.innerWidth * 0.022 * size,
     scoreX = boardX + squareSide * 10.5,
     scoreY = boardY + squareSide * 18,
     nextX = boardX + squareSide * 10.5,
@@ -432,6 +432,7 @@ class PlayerInterface {
     this.score = 0;
     this.time = 60;
     this.pressDownScore = 0;
+    this.result = false;
 
     // event listeners
     this.handlers = new Map();
