@@ -541,18 +541,6 @@ class ClassicTetris {
   // 
   //----------------------------------------------------------------------------------------
 
-  // set the border and fill colors for a piece
-  setPieceColor(piece, color) {
-    switch (piece) {
-      case ClassicTetris.Z_PIECE: this.zColor = [...color]; break;
-      case ClassicTetris.S_PIECE: this.sColor = [...color]; break;
-      case ClassicTetris.O_PIECE: this.oColor = [...color]; break;
-      case ClassicTetris.L_PIECE: this.lColor = [...color]; break;
-      case ClassicTetris.J_PIECE: this.jColor = [...color]; break;
-      case ClassicTetris.T_PIECE: this.tColor = [...color]; break;
-      case ClassicTetris.I_PIECE: this.iColor = [...color]; break;
-    }
-  }
 
   togglePlayPause() {
     if (this.playing) {
@@ -651,7 +639,7 @@ class ClassicTetris {
         SendData(this); this.burnOn=0;
       }
 
-      draw._render(this,this.block_preview_time);    
+      draw._render(this,P1canvas);    
       
       await this._sleep();
       if (timer.GameCountTime <= 0.4) {this.quit();}
@@ -1255,9 +1243,10 @@ class ClassicTetris {
       let temp = [0,1,1,2,2,3,3]
       if(this.burnOn < 7) this.burnOn+=temp[this.combos]
       else this.burnOn+=4;
-      
-      if(this.raise > 0)
-        this.raise -= this.burnOn
+      if(this.raise > 0)this.raise -= this.burnOn
+      if(this.burnOn > 0 && this.raise){
+        //triiggertrashanime()
+      }
       
       
       // remove initial columns of squares for animation
@@ -1311,14 +1300,14 @@ class ClassicTetris {
 
   _processBurn() {
     if ((this.frameCounter % 8) === 0) {  //4) === 0) {
-      ++this.columnsCleared;
+      ++this.columnsCleared;this.columnsCleared=3;
       if (this.columnsCleared < 3) {
-        // remove another columns of squares
-        const mid = this.boardWidth / 2;
-        for (let i = 0; i < this.linesCleared.length; ++i) {
-          this.board[this.linesCleared[i]][mid + this.columnsCleared] = -1;
-          this.board[this.linesCleared[i]][mid - 1 - this.columnsCleared] = -1;
-        }
+        // // remove another columns of squares
+        // const mid = this.boardWidth / 2;
+        // for (let i = 0; i < this.linesCleared.length; ++i) {
+        //   this.board[this.linesCleared[i]][mid + this.columnsCleared] = -1;
+        //   this.board[this.linesCleared[i]][mid - 1 - this.columnsCleared] = -1;
+        // }
 
       } else {
         this.columnsCleared = -1;

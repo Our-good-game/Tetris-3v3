@@ -7,9 +7,9 @@
   <script src='/JS/player-interface.js'></script>
   <script src='/JS/classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
+  <script src='/JS/size.js'></script>
   <style>
     @import"/CSS/style.css";
-
     @font-face {
       font-family: huakang_girl_w5;
       src: url(huakang_girl_w5.ttf);
@@ -37,10 +37,17 @@
         <canvas id='opponent' class='tetris-canvas'></canvas>
       </div>
     </div>
-    <div style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center;'>
+    <div id='control' style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: block;'>
       <button id='start-stop-btn'>Play</button><br>
       <button id='find'>find</button><br>
       <input type="button"  onclick="javascript:location.href='index.html'" value="Quit" />
+      <pre id = 'roomNumber-out'>room - </pre>
+    </div>
+    <div id='room' style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: none;'>
+      <button class="rooms" id='rooms1' onclick="_enter_room(1)">room 1</button><br>
+      <button class="rooms" id='rooms2' onclick="_enter_room(2)">room 2</button><br>
+      <button class="rooms" id='rooms3' onclick="_enter_room(3)">room 3</button><br>
+      <pre id = 'roomNumber-in'>room - </pre>
     </div>
   </div>
 </body>
@@ -57,18 +64,19 @@
   HUD.height = window.innerHeight
   HUD.width = window.innerWidth * 0.1
   var draw = new Render();
-  var P1canvas = new ClassicTetris(canvas_player);
-  var P2canvas = new PlayerInterface(canvas_opponent);
-  var timer = new timecount(HUD);
+  var gamecore = new ClassicTetris(canvas_player);     //主遊戲邏輯
+  var P1canvas = new defaultsize(canvas_player);       //自己的遊戲大小
+  var P2core = new PlayerInterface(canvas_opponent);   //對手的遊戲資料
+  var P2canvas = new defaultsize(canvas_opponent);     //對手的遊戲大小
+  //var timer = new timecount(HUD);
   window.onload = function () {
-    draw._render(P1canvas);
-    draw._render(P2canvas);
-    draw._rendertime(timer, 120);
+    draw._render(gamecore,P1canvas);
+    draw._render(P2core,P2canvas);
+    //draw._rendertime(timer, 120);
   }
   var id = undefined
-  var socket = io()
   var p2 = undefined
-
+  var socket = io()
   window.addEventListener('load', event => {
 
     fetch('id')
@@ -76,10 +84,15 @@
       .then(function (data) {
         id = data;
         P1canvas.playerName = id;
-        draw._drawPlayerName (P1canvas);
+        draw._render(gamecore,P1canvas);
+        socket.emit("idstore", id)
       })
     document.getElementById('start-stop-btn').addEventListener('click', event => {
+      /*
       timer.settime(P1canvas.togglePlayPause());
+      /*/
+      gamecore.togglePlayPause()
+      //*/
       if (p2 !== undefined) socket.emit('fight', p2);
     });
     /*
@@ -88,15 +101,30 @@
     });
     */
     document.getElementById('find').addEventListener('click', function (event) {
-      socket.emit('find', id)
+      document.getElementById('control').style.display = "none"
+      document.getElementById('room').style.display = "block"
     });
   })
   socket.on('find', function (opponent) {
-    p2 = opponent;
-    console.log (opponent);
-    P2canvas.playerName = p2;
-    draw._drawPlayerName (P2canvas, opponent);
+    if(opponent === 0){alert('The room is busy')}
+    else if(opponent !== id){
+      p2 = opponent;
+      console.log (opponent);
+      P2core.playerName = p2;
+      draw._render(P2core,P2canvas);
+    }else {
+      p2 = undefined;
+      P2core.playerName = " ";
+      draw._render(P2core,P2canvas);
+    }
   })
+  function _enter_room(num){
+    document.getElementById('control').style.display = "block"
+    document.getElementById('room').style.display = "none"
+    document.getElementById('roomNumber-in').textContent ="room "+num+" "
+    document.getElementById('roomNumber-out').textContent ="room "+num+" "
+    socket.emit('find', id, num)
+  };
   function SendData(data) {
     let datatmp = {
       gameState: data.gameState,
@@ -115,32 +143,33 @@
     if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
   };
   socket.on('gamming', function (data) {
-    P2canvas.gameState = data.gameState
-    P2canvas.board = data.board;
-    P2canvas.linesCleared = data.linesCleared
-    P2canvas.piecePosition = data.piecePosition
-    P2canvas.pieceRotation = data.pieceRotation
-    P2canvas.piece = data.piece
-    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i]
-    P2canvas.haveHold = data.haveHold
-    P2canvas.holdPiece = data.holdPiece
-    P2canvas.lines = data.lines
+    P2core.gameState = data.gameState
+    P2core.board = data.board;
+    P2core.linesCleared = data.linesCleared
+    P2core.piecePosition = data.piecePosition
+    P2core.pieceRotation = data.pieceRotation
+    P2core.piece = data.piece
+    for (let i = 0; i < 3; ++i)P2core.next[i] = data.next[i]
+    P2core.haveHold = data.haveHold
+    P2core.holdPiece = data.holdPiece
+    P2core.lines = data.lines
+    P2core.result = data.result
     P1canvas.raise += data.burnOn
     if(!data.result){
       P1canvas._triggerGameOver()
     }
-    console.log(data.result)
-    draw._render(P2canvas, 0);
+    draw._render(P2core, P2canvas);
   })
   socket.on('fight', function (opponent) {
+
     timer.settime(P1canvas.togglePlayPause());
   })
-  socket.on('item', function (itemName) {
-    P1canvas.getItem = itemName;
-    P1canvas._itemProcess();
-    P1canvas._sleep()
-    P1canvas.getItem = 'undefined'
-  })
+  // socket.on('item', function (itemName) {
+  //   P1canvas.getItem = itemName;
+  //   P1canvas._itemProcess();
+  //   P1canvas._sleep()
+  //   P1canvas.getItem = 'undefined'
+  // })
 </script>
 
 </html>
