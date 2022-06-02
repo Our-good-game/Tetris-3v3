@@ -68,6 +68,7 @@ app.get('/picture/Item/higher.png', function (req, res) {res.sendFile(__dirname 
 app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
 app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
+app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
 app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/render.js');})
 app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
 app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
@@ -91,37 +92,32 @@ app.get('/id',function(req,res){res.send(req.session.username)})
 var messages=[{name: "Who",message: "test message"}]
 var typing = false
 var timer = null
-var finding 
 var ids = new Map();
-var find_queue = []
 var people = 0 
-function find(){
-  if(find_queue.length < 2)return;
-  while(finding == true){
-    if(find_queue.length < 2)return;
+var rooms = new Array(3)
+for(let i=0; i<rooms.length; ++i)rooms[i] = new Array(2);
+function _findroom(id, roomnum){
+  if(rooms[roomnum-1][0] == undefined){
+    rooms[roomnum-1][0] = id
+    return id
   }
-  finding = true;
-  let A=null,B=null;
-  find_queue.forEach(E => {
-    if(A == null )A = E;
-    if(B == null )B = E;
-    if(B != A ){
-      find_queue.splice(find_queue.indexOf(A),1)
-      find_queue.splice(find_queue.indexOf(B),1)
-      return;
-    }
-    else B = null;
-  });
-  if( A!=null && B!=null ){
-    ids.get(A).socket.emit('find',B);
-    ids.get(B).socket.emit('find',A);
+  else if(rooms[roomnum-1][1] == undefined){
+    rooms[roomnum-1][1] = id
+    return rooms[roomnum-1][0]
   }
-  finding = false;
+  else return 0
 }
 io.on('connection', function (socket) {
-    people++;console.log(people+' user connected');socket.emit("allMessage",messages);
+    people++;console.log(people+' user connected');
+    socket.on("idstore", function (id){
+      ids.set(id,{socket:socket})
+      let id_queue = new Array();
+      ids.forEach(function(value, key) {id_queue.push(key)})
+      console.log(id_queue)
+    })
     
     
+    socket.emit("allMessage",messages);
     socket.on("sendMessage", function (message){
         messages.push(message)
         io.emit("newMessage",message)
@@ -136,11 +132,20 @@ io.on('connection', function (socket) {
           io.emit("someoneIsTyping",typing)
         },3000)
     })
-    socket.on('find',function(id){
-      ids.set(id,{socket:socket})
-      find_queue.push(id);
-      console.log(find_queue);
-      find();
+    
+    
+    socket.on('find',function(id , roomnum){
+      let result
+      for(let i=0; i<rooms.length; ++i){
+        if(rooms[i][0] == id){rooms[i][0] = undefined; result = rooms[i][1]}
+        if(rooms[i][1] == id){rooms[i][1] = undefined; result = rooms[i][0]}
+      }
+      if(result !== undefined)ids.get(result).socket.emit('find', result)
+      result = _findroom(id, roomnum)
+      socket.emit('find' , result)
+      if(result !== id && result !== 0){
+        ids.get(result).socket.emit('find', id)
+      }
     })
     socket.on('gamming',function(data,p2){
       ids.get(p2).socket.emit('gamming',data)
@@ -148,11 +153,20 @@ io.on('connection', function (socket) {
     socket.on('fight',function(p2){
       ids.get(p2).socket.emit('fight',p2)
     })
-    socket.on('item',function(itemName,p2){
-      ids.get(p2).socket.emit('item', itemName)
-    })
+    // socket.on('item',function(itemName,p2){
+    //   ids.get(p2).socket.emit('item', itemName)
+    // })
     
     socket.on('disconnect',function(){
+      let leaver
+      ids.forEach((value, key)=>{
+        if(socket.id === value.socket.id)leaver = key
+      });ids.delete(leaver)
+      let result
+      for(let i=0; i<rooms.length; ++i){
+        if(rooms[i][0] == leaver){rooms[i][0] = undefined; result = rooms[i][1]}
+        if(rooms[i][1] == leaver){rooms[i][1] = undefined; result = rooms[i][0]}
+      };if(result !== undefined)ids.get(result).socket.emit('find', result)
       people--;
       console.log(people+' user disconnected')
     })
