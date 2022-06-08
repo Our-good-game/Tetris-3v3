@@ -531,7 +531,6 @@ class ClassicTetris {
   async play() {
     if (this.playing) return;
     this.playing = true;
-    // disable UI
     // attach event listeners
     this._addEventListeners();
     // reset params
@@ -570,12 +569,7 @@ class ClassicTetris {
       
       await this._sleep();
     } while (this.gameLoop);
-
-    // remove event listeners
-    // enable UI
-    //this._removeEventListeners();
-    this._enableUI();
-
+    P1canvas._enableUI();
     // toggle playing flag
     this.playing = false;
 
@@ -1324,7 +1318,6 @@ class ClassicTetris {
       this.gameOverSound.currentTime = 0;
       this.gameOverSound.play();
     }
-
     this.gameOverLine = 1;
     this.gameState = ClassicTetris.STATE_GAME_OVER;
 
@@ -1349,6 +1342,8 @@ class ClassicTetris {
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;
+        SendData(this)
+        draw._render(this, P1canvas);
         // fire game-over animation end event
         this._dispatch(ClassicTetris.GAME_OVER_END, {
           type: ClassicTetris.GAME_OVER_END,

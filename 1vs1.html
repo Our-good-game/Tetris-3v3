@@ -69,9 +69,9 @@
   HUD.height = window.innerHeight
   HUD.width = window.innerWidth
   var draw = new Render();
-  var gamecore = new ClassicTetris(canvas_player);     //主遊戲邏輯
+  var gamecore = new ClassicTetris();                  //主遊戲邏輯
   var P1canvas = new defaultsize(canvas_player);       //自己的遊戲大小
-  var P2core = new PlayerInterface(canvas_opponent);   //對手的遊戲資料
+  var P2core = new PlayerInterface();                  //對手的遊戲資料
   var P2canvas = new defaultsize(canvas_opponent);     //對手的遊戲大小
   //var timer = new timecount(HUD);
   window.onload = function () {
@@ -112,7 +112,11 @@
     });
   })
   socket.on('find', function (opponent) {
-    if(opponent === 0){alert('The room is busy')}
+    if(opponent === 0){
+      document.getElementById('roomNumber-in').textContent ="room - "
+      document.getElementById('roomNumber-out').textContent ="room - "
+      alert('The room is busy')
+    }
     else if(opponent !== id){
       p2 = opponent;
       console.log (p2);
@@ -146,7 +150,6 @@
       burnOn: data.burnOn,
       result: data.result
     }
-    
     if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
   };
   socket.on('gamming', function (data) {
@@ -165,7 +168,6 @@
     gamecore.raise += data.burnOn
     if(!data.result){
       gamecore._triggerGameOver()
-      P1canvas._enableUI()
     }
     draw._render(P2core, P2canvas);
   })
@@ -173,6 +175,7 @@
     /*
     timer.settime(gamecore.togglePlayPause());
     /*/
+    P1canvas._disableUI()
     gamecore.togglePlayPause()
     //*/
   })
