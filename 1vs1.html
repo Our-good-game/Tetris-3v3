@@ -47,9 +47,9 @@
       <pre id = 'roomNumber-out'>room - </pre>
     </div>
     <div id='room' style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: none;'>
-      <button class="rooms" id='rooms1' onclick="_enter_room(1)">room 1</button><br>
-      <button class="rooms" id='rooms2' onclick="_enter_room(2)">room 2</button><br>
-      <button class="rooms" id='rooms3' onclick="_enter_room(3)">room 3</button><br>
+      <button class="rooms" id='rooms1' onclick="_enterRoom(1)">room 1</button><br>
+      <button class="rooms" id='rooms2' onclick="_enterRoom(2)">room 2</button><br>
+      <button class="rooms" id='rooms3' onclick="_enterRoom(3)">room 3</button><br>
       <pre id = 'roomNumber-in'>room - </pre>
     </div>
   </div>
@@ -96,6 +96,7 @@
       /*
       timer.settime(P1canvas.togglePlayPause());
       /*/
+      P1canvas._disableUI()
       gamecore.togglePlayPause()
       //*/
       if (p2 !== undefined) socket.emit('fight', p2);
@@ -109,24 +110,21 @@
       document.getElementById('control').style.display = "none"
       document.getElementById('room').style.display = "block"
     });
-    // document.getElementById('quit').addEventListener('click', function (event) {
-    //   location.href="index.html";
-    // });
   })
   socket.on('find', function (opponent) {
     if(opponent === 0){alert('The room is busy')}
     else if(opponent !== id){
       p2 = opponent;
-      console.log (opponent);
-      P2core.playerName = p2;
+      console.log (p2);
+      P2canvas.playerName = p2;
       draw._render(P2core,P2canvas);
     }else {
       p2 = undefined;
-      P2core.playerName = " ";
+      P2canvas.playerName = " ";
       draw._render(P2core,P2canvas);
     }
   })
-  function _enter_room(num){
+  function _enterRoom(num){
     document.getElementById('control').style.display = "block"
     document.getElementById('room').style.display = "none"
     document.getElementById('roomNumber-in').textContent ="room "+num+" "
@@ -135,6 +133,7 @@
   };
   function SendData(data) {
     let datatmp = {
+      gameLoop: data.gameLoop,
       gameState: data.gameState,
       board: data.board,
       piecePosition: data.piecePosition,
@@ -151,6 +150,7 @@
     if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
   };
   socket.on('gamming', function (data) {
+    P2core.gameLoop = data.gameLoop
     P2core.gameState = data.gameState
     P2core.board = data.board;
     P2core.linesCleared = data.linesCleared
@@ -165,21 +165,17 @@
     gamecore.raise += data.burnOn
     if(!data.result){
       gamecore._triggerGameOver()
+      P1canvas._enableUI()
     }
     draw._render(P2core, P2canvas);
   })
   socket.on('fight', function (opponent) {
+    /*
     timer.settime(gamecore.togglePlayPause());
     /*/
-    P1canvas.togglePlayPause()
+    gamecore.togglePlayPause()
     //*/
   })
-  // socket.on('item', function (itemName) {
-  //   P1canvas.getItem = itemName;
-  //   P1canvas._itemProcess();
-  //   P1canvas._sleep()
-  //   P1canvas.getItem = 'undefined'
-  // })
 </script>
 
 </html>

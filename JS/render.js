@@ -28,7 +28,7 @@ class Render{
       canvas.context.fillText(timeStr,15,140);
     }
     _render(tetris,formal) {
-      formal.context.clearRect(tetris.paintposA,tetris.paintposB,tetris.paintposC,tetris.paintposD);
+      formal.context.clearRect(formal.paintposA,formal.paintposB,formal.paintposC,formal.paintposD);
       this._drawBackground(tetris,formal);
       this._drawBoard(tetris,formal);
       this._drawGhost(tetris,formal);
@@ -117,7 +117,7 @@ class Render{
       for (let i = 2; i < formal.boardHeight; ++i) {
         for (let j = 0; j < formal.boardWidth; ++j) {
           if (tetris.board[i][j] != -1) {
-            this._drawSquare(
+            this._drawSquare( 
               formal.boardX + j * formal.squareSide,
               formal.boardY + i * formal.squareSide,
               this.piececolor[tetris.board[i][j]][0], 
@@ -179,10 +179,10 @@ class Render{
         let holdStr = 'Hold';
         formal.context.font = this.canvasFont;
         formal.context.fillStyle = this.canvasFontColor;
-        formal.context.fillText(scoreStr, tetris.scoreX, tetris.scoreY);
-        formal.context.fillText(tetris.lines, tetris.scoreX, tetris.scoreY + 50);
-        formal.context.fillText(nextStr, tetris.nextX, tetris.nextY);
-        formal.context.fillText(holdStr, tetris.holdX, tetris.holdY);
+        formal.context.fillText(scoreStr, formal.scoreX, formal.scoreY);
+        formal.context.fillText(tetris.lines, formal.scoreX, formal.scoreY + 50);
+        formal.context.fillText(nextStr, formal.nextX, formal.nextY);
+        formal.context.fillText(holdStr, formal.holdX, formal.holdY);
       }
     
       // draw next piece
@@ -248,7 +248,6 @@ class Render{
         if(tetris.result){
           formal.context.fillStyle = '#F4E952';
           formal.context.fillText('Winner', formal.nameX, formal.nameY - 2 * formal.squareSide);
-
         }
       }
 }

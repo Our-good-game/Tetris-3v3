@@ -236,34 +236,9 @@ class ClassicTetris {
   static BOARD_HEIGHT = 22;
 
   // constructor needs a canvas
-  constructor(canvas, size, {
+  constructor( {
     boardWidth = ClassicTetris.BOARD_WIDTH,
     boardHeight = ClassicTetris.BOARD_HEIGHT,
-    paintposA=0,
-    paintposB=0,
-    paintposC=canvas.width,
-    paintposD=canvas.height,
-    boardX = canvas.width * 0.25,
-    boardY = canvas.height * 0,
-    // squareSide = Math.sqrt (canvas.height * canvas.width * 0.3 / 200),
-    squareSide = window.innerWidth * 0.022 * size,
-    scoreX = boardX + squareSide * 10.5,
-    scoreY = boardY + squareSide * 18,
-    nextX = boardX + squareSide * 10.5,
-    nextY = boardY + squareSide * 3,
-    nextOffsetX = boardX + squareSide * 10.5,
-    nextOffsetY = nextY + squareSide * 0.5,
-    nextOffsetvec = squareSide * 3,
-    pauseX = boardX + squareSide * 3,
-    pauseY = boardY + squareSide * 12,
-    holdX = boardX - squareSide * 4,
-    holdY = boardY + squareSide * 3,
-    comboX = boardX - squareSide * 5,
-    comboY = boardX + squareSide * 12,
-    nameX = boardX + 3 * squareSide,
-    nameY = boardY + squareSide,
-    
-    playerName = '',
 
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
@@ -282,11 +257,6 @@ class ClassicTetris {
 
   } = {}) {
 
-    // game canvas
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
-    this.context.lineJoin = 'round';
-
     // board dimensions
     this.boardWidth = boardWidth;
     this.boardHeight = boardHeight;
@@ -301,47 +271,6 @@ class ClassicTetris {
     for (let i = 0; i < this.boardHeight; ++i) {
       for (let j = 0; j < this.boardWidth; ++j)this.board[i][j]=-1
     }
-    // canvaes paint
-    this.paintposA = paintposA;
-    this.paintposB = paintposB;
-    this.paintposC = paintposC;
-    this.paintposD = paintposD;
-
-    // render parameters
-    this.boardX = boardX;           // board's left
-    this.boardY = boardY;           // board's top
-    this.squareSide = squareSide;   // width of individual squares
-    
-
-    // board's bounding box
-    this.boardBorder = [
-      -0.5 + this.boardX,
-      -0.5 + this.boardY + 2 * this.squareSide,
-      0.5 + this.boardX + this.boardWidth * this.squareSide + 1,
-      0.5 + this.boardY + this.boardHeight * this.squareSide
-    ];
-    
-    // player information
-    this.playerName = playerName;
-
-    // HUD stuff coordinates
-    this.scoreX = scoreX;             // score coords
-    this.scoreY = scoreY;
-    this.nextX = nextX;               // next text coords
-    this.nextY = nextY;
-    this.nextOffsetX = nextOffsetX;   // next piece coords
-    this.nextOffsetY = nextOffsetY;
-    this.nextOffsetvec = nextOffsetvec;
-    this.pauseX = pauseX;             // pause text coords
-    this.pauseY = pauseY;
-    this.holdX = holdX;
-    this.holdY = holdY;
-    this.comboX = comboX;
-    this.comboY = comboY;
-    this.nameX = nameX;
-    this.nameY = nameY;
-
-
     // max time between pointerdown and pointerup for the game to count it as click
     this.tapClickMaxDuration = tapClickMaxDuration;   // grandpa's tap/click duration!
     // maximum distance between pointer-down and pointer-up coordinates 
@@ -604,7 +533,6 @@ class ClassicTetris {
     this.playing = true;
     // disable UI
     // attach event listeners
-    this._disableUI();
     this._addEventListeners();
     // reset params
     this._resetParams();
@@ -717,7 +645,6 @@ class ClassicTetris {
 
   // add and remove event listeners
   _addEventListeners() {
-    this.canvas.addEventListener('contextmenu', this._handleContextMenu, { capture: true, passive: false });
     document.addEventListener('pointerdown', this._handlePointerDown, { capture: true, passive: false });
     document.addEventListener('pointermove', this._handlePointerMove, { capture: true, passive: false });
     document.addEventListener('pointerup', this._handlePointerUp, { capture: true, passive: false });
@@ -735,15 +662,6 @@ class ClassicTetris {
     document.removeEventListener('wheel', this._handleWheel, true);
     document.removeEventListener('keydown', this._handleKeyDown, true);
   }         
-
-  // disable/enable UI
-  _disableUI() {
-    this.canvas.style.touchAction = 'none';
-  }
-  _enableUI() {
-    this.canvas.style.touchAction = 'auto';
-  }
-
 
   //-----------------------------------------------------------
   // 
@@ -1427,7 +1345,7 @@ class ClassicTetris {
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = -1;
-        draw._render(this);
+        draw._render(this, P1canvas);
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;

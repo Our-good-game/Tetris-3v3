@@ -205,43 +205,10 @@ class PlayerInterface {
   static BOARD_HEIGHT = 22;
 
   // constructor needs a canvas
-  constructor(canvas, size, {
+  constructor( {
     boardWidth = PlayerInterface.BOARD_WIDTH,
     boardHeight = PlayerInterface.BOARD_HEIGHT,
-    paintposA=0,
-    paintposB=0,
-    paintposC = canvas.width,
-    paintposD = canvas.height,
-    boardX = canvas.width * 0.25,
-    boardY = canvas.height * 0 * size,
-    squareSide = window.innerWidth * 0.022 * size,
-    scoreX = boardX + squareSide * 10.5,
-    scoreY = boardY + squareSide * 18,
-    nextX = boardX + squareSide * 10.5,
-    nextY = boardY + squareSide * 3,
-    nextOffsetX = boardX + squareSide * 10.5,
-    nextOffsetY = nextY + squareSide * 0.5,
-    nextOffsetvec = squareSide * 3,
-    pauseX = boardX + squareSide * 3,
-    pauseY = boardY + squareSide * 12,
-    holdX = boardX - squareSide * 4,
-    holdY = boardY + squareSide * 3,
-    nameX = boardX + 3 * squareSide,
-    nameY = boardY + squareSide,
-
-    playerName = '',
-
-    tapClickMaxDuration = 30000,
-    tapClickMaxDistance = 1,
-
-
   } = {}) {
-
-    // game canvas
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
-    this.context.lineJoin = 'round';
-
     // board dimensions
     this.boardWidth = boardWidth;
     this.boardHeight = boardHeight;
@@ -256,55 +223,7 @@ class PlayerInterface {
     for (let i = 0; i < this.boardHeight; ++i) {
       for (let j = 0; j < this.boardWidth; ++j)this.board[i][j]=-1
     }
-    //canvaes paint
-    this.paintposA = paintposA;
-    this.paintposB = paintposB;
-    this.paintposC = paintposC;
-    this.paintposD = paintposD;
-    // render parameters
-    this.boardX = boardX;           // board's left
-    this.boardY = boardY;           // board's top
-    this.squareSide = squareSide;   // width of individual squares
 
-
-    // board's bounding box
-    this.boardBorder = [
-      -0.5 + this.boardX,
-      -0.5 + this.boardY + 2 * this.squareSide,
-      0.5 + this.boardX + this.boardWidth * this.squareSide + 1,
-      0.5 + this.boardY + this.boardHeight * this.squareSide
-    ];
-
-    // player information
-    this.playerName = playerName;
-
-    // HUD stuff coordinates
-    this.scoreX = scoreX;             // score coords
-    this.scoreY = scoreY;
-    this.nextX = nextX;               // next text coords
-    this.nextY = nextY;
-    this.nextOffsetX = nextOffsetX;   // next piece coords
-    this.nextOffsetY = nextOffsetY;
-    this.nextOffsetvec = nextOffsetvec
-    this.pauseX = pauseX;             // pause text coords
-    this.pauseY = pauseY;
-    this.holdX = holdX;
-    this.holdY = holdY;
-    this.nameX = nameX;
-    this.nameY = nameY;
-
-    
-   
-
-    // max time between pointerdown and pointerup for the game to count it as click
-    this.tapClickMaxDuration = tapClickMaxDuration;   // grandpa's tap/click duration!
-    // maximum distance between pointer-down and pointer-up coordinates 
-    // for the game to count it as a click/tap
-    this.tapClickMaxDistance = tapClickMaxDistance;
-
-    
-
-    // pieces
     this.pieces = [
       {
         id: 0,
@@ -364,56 +283,9 @@ class PlayerInterface {
       },
     ];
 
-    // items 
-    this.items=[
-      {
-        id: 0,
-        name: 'LockSpace',
-      },
-      {
-        id: 1,
-        name: 'Defense',
-      },
-      {
-        id: 2,
-        name: 'HoldOn',
-      },
-      {
-        id: 3,
-        name: 'LeftRightChange',
-      },
-      {
-        id: 4,
-        name: 'BlockPreview',
-      },
-      {
-        id: 5,
-        name: 'ChangeTetris',
-      },
-      {
-        id: 6,
-        name: 'LockTetris',
-      },
-      {
-        id: 7,
-        name :'BlockALine',
-      },
-    ];
-    this.send_item= undefined;
-    this.get_item= undefined
-    this.blockHeight=0;
-    this.item_defense=false
-    
-    // pointer coords
-    this.xIni = undefined;
-    this.yIni = undefined;
-    this.tIni = undefined;
-
     // pointer game controls
-    this.pointerMoveDownEnabled = false;  // flag to allow/disallow pointer to move piece down
-
     this.playing = false;       // ongoing game
-    
+    this.gameLoop = false
     this.piece = this.pieces[0];      // current piece
     this.piecePosition = [0, 0];    // current piece's position
     this.pieceRotation = 0;           // current piece's rotation
@@ -466,66 +338,7 @@ class PlayerInterface {
     this.gameOverLine = -1;
 
     // game state
-    this.previousGameState = PlayerInterface.STATE_GAME_OVER;
     this.gameState = PlayerInterface.STATE_GAME_OVER;
-
-    // an empty row used to exploit syntactic sugar
-    this.emptyRow = [];
-    for (let i = 0; i < this.boardWidth; ++i) this.emptyRow.push(-1);
-  }
-
- 
-  setGameOverColor(color) { this.gameOverColor = [...color]; }
-  setGhostColor(color) {this.ghostColor = [...color];}
-  setPieceColor(piece, color) {
-    switch (piece) {
-      case PlayerInterface.Z_PIECE: this.zColor = [...color]; break;
-      case PlayerInterface.S_PIECE: this.sColor = [...color]; break;
-      case PlayerInterface.O_PIECE: this.oColor = [...color]; break;
-      case PlayerInterface.L_PIECE: this.lColor = [...color]; break;
-      case PlayerInterface.J_PIECE: this.jColor = [...color]; break;
-      case PlayerInterface.T_PIECE: this.tColor = [...color]; break;
-      case PlayerInterface.I_PIECE: this.iColor = [...color]; break;
-    }
-  }
-
-
-  //--------------------------------------------------------------------------------------------
-  // 
-  // game rules: https://tetris.wiki/PlayerInterface_(NES,_Nintendo)
-  // 
-  //--------------------------------------------------------------------------------------------
-
-
-  // line clear delay is an additional 17~20 frames depending on the frame that the piece locks; 
-  // the animation has 5 steps that advance when the global frame counter modulo 4 equals 0. 
-  // As a consequence, the first step of the line clear animation is not always a set number of frames
-  _getLinesCleared() {
-    const arr = [];
-    for (let i = 0; i < this.boardHeight; ++i) {
-      let b = true;
-      for (let j = 0; b && j < this.boardWidth; ++j)
-        if (this.board[i][j] === -1) b = false;
-      if (b) arr.push(i);
-    }
-    return arr;
-  }
-
-  // set piece down on board (lock it)
-  _setPiece() {
-    const p = this.piece.rot[this.pieceRotation];
-    for (let i = 0; i < p.length; ++i) {
-      for (let j = 0; j < p[i].length; ++j) {
-        if (p[i][j] != 0) {
-          this.board[this.piecePosition[1] + i][this.piecePosition[0] + j] = this.piece.id;
-        }
-      }
-    }
-  }
-
-  // can the piece move
-  _canMovePiece(offsetX, offsetY) {
-    return this._canMove(this.piece, this.pieceRotation, this.piecePosition, offsetX, offsetY);
   }
   _canMove(piece, pieceRot, piecePos, offsetX, offsetY) {
     const p = piece.rot[pieceRot];
@@ -540,50 +353,6 @@ class PlayerInterface {
       }
     }
     return true;
-  }
-
- 
-  //-----------------------------------------------------------
-  // 
-  // sleep function
-  // 
-  //-----------------------------------------------------------
-
-  _sleep() { return new Promise(requestAnimationFrame); }
-
-
-
-  //-----------------------------------------------------------
-  // 
-  // observer pattern
-  // 
-  //-----------------------------------------------------------
-
-  // add an event handler
-  on(event, handler) {
-    const handlers = this.handlers.get(event);
-    if (handlers) {
-      handlers.push(handler);
-    }
-  }
-
-  // remove an event handler
-  off(event, handler) {
-    const handlers = this.handlers.get(event);
-    if (handlers) {
-      const index = handlers.indexOf(handler);
-      if (index != -1) handlers.splice(index, 1);
-    }
-  }
-
-  // fire events
-  _dispatch(event, data) {
-    const handlers = this.handlers.get(event);
-    if (handlers) {
-      for (const handler of handlers) {
-        handler(data);
-      }
-    }
   }
 }
 

@@ -44,6 +44,11 @@ app.get('/1vs1.html', function (req, res) {
   if(username==undefined){res.redirect('/login');}
   else res.sendFile(__dirname +'/1vs1.html');
 })
+app.get('/3vs3.html', function (req, res) {
+  let username = req.session.username;
+  if(username==undefined){res.redirect('/login');}
+  else res.sendFile(__dirname +'/3vs3.html');
+})
 
 
 //CSS && picture
@@ -153,10 +158,6 @@ io.on('connection', function (socket) {
     socket.on('fight',function(p2){
       ids.get(p2).socket.emit('fight',p2)
     })
-    // socket.on('item',function(itemName,p2){
-    //   ids.get(p2).socket.emit('item', itemName)
-    // })
-    
     socket.on('disconnect',function(){
       let leaver
       ids.forEach((value, key)=>{
