@@ -19,34 +19,43 @@ class Render{
     this.borderColor = '#fff'
     this.gridColor = '#ddd'
   }
-    _rendertime(canvas,time){
-      canvas.context.clearRect(0,0,canvas.canvas.width,canvas.canvas.height);
+    _rendertime(canvas, time){
+      canvas.context.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
       let timeStr = Math.floor(time);
       canvas.context.font = this.canvasFont;
       canvas.context.fillStyle = this.canvasFontColor;
-      canvas.context.fillText('Time：',0,100);
-      canvas.context.fillText(timeStr,15,140);
+      canvas.context.fillText('Time：', 0, 100);
+      canvas.context.fillText(timeStr, 15, 140);
     }
-    _render(tetris,formal) {
-      formal.context.clearRect(formal.paintposA,formal.paintposB,formal.paintposC,formal.paintposD);
-      this._drawBackground(tetris,formal);
-      this._drawBoard(tetris,formal);
-      this._drawGhost(tetris,formal);
-      this._drawPiece(tetris,formal);
-      this._drawHUD(tetris,formal);
-      this._drawPlayerName(tetris,formal);
-      this._drawCombo(tetris,formal);
+    _render(tetris, formal) {
+      formal.context.clearRect(formal.paintposA, formal.paintposB, formal.paintposC, formal.paintposD);
+      this._drawBackground(tetris, formal);
+      this._drawBoard(tetris, formal);
+      this._drawGhost(tetris, formal);
+      this._drawPiece(tetris, formal);
+      this._drawHUD(tetris, formal);
+      this._drawPlayerName(tetris, formal);
+      this._drawCombo(tetris, formal);
       //if ( !tetris.itemBlockPreview ) {
-        this._drawNext(tetris,formal)
+        this._drawNext(tetris, formal)
       // }
       if ( tetris.haveHold ) {
-        this._drawHold(tetris,formal)
+        this._drawHold(tetris, formal)
       }
-      if(tetris.gameState === ClassicTetris.STATE_GAME_OVER)this._drawWinner(tetris,formal)
+      if(tetris.gameState === ClassicTetris.STATE_GAME_OVER) this._drawWinner(tetris, formal)
     }   
+    
+    _renderNoHUD (tetris, formal) {
+      formal.context.clearRect(formal.paintposA, formal.paintposB, formal.paintposC, formal.paintposD);
+      this._drawBackground(tetris, formal);
+      this._drawBoard(tetris, formal);
+      this._drawGhost(tetris, formal);
+      this._drawPiece(tetris, formal);
+      this._drawPlayerName(tetris, formal);
+    }
 
     // draw an individual square on the board
-    _drawSquare(x, y, color, border,formal) {
+    _drawSquare(x, y, color, border, formal) {
       formal.context.beginPath();
       formal.context.moveTo(x + 1, y + 1);
       formal.context.lineTo(x + formal.squareSide - 1, y + 1);
@@ -59,7 +68,7 @@ class Render{
       formal.context.stroke();
     }
 
-    _drawBackground(tetris,formal) {
+    _drawBackground(tetris, formal) {
         formal.context.lineWidth = 1;
         // if burning a this, make background color flash
         const fillColor = this.backgroundColor;
@@ -82,7 +91,7 @@ class Render{
           formal.context.fillStyle = this.canvasFontColor;
           //formal.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
           let pauseImg=new Image();pauseImg.src='pauseitem.png'
-          formal.context.drawImage(pauseImg,270, 250,160,160)
+          formal.context.drawImage(pauseImg, 270, 250, 160, 160)
         } else {
         // draw grid if not paused
         formal.context.lineWidth = 0.5;
@@ -112,7 +121,7 @@ class Render{
           formal.context.lineWidth = 1;
         } 
     }
-    _drawBoard(tetris,formal) { 
+    _drawBoard(tetris, formal) { 
       if(!tetris.gameLoop )return
       for (let i = 2; i < formal.boardHeight; ++i) {
         for (let j = 0; j < formal.boardWidth; ++j) {
@@ -128,7 +137,7 @@ class Render{
       }
     } 
       // draw current piece
-      _drawPiece(tetris,formal) {
+      _drawPiece(tetris, formal) {
         if(tetris.gameState !== ClassicTetris.STATE_DROP)return;
         // current piece is only drawn in drop state
         const p = tetris.piece.rot[tetris.pieceRotation];
@@ -148,7 +157,7 @@ class Render{
     
       // draw ghost piece
       // it is a representation of where a tetromino or other piece will land if allowed to drop into the playfield
-      _drawGhost(tetris,formal) {
+      _drawGhost(tetris, formal) {
         if(tetris.gameState !== ClassicTetris.STATE_DROP)return;
           // find ghost piece position, which is lowest position for current piece
           const piecePos = [tetris.piecePosition[0], tetris.piecePosition[1]];
@@ -173,7 +182,7 @@ class Render{
       }
     
       // draw heads-up display
-      _drawHUD(tetris,formal) {
+      _drawHUD(tetris, formal) {
         let scoreStr = 'Lines:   ';
         let nextStr = 'Next';
         let holdStr = 'Hold';
@@ -186,7 +195,7 @@ class Render{
       }
     
       // draw next piece
-      _drawNext(tetris,formal) {
+      _drawNext(tetris, formal) {
         if(!tetris.gameLoop)return
         for(let num= 0;num< 3;++num){
           let p = tetris.next[num].rot[0];
@@ -207,7 +216,7 @@ class Render{
       }
     
       
-      _drawHold(tetris,formal) {
+      _drawHold(tetris, formal) {
         if(!tetris.gameLoop)return
         const p = tetris.holdPiece.rot[0];
         const b = tetris.holdPiece.box;
@@ -224,27 +233,27 @@ class Render{
           }
         }
       }
-      _drawCombo(tetris,formal) {
+      _drawCombo(tetris, formal) {
         if(!tetris.gameLoop)return
         if(tetris.combos > 0){
           formal.context.fillText("Combo", formal.comboX, formal.comboY);
           formal.context.fillText(tetris.combos, formal.comboX+50, formal.comboY + 50);
         }
         if(tetris.cheakTspin)
-          formal.context.fillText("T-spin", formal.comboX, formal.comboY+150);
+          formal.context.fillText("T-spin", formal.comboX, formal.comboY + 150);
           
         if(tetris.cheakTetris)
-          formal.context.fillText("Tetris", formal.comboX-10, formal.comboY+200);
+          formal.context.fillText("Tetris", formal.comboX - 10, formal.comboY + 200);
         
         if(tetris.backToBack)
-          formal.context.fillText("Back-2", formal.comboX, formal.comboY+250);
+          formal.context.fillText("Back-2", formal.comboX, formal.comboY + 250);
         
       }
       
-      _drawPlayerName(tetris,formal) {
+      _drawPlayerName(tetris, formal) {
         formal.context.fillText(formal.playerName, formal.nameX, formal.nameY);
       }
-      _drawWinner(tetris,formal) {
+      _drawWinner(tetris, formal) {
         if(tetris.result){
           formal.context.fillStyle = '#F4E952';
           formal.context.fillText('Winner', formal.nameX, formal.nameY - 2 * formal.squareSide);

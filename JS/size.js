@@ -1,35 +1,35 @@
-class defaultsize {
+class defaultSize {
   constructor(canvas){
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
     this.playerName = ' '
     
-    this.boardWidth = 10
+    this.boardWidth  = 10
     this.boardHeight = 22
-    this.paintposA = 0
-    this.paintposB = 0
-    this.paintposC = canvas.width
-    this.paintposD = canvas.height
-    this.boardX = canvas.width * 0.25
-    this.boardY = canvas.height * 0.15
-    this.squareSide = canvas.height * 0.035
+    this.paintposA   = 0
+    this.paintposB   = 0
+    this.paintposC   = canvas.width
+    this.paintposD   = canvas.height
+    this.boardX      = canvas.width * 0.25
+    this.boardY      = canvas.height * 0.15
+    this.squareSide  = canvas.height * 0.035
     
-    this.scoreX =   this.boardX + this.squareSide * 10.5
-    this.scoreY =   this.boardY + this.squareSide * 18
-    this.nextX =    this.boardX + this.squareSide * 10.5
-    this.nextY =    this.boardY + this.squareSide * 3
-    this.nextOffsetX =    this.boardX + this.squareSide * 10.5
-    this.nextOffsetY =    this.nextY + this.squareSide * 0.5
-    this.nextOffsetvec =  this.squareSide * 3
-    this.pauseX =     this.boardX + this.squareSide * 3
-    this.pauseY =     this.boardY + this.squareSide * 12
-    this.holdX =      this.boardX - this.squareSide * 4
-    this.holdY =      this.boardY + this.squareSide * 3
-    this.comboX =     this.boardX - this.squareSide * 5
-    this.comboY =     this.boardX + this.squareSide * 12
-    this.nameX =      this.boardX + 3 * this.squareSide
-    this.nameY =      this.boardY + this.squareSide
+    this.scoreX        = this.boardX + this.squareSide * 10.5
+    this.scoreY        = this.boardY + this.squareSide * 18
+    this.nextX         = this.boardX + this.squareSide * 10.5
+    this.nextY         = this.boardY + this.squareSide * 3
+    this.nextOffsetX   = this.boardX + this.squareSide * 10.5
+    this.nextOffsetY   = this.nextY  + this.squareSide * 0.5
+    this.nextOffsetvec = this.squareSide * 3
+    this.pauseX        = this.boardX + this.squareSide * 3
+    this.pauseY        = this.boardY + this.squareSide * 12
+    this.holdX         = this.boardX - this.squareSide * 4
+    this.holdY         = this.boardY + this.squareSide * 3
+    this.comboX        = this.boardX - this.squareSide * 5
+    this.comboY        = this.boardX + this.squareSide * 12
+    this.nameX         = this.boardX + this.squareSide * 3
+    this.nameY         = this.boardY + this.squareSide
 
     // board's bounding box
     this.boardBorder = [
@@ -54,10 +54,12 @@ class defaultsize {
   _handleContextMenu = event => {
     event.preventDefault();
   }
-
+  
+  
 }
-class teammatesize {
-  constructor(canvas){
+
+class teamModSize {
+  constructor(canvas) {
     this.canvas = canvas;
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
@@ -70,12 +72,12 @@ class teammatesize {
     this.paintposC = canvas.width
     this.paintposD = canvas.height
     this.boardX = canvas.width * 0.25
-    this.boardY = canvas.height * 0.15
-    this.squareSide = canvas.height * 0.035
+    this.boardY = 0
+    this.squareSide = window.innerWidth * 0.022
     
     this.scoreX =   this.boardX + this.squareSide * 10.5
     this.scoreY =   this.boardY + this.squareSide * 18
-    this.nextX =    this.boardX + this.squareSide * 10.5
+    this.nextX =    this.boardX + this.squareSide * 10.5 
     this.nextY =    this.boardY + this.squareSide * 3
     this.nextOffsetX =    this.boardX + this.squareSide * 10.5
     this.nextOffsetY =    this.nextY + this.squareSide * 0.5

@@ -70,9 +70,9 @@
   HUD.width = window.innerWidth
   var draw = new Render();
   var gamecore = new ClassicTetris();                  //主遊戲邏輯
-  var P1canvas = new defaultsize(canvas_player);       //自己的遊戲大小
+  var P1canvas = new defaultSize(canvas_player);       //自己的遊戲大小
   var P2core = new PlayerInterface();                  //對手的遊戲資料
-  var P2canvas = new defaultsize(canvas_opponent);     //對手的遊戲大小
+  var P2canvas = new defaultSize(canvas_opponent);     //對手的遊戲大小
   //var timer = new timecount(HUD);
   window.onload = function () {
     draw._render(gamecore,P1canvas);
@@ -89,7 +89,7 @@
       .then(function (data) {
         id = data;
         P1canvas.playerName = id;
-        draw._render(gamecore,P1canvas);
+        draw._render(gamecore, P1canvas);
         socket.emit("idstore", id)
       })
     _startStopBtn = event => {
@@ -100,7 +100,7 @@
       gamecore.togglePlayPause()
       //*/
       if (p2 !== undefined) socket.emit('fight', p2);
-    };document.getElementById('start-stop-btn').addEventListener('click',_startStopBtn );
+    };document.getElementById('start-stop-btn').addEventListener('click', _startStopBtn );
     /*
     document.getElementById('GameOver-btn').addEventListener('click', event => {
       P1canvas.quit()
@@ -121,18 +121,18 @@
       p2 = opponent;
       console.log (p2);
       P2canvas.playerName = p2;
-      draw._render(P2core,P2canvas);
+      draw._render(P2core, P2canvas);
     }else {
       p2 = undefined;
       P2canvas.playerName = " ";
-      draw._render(P2core,P2canvas);
+      draw._render(P2core, P2canvas);
     }
   })
   function _enterRoom(num){
     document.getElementById('control').style.display = "block"
     document.getElementById('room').style.display = "none"
-    document.getElementById('roomNumber-in').textContent ="room "+num+" "
-    document.getElementById('roomNumber-out').textContent ="room "+num+" "
+    document.getElementById('roomNumber-in').textContent ="room " + num + " "
+    document.getElementById('roomNumber-out').textContent ="room " + num + " "
     socket.emit('find', id, num)
   };
   function SendData(data) {
