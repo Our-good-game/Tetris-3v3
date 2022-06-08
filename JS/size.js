@@ -49,6 +49,7 @@ class defaultsize {
   }
   _enableUI() {
     this.canvas.style.touchAction = 'auto';
+    this.canvas.removeEventListener('contextmenu', this._handleContextMenu, true);
   }
   _handleContextMenu = event => {
     event.preventDefault();

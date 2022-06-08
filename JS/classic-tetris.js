@@ -572,7 +572,7 @@ class ClassicTetris {
     P1canvas._enableUI();
     // toggle playing flag
     this.playing = false;
-
+    this._removeEventListeners()
     // fire game finish event
     this._dispatch(ClassicTetris.GAME_OVER, {
       type: ClassicTetris.GAME_OVER,
@@ -639,6 +639,8 @@ class ClassicTetris {
 
   // add and remove event listeners
   _addEventListeners() {
+    document.getElementById('start-stop-btn').removeEventListener('start-stop-btn', _startStopBtn,false)
+    document.getElementById('find').removeEventListener('click',_find,false)
     document.addEventListener('pointerdown', this._handlePointerDown, { capture: true, passive: false });
     document.addEventListener('pointermove', this._handlePointerMove, { capture: true, passive: false });
     document.addEventListener('pointerup', this._handlePointerUp, { capture: true, passive: false });
@@ -648,7 +650,8 @@ class ClassicTetris {
   }
 
   _removeEventListeners() {
-    this.canvas.removeEventListener('contextmenu', this._handleContextMenu, true);
+    document.getElementById('start-stop-btn').addEventListener('start-stop-btn',_startStopBtn,false)
+    document.getElementById('find').addEventListener('click',_find,false)
     document.removeEventListener('pointerdown', this._handlePointerDown, true);
     document.removeEventListener('pointermove', this._handlePointerMove, true);
     document.removeEventListener('pointerup', this._handlePointerUp, true);

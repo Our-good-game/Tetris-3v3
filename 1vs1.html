@@ -92,7 +92,7 @@
         draw._render(gamecore,P1canvas);
         socket.emit("idstore", id)
       })
-    document.getElementById('start-stop-btn').addEventListener('click', event => {
+    _startStopBtn = event => {
       /*
       timer.settime(P1canvas.togglePlayPause());
       /*/
@@ -100,16 +100,16 @@
       gamecore.togglePlayPause()
       //*/
       if (p2 !== undefined) socket.emit('fight', p2);
-    });
+    };document.getElementById('start-stop-btn').addEventListener('click',_startStopBtn );
     /*
     document.getElementById('GameOver-btn').addEventListener('click', event => {
       P1canvas.quit()
     });
     */
-    document.getElementById('find').addEventListener('click', function (event) {
+    _find = event => {
       document.getElementById('control').style.display = "none"
       document.getElementById('room').style.display = "block"
-    });
+    };document.getElementById('find').addEventListener('click',_find);
   })
   socket.on('find', function (opponent) {
     if(opponent === 0){
