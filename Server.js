@@ -67,6 +67,7 @@ app.get('/picture/Item/shadow.png', function (req, res) {res.sendFile(__dirname 
 app.get('/picture/Item/PieceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChain.png');})
 app.get('/picture/Item/PieceChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChange.png');})
 app.get('/picture/Item/higher.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/higher.png');})
+app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/picture/heart.png');})
 
 
 //JS mode
@@ -74,6 +75,7 @@ app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '
 app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
 app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
+app.get('/JS/heart.js', function (req, res) {res.sendFile(__dirname + '/JS/heart.js');})
 app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/render.js');})
 app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
 app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
@@ -100,10 +102,13 @@ var timer = null
 var ids = new Map();
 var people = 0 
 var rooms = new Array(3)
+var team = new Array(2)
 for(let i=0; i<rooms.length; ++i)rooms[i] = new Array(2);
+for(let i=0; i<team.length; ++i)team[i] = new Array(3);
 function _findroom(id, roomnum){
   if(rooms[roomnum-1][0] == undefined){
     rooms[roomnum-1][0] = id
+
     return id
   }
   else if(rooms[roomnum-1][1] == undefined){
@@ -138,7 +143,7 @@ io.on('connection', function (socket) {
         },3000)
     })
     
-    
+    // 1vs1
     socket.on('find',function(id , roomnum){
       let result
       for(let i=0; i<rooms.length; ++i){
@@ -158,6 +163,14 @@ io.on('connection', function (socket) {
     socket.on('fight',function(p2){
       ids.get(p2).socket.emit('fight',p2)
     })
+
+
+    //3vs3
+    socket.on('teamGamming',function(data,p2){
+      ids.get(p2).socket.emit('teamGamming',data)
+    })
+
+
     socket.on('disconnect',function(){
       let leaver
       ids.forEach((value, key)=>{

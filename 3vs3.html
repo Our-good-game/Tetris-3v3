@@ -8,14 +8,15 @@
   <script src='/JS/classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
+  <script src='/JS/heart.js'></script>
   <style>
     @import"/CSS/style.css";
-
     @font-face {
       font-family: huakang_girl_w5;
       src: url(huakang_girl_w5.ttf);
     }
   </style>
+  <img src="/picture/heart.png" id ="heart" style="display:none"></img>
 </head>
 
 <body>
@@ -121,10 +122,12 @@
   var opponent2Canvas = new teamModSize (opponent2);
   var opponent3Canvas = new teamModSize (opponent3);
 
-  // P1canvas.boardY = 0;
-//  var P2canvas = new PlayerInterface(canvas_opponent);
-  var P2canvas;
-  //var timer = new timecount(HUD);
+  var teamHeart = new Array(5)
+  var opponentHeart = new Array(5)
+  for (let i = 1; i<= 5; ++i){
+    teamHeart[i] = new heart(i, "left", HUD)
+    opponentHeart[i] = new heart(i, "right", HUD)
+  }
   window.onload = function () {
     draw._render(gamecore, myCanvas);
     draw._renderNoHUD(teammate1Core, teammate1Canvas);
@@ -132,49 +135,23 @@
     draw._renderNoHUD(opponent1Core, opponent1Canvas);
     draw._renderNoHUD(opponent2Core, opponent2Canvas);
     draw._renderNoHUD(opponent3Core, opponent3Canvas);
-//    draw._render(P2canvas);
-    //draw._rendertime(timer, 120);
+    for (let i = 1; i<= 5; ++i){
+      teamHeart[i].paint()
+      opponentHeart[i].paint()
+    }
   }
   var id = undefined
   var socket = io()
-  var p2 = undefined
 
   window.addEventListener('load', event => {
-
     fetch('id')
       .then(function (response) { return response.text(); })
       .then(function (data) {
         id = data;
-        P1canvas.playerName = id;
-        draw._drawPlayerName (P1canvas);
+        myCanvas.playerName = id;
+        draw._drawPlayerName (gamecore,myCanvas);
       })
-    document.getElementById('start-stop-btn').addEventListener('click', event => {
-      /*
-      timer.settime(P1canvas.togglePlayPause());
-      /*/
-      P1canvas.togglePlayPause()
-      //*/
-      if (p2 !== undefined) socket.emit('fight', p2);
-    });
-    /*
-    document.getElementById('GameOver-btn').addEventListener('click', event => {
-      P1canvas.quit()
-    });
-    */
-    document.getElementById('find').addEventListener('click', function (event) {
-      socket.emit('find', id)
-    });
-    document.getElementById('quit').addEventListener('click', function (event) {
-      location.href="index.html";
-    });
-    
   });
-  socket.on('find', function (opponent) {
-    p2 = opponent;
-    console.log (opponent);
-    P2canvas.playerName = p2;
-    draw._drawPlayerName (P2canvas, opponent);
-  })
   function SendData(data) {
     let datatmp = {
       gameState: data.gameState,
@@ -189,39 +166,14 @@
       burnOn: data.burnOn,
       result: data.result
     }
-    
-    if (p2 !== undefined) socket.emit('gamming', datatmp, p2);
   };
-  socket.on('gamming', function (data) {
-    P2canvas.gameState = data.gameState
-    P2canvas.board = data.board;
-    P2canvas.linesCleared = data.linesCleared
-    P2canvas.piecePosition = data.piecePosition
-    P2canvas.pieceRotation = data.pieceRotation
-    P2canvas.piece = data.piece
-    for (let i = 0; i < 3; ++i)P2canvas.next[i] = data.next[i]
-    P2canvas.haveHold = data.haveHold
-    P2canvas.holdPiece = data.holdPiece
-    P2canvas.lines = data.lines
-    P2canvas.result = data.result
-    P1canvas.raise += data.burnOn
-    if(!data.result){
-      P1canvas._triggerGameOver()
-    }
-    draw._render(P2canvas, 0);
+  socket.on('teamGamming', function (data) {
+    // load data
+    // draw teammate
+    // draw opponent
   })
   socket.on('fight', function (opponent) {
-    /*
-    timer.settime(P1canvas.togglePlayPause());
-    /*/
-    P1canvas.togglePlayPause()
-    //*/
-  })
-  socket.on('item', function (itemName) {
-    P1canvas.getItem = itemName;
-    P1canvas._itemProcess();
-    P1canvas._sleep()
-    P1canvas.getItem = 'undefined'
+    // trigger gameloop 
   })
 </script>
 

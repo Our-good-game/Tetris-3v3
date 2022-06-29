@@ -18,6 +18,8 @@
       <div style='padding:50px 60px 20px 160px; '>
         <button id='1vs1-btn' style="width:400px;height:100px;">Battle mode </button>
         </br>
+        <button id='3vs3-btn' style="width:400px;height:100px;">TeamFight mode </button>
+        </br>
         <button id='talking-btn' style="width:400px;height:100px;margin:20px 0px 0px 0px">Talking mode </button>
         </br>
         <canvas id='player-id' class='canvas' width='200' height='100'></canvas>
@@ -44,5 +46,8 @@
       document.getElementById('1vs1-btn').addEventListener('click', event => {
         document.location.href="1vs1.html"
       }); 
+      document.getElementById('3vs3-btn').addEventListener('click', event => {
+        document.location.href="3vs3.html"
+      });
     </script>
 </html>
