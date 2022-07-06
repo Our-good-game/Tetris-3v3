@@ -53,6 +53,7 @@ app.get('/3vs3.html', function (req, res) {
 
 //CSS && picture
 app.get('/CSS/style.css', function (req, res){res.sendFile(__dirname + '/CSS/style.css');})
+app.get('/CSS/energyBar.css', function (req, res){res.sendFile(__dirname + '/CSS/energyBar.css');})
 app.get('/picture/background.jpg', function (req, res) {res.sendFile(__dirname +'/picture/background.jpg')})
 app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/picture/pauseitem.png');})
 app.get('/obj/hana1.png', function (req, res) {res.sendFile(__dirname + '/obj/hana1.png');})
@@ -72,6 +73,7 @@ app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/pi
 
 //JS mode
 app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
+app.get('/JS/classic-tetris-3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris-3v3.js');})
 app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
 app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
@@ -81,6 +83,7 @@ app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/
 app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
 app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
+app.get('/JS/EnergyBar.js', function (req, res) {res.sendFile(__dirname + '/JS/EnergyBar.js');})
 
 // audio
 app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})

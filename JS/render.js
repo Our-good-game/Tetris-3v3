@@ -47,7 +47,7 @@ class Render{
     
     _renderNoHUD (tetris, formal) {
       formal.context.clearRect(formal.paintposA, formal.paintposB, formal.paintposC, formal.paintposD);
-      this._drawBackground(tetris, formal);
+      this._drawBackgroundSimple(tetris, formal);
       this._drawBoard(tetris, formal);
       this._drawGhost(tetris, formal);
       this._drawPiece(tetris, formal);
@@ -69,60 +69,77 @@ class Render{
     }
 
     _drawBackground(tetris, formal) {
-        formal.context.lineWidth = 1;
-        // if burning a this, make background color flash
-        const fillColor = this.backgroundColor;
-        // draw background and border
-        formal.context.beginPath();
-        formal.context.moveTo(formal.boardBorder[0], formal.boardBorder[1]);
-        formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[1]);
-        formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[3]);
-        formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
-        formal.context.closePath();
-        formal.context.fillStyle = fillColor;
-        formal.context.strokeStyle = this.borderColor;
-        formal.context.fill();
-        formal.context.stroke();
-        if (tetris.gameState === ClassicTetris.STATE_PAUSE) {
-          // pause overlay:
-          // write PAUSE on the board if game is paused
-          
-          formal.context.font = this.canvasFont;
-          formal.context.fillStyle = this.canvasFontColor;
-          //formal.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
-          let pauseImg=new Image();pauseImg.src='pauseitem.png'
-          formal.context.drawImage(pauseImg, 270, 250, 160, 160)
-        } else {
+      formal.context.lineWidth = 1;
+      // if burning a this, make background color flash
+      const fillColor = this.backgroundColor;
+      // draw background and border
+      formal.context.beginPath();
+      formal.context.moveTo(formal.boardBorder[0], formal.boardBorder[1]);
+      formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[1]);
+      formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[3]);
+      formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
+      formal.context.closePath();
+      formal.context.fillStyle = fillColor;
+      formal.context.strokeStyle = this.borderColor;
+      formal.context.fill();
+      formal.context.stroke();
+      if (tetris.gameState === ClassicTetris.STATE_PAUSE) {
+        // pause overlay:
+        // write PAUSE on the board if game is paused
+        
+        formal.context.font = this.canvasFont;
+        formal.context.fillStyle = this.canvasFontColor;
+        //formal.context.fillText('PAUSE', tetris.pauseX, tetris.pauseY);
+        let pauseImg=new Image();pauseImg.src='pauseitem.png'
+        formal.context.drawImage(pauseImg, 270, 250, 160, 160)
+      } else {
         // draw grid if not paused
         formal.context.lineWidth = 0.5;
         // horizontal lines
-        formal.context.strokeStyle =　this.gridColor;
+        formal.context.strokeStyle = this.gridColor;
         const boardRight = formal.boardX + formal.squareSide * formal.boardWidth;
         for (let i = 3; i < formal.boardHeight; ++i) {
-            const height = formal.boardY + i * formal.squareSide;
-            formal.context.beginPath();
-            formal.context.moveTo(formal.boardX, height);
-            formal.context.lineTo(boardRight, height);
-            formal.context.closePath();
-            formal.context.stroke();
+          const height = formal.boardY + i * formal.squareSide;
+          formal.context.beginPath();
+          formal.context.moveTo(formal.boardX, height);
+          formal.context.lineTo(boardRight, height);
+          formal.context.closePath();
+          formal.context.stroke();
         }
         // vertical lines
         const boardTop = formal.boardY + 2 * formal.squareSide;
         const boardBottom = formal.boardY + formal.boardHeight * formal.squareSide;
         for (let j = 0; j < formal.boardWidth; ++j) {
-            const width = formal.boardX + j * formal.squareSide;
-            formal.context.beginPath();
-            formal.context.moveTo(width, boardTop);
-            formal.context.lineTo(width, boardBottom);
-            formal.context.closePath();
-            formal.context.stroke();
+          const width = formal.boardX + j * formal.squareSide;
+          formal.context.beginPath();
+          formal.context.moveTo(width, boardTop);
+          formal.context.lineTo(width, boardBottom);
+          formal.context.closePath();
+          formal.context.stroke();
         }
-          // back to regular line width
-          formal.context.lineWidth = 1;
-        } 
+        // back to regular line width
+        formal.context.lineWidth = 1;
+      } 
+    }
+    // 沒有網格線
+    _drawBackgroundSimple(tetris, formal) {
+      formal.context.lineWidth = 1;
+      // if burning a this, make background color flash
+      const fillColor = this.backgroundColor;
+      // draw background and border
+      formal.context.beginPath();
+      formal.context.moveTo(formal.boardBorder[0], formal.boardBorder[1]);
+      formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[1]);
+      formal.context.lineTo(formal.boardBorder[2], formal.boardBorder[3]);
+      formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
+      formal.context.closePath();
+      formal.context.fillStyle = fillColor;
+      formal.context.strokeStyle = this.borderColor;
+      formal.context.fill();
+      formal.context.stroke();
     }
     _drawBoard(tetris, formal) { 
-      if(!tetris.gameLoop )return
+      if(!tetris.gameLoop )return;
       for (let i = 2; i < formal.boardHeight; ++i) {
         for (let j = 0; j < formal.boardWidth; ++j) {
           if (tetris.board[i][j] != -1) {
