@@ -102,4 +102,15 @@ class teamModSize {
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
   }
+  _disableUI() {
+    this.canvas.style.touchAction = 'none';
+    this.canvas.addEventListener('contextmenu', this._handleContextMenu, { capture: true, passive: false });
+  }
+  _enableUI() {
+    this.canvas.style.touchAction = 'auto';
+    this.canvas.removeEventListener('contextmenu', this._handleContextMenu, true);
+  }
+  _handleContextMenu = event => {
+    event.preventDefault();
+  }
 }

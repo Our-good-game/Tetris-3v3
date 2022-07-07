@@ -73,7 +73,7 @@ app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/pi
 
 //JS mode
 app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
-app.get('/JS/classic-tetris-3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris-3v3.js');})
+app.get('/JS/classic-tetris3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris3v3.js');})
 app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
 app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
@@ -105,9 +105,12 @@ var timer = null
 var ids = new Map();
 var people = 0 
 var rooms = new Array(3)
-var team = new Array(2)
+var rooms3vs3 = new Array(2)
 for(let i=0; i<rooms.length; ++i)rooms[i] = new Array(2);
-for(let i=0; i<team.length; ++i)team[i] = new Array(3);
+for(let i=0; i<rooms3vs3.length; ++i)rooms3vs3[i] = new Array(3);
+for(let i=0; i<2; ++i)
+  for(let j=0; j<3; ++j)
+    rooms3vs3[i][j] = "--"
 function _findroom(id, roomnum){
   if(rooms[roomnum-1][0] == undefined){
     rooms[roomnum-1][0] = id
@@ -160,6 +163,7 @@ io.on('connection', function (socket) {
         ids.get(result).socket.emit('find', id)
       }
     })
+    
     socket.on('gamming',function(data,p2){
       ids.get(p2).socket.emit('gamming',data)
     })
@@ -169,10 +173,61 @@ io.on('connection', function (socket) {
 
 
     //3vs3
-    socket.on('teamGamming',function(data,p2){
-      ids.get(p2).socket.emit('teamGamming',data)
+    socket.on('enterRoom', function(config, act){
+      let same = false 
+      if(act === "change"){
+        let posi,posj,full = true
+        for(let j=0; j<3; ++j)
+          for(let i=0; i<2; ++i)
+            if (rooms3vs3[i][j] == config.id){
+              posi = i
+              posj = j
+              i=10;j=10
+            }
+        for(let j = 0; j<3; ++j){
+          if(rooms3vs3[(posi+1)%2][j] == "--"){
+            full = false;
+            rooms3vs3[(posi+1)%2][j] = config.id
+            rooms3vs3[posi][posj] = "--"
+            break;
+          }
+        }
+      }
+      else {
+        for(let j=0; j<3; ++j)
+          for(let i=0; i<2; ++i)
+            if(rooms3vs3[i][j] == config.id)same=true;
+        if(same != true)
+          for(let j=0; j<3; ++j)
+            for(let i=0; i<2; ++i)
+              if (rooms3vs3[i][j] == "--"){
+                rooms3vs3[i][j] = config.id
+                i=10;j=10
+              }
+      }
+      
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
+          if (rooms3vs3[i][j] !== "--")
+            ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3) 
     })
-
+    socket.on('teamFight',function(config){
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
+          if (rooms3vs3[i][j] !== "--")
+            ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
+    })
+    socket.on('teamGamming',function(data, config){
+      
+      for(let i=0; i<2; ++i)
+        for(let j=0; j<3; ++j)
+          if (rooms3vs3[i][j] !== "--"){
+            if(config.id == rooms3vs3[i][j])break;
+            ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config)
+            console.log(config)
+          }
+    })
+    
 
     socket.on('disconnect',function(){
       let leaver
@@ -184,6 +239,13 @@ io.on('connection', function (socket) {
         if(rooms[i][0] == leaver){rooms[i][0] = undefined; result = rooms[i][1]}
         if(rooms[i][1] == leaver){rooms[i][1] = undefined; result = rooms[i][0]}
       };if(result !== undefined)ids.get(result).socket.emit('find', result)
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
+          if(rooms3vs3[i][j] == leaver)rooms3vs3[i][j] = "--"
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
+          if (rooms3vs3[i][j] !== "--")
+            ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3)
       people--;
       console.log(people+' user disconnected')
     })
