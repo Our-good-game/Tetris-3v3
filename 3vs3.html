@@ -9,8 +9,10 @@
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
   <script src='/JS/heart.js'></script>
+  <script src='/JS/EnergyBar.js'></script>
   <style>
     @import"/CSS/style.css";
+    @import"/CSS/energyBar.css";
     @font-face {
       font-family: huakang_girl_w5;
       src: url(huakang_girl_w5.ttf);
@@ -33,7 +35,11 @@
       </div>
       <div class='container' id ='playInterface' style="display: none;"> 
         <canvas id='HUD' style="position:absolute;"></canvas>
-        <canvas id='player' class='tetris-canvas' style="height: 85%; "></canvas>
+        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
+
+        <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
+          <span id="energy" style="height: 60%"></span>
+        </div>
 
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
@@ -65,7 +71,7 @@
       </div>
     </div>
   </div>
-</body>
+ 
 <script src="/JS/background.js"></script>
 <script>
 
@@ -81,13 +87,13 @@
 
   var teammate1 = document.getElementById('teammate1');
   teammate1.height = window.innerHeight;
-  teammate1.width = window.innerWidth * 0.5;
+  teammate1.width = window.innerWidth * 0.45;
   teammate1.style.top = HUD.height + "px";
   teammate1.style.left = window.innerWidth / 15 + "px";
 
   var teammate2 = document.getElementById('teammate2');
   teammate2.height = window.innerHeight;
-  teammate2.width = window.innerWidth * 0.5;
+  teammate2.width = window.innerWidth * 0.45;
   teammate2.style.top = (HUD.height +  teammate2.height * 0.4) + "px";
   teammate2.style.left = window.innerWidth / 15 + "px";
 /* ----------------------------------------------------------------------------------------------*/
@@ -110,10 +116,13 @@
   opponent3.style.left = window.innerWidth * 0.83 + "px";
   
   var draw = new Render();
-  var gamecore = new ClassicTetris();        // 主遊戲邏輯 
-  var teammate1Core = new PlayerInterface(); // 隊友遊戲資料
+  // 主遊戲邏輯
+  var gamecore = new ClassicTetris3v3();  
+  // 隊友遊戲資料       
+  var teammate1Core = new PlayerInterface(); 
   var teammate2Core = new PlayerInterface();
-  var opponent1Core = new PlayerInterface(); // 敵人遊戲資料
+  // 敵人遊戲資料
+  var opponent1Core = new PlayerInterface(); 
   var opponent2Core = new PlayerInterface();
   var opponent3Core = new PlayerInterface();
 
@@ -248,6 +257,8 @@
     myCanvas._disableUI()
     gamecore.togglePlayPause()
   })
+  // 能量條
+  var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
 </script>
 
 </html>

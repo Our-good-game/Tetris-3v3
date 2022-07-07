@@ -6,10 +6,13 @@
   <script src='/JS/render.js'></script>
   <script src='/JS/player-interface.js'></script>
   <script src='/JS/classic-tetris.js'></script>
+  <script src='/JS/classic-tetris-3v3.js'></script>
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
+  <script src='/JS/EnergyBar.js'></script>
   <style>
     @import"/CSS/style.css";
+    @import"/CSS/energyBar.css";
     @font-face {
       font-family: huakang_girl_w5;
       src: url(huakang_girl_w5.ttf);
@@ -38,6 +41,11 @@
         </div>
          <!-- 對手畫面 -->
         <canvas id='opponent' class='tetris-canvas'></canvas>
+
+        <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
+          <span id="energy" style="height: 0%"></span>
+        </div>
+
       </div>
     </div>
     <div id='control' style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: block;'>
@@ -179,6 +187,9 @@
     gamecore.togglePlayPause()
     //*/
   })
+  var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
+  energyBar.bar.style.top = window.innerHeight * 0.45 + "px";
+  energyBar.bar.style.left = window.innerWidth * 0.07 + "px";
 </script>
 
 </html>
