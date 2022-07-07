@@ -55,3 +55,9 @@ button:hover ,input:hover{
   background-color:#fff;
   border:2px #003C9D;
 }
+.playername{
+  float:left; 
+  margin: 0 auto;
+  background-color:#003C9D; 
+  height: 25%; width: 50%;
+}

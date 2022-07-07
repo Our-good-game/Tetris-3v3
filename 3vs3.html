@@ -5,8 +5,7 @@
   <script src='/JS/timer.js'></script>
   <script src='/JS/render.js'></script>
   <script src='/JS/player-interface.js'></script>
-  <script src='/JS/classic-tetris.js'></script>
-  <script src='/JS/classic-tetris-3v3.js'></script>
+  <script src='/JS/classic-tetris3v3.js'></script>
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
   <script src='/JS/heart.js'></script>
@@ -34,8 +33,7 @@
       <div id='player2-name'
         style="position:absolute; top:100px; left:1000px; color:rgb(54, 170, 238); font:36px georgia">
       </div>
-      
-      <div class='container'>
+      <div class='container' id ='playInterface' style="display: none;"> 
         <canvas id='HUD' style="position:absolute;"></canvas>
         <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
 
@@ -49,38 +47,38 @@
         <canvas id='opponent1' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent2' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent3' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
-     
-      <!--
-        <div class='text'>
-          <canvas id='HUD' style='width: 100%; height: 100%; '></canvas>
+      </div>
+      <div class='container' id ='findInterface' style="display: block;">
+        <div style=" text-align: center; margin: 15% auto; flex-direction: row;height: 100%; width: 50%;">
+          <div style="margin: 15% auto; width: 50%;">
+            <div class= 'playername'><pre id = 'left1' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div>
+            <div class= 'playername'><pre id = 'right1' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div></br>
+            <div class= 'playername'><pre id = 'left2' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div>
+            <div class= 'playername'><pre id = 'right2' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div></br>
+            <div class= 'playername'><pre id = 'left3' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div>
+            <div class= 'playername'><pre id = 'right3' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div></br>
+          </div>
+          <div id='control' style='display: none; left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: block;'>
+            <button id='start-stop-btn' style='display: none;'>Play</button><br>
+            <button id='find' style='display: none;'>find</button><br>
+            <input style='display: none;' type="button" onclick="javascript:location.href='index.html'" value="Quit" />
+            <pre id = 'roomNumber-out' style='display: none;'>room - </pre>
+          </div>
+          <button onclick="changeTeam()">Change</button>
+          <button onclick="start()">Start</button>
+          <input type="button" onclick="javascript:location.href='index.html'" value="Quit">
         </div>
-      -->
-        <!-- <canvas id='opponent' class='tetris-canvas'></canvas>-->
-        
       </div>
     </div>
-  <!-- 
-    <div style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center;'>
-      <button id='start-stop-btn'>Play</button><br>
-      <button id='find'>find</button><br>
-      <button id='quit'>Quit</button><br>  
-    </div>
-  -->
   </div>
-  
-</body>
+ 
 <script src="/JS/background.js"></script>
 <script>
-/*
-  var canvas_opponent = document.getElementById('opponent');
-  canvas_opponent.height = window.innerHeight;
-  canvas_opponent.width = window.innerHeight;
-*/
+
   var HUD = document.getElementById('HUD');
   HUD.height = window.innerHeight * 0.15;
   HUD.width = window.innerWidth;
 
-  // document.getElementsByClassName('container')
   var player = document.getElementById('player');
   player.height = window.innerHeight;
   player.width = window.innerWidth * 0.45;
@@ -141,30 +139,26 @@
     teamHeart[i] = new heart(i, "left", HUD)
     opponentHeart[i] = new heart(i, "right", HUD)
   }
-  window.onload = function () {
-    draw._render(gamecore, myCanvas);
-    draw._renderNoHUD(teammate1Core, teammate1Canvas);
-    draw._renderNoHUD(teammate2Core, teammate2Canvas);
-    draw._renderNoHUD(opponent1Core, opponent1Canvas);
-    draw._renderNoHUD(opponent2Core, opponent2Canvas);
-    draw._renderNoHUD(opponent3Core, opponent3Canvas);
-    for (let i = 1; i<= 5; ++i){
-      teamHeart[i].paint()
-      opponentHeart[i].paint()
-    }
-  }
-  var id = undefined
+  
   var socket = io()
-
-  window.addEventListener('load', event => {
+  var config = {
+    id: undefined,
+    team: undefined,       // left or right
+    teamNumber: 0,         // 1 2 3
+    profession: undefined, // defind attack annoy
+  }
+ 
+  
+  window.onload = function () {
     fetch('id')
       .then(function (response) { return response.text(); })
       .then(function (data) {
-        id = data;
-        myCanvas.playerName = id;
-        draw._drawPlayerName (gamecore,myCanvas);
+        config.id = data;
+        socket.emit("idstore", config.id)
+        socket.emit('enterRoom',config)
       })
-  });
+    
+  }
   function SendData(data) {
     let datatmp = {
       gameState: data.gameState,
@@ -179,15 +173,89 @@
       burnOn: data.burnOn,
       result: data.result
     }
+    socket.emit('teamGamming',data,config)
   };
-
-  socket.on('teamGamming', function (data) {
-    // load data
-    // draw teammate
-    // draw opponent
+  function changeTeam(){
+    socket.emit('enterRoom',config, "change")
+  }
+  function start(){
+    socket.emit('teamFight',config)
+  }
+  function _loadData(Core, Canvas, data){
+    console.log(data)
+    Core.gameLoop = data.gameLoop
+    Core.gameState = data.gameState
+    Core.board = data.board;
+    Core.linesCleared = data.linesCleared
+    Core.piecePosition = data.piecePosition
+    Core.pieceRotation = data.pieceRotation
+    Core.piece = data.piece
+    for (let i = 0; i < 3; ++i)Core.next[i] = data.next[i]
+    Core.haveHold = data.haveHold
+    Core.holdPiece = data.holdPiece
+    Core.lines = data.lines
+    Core.result = data.result
+    gamecore.raise += 0
+    if(!data.result){
+      gamecore._triggerGameOver()
+    }
+    draw._renderNoHUD(Core, Canvas);
+  }
+  socket.on('teamGamming', function (data, dataConfig) {
+    console.log(dataConfig)
+    if(dataConfig.id == teammate1Canvas.playerName)
+      _loadData(teammate1Core, teammate1Canvas, data)
+    if(dataConfig.id == teammate2Canvas.playerName)
+      _loadData(teammate2Core, teammate2Canvas, data);
+    if(dataConfig.id == opponent1Canvas.playerName)
+      _loadData(opponent1Core, opponent1Canvas, data);
+    if(dataConfig.id == opponent2Canvas.playerName)
+      _loadData(opponent2Core, opponent2Canvas, data);
+    if(dataConfig.id == opponent3Canvas.playerName)
+      _loadData(opponent3Core, opponent3Canvas, data);
   })
-  socket.on('fight', function (opponent) {
-    // trigger gameloop 
+  socket.on('roomInfo', function (roomData) {
+    let tmp1 = ["left","right"]
+    let tmp2 = ['1','2','3']
+   
+    for(let i=0; i<2; ++i)
+      for(let j=0; j<3; ++j){
+        document.getElementById(tmp1[i]+tmp2[j]).textContent = roomData[i][j]
+        if(roomData[i][j] == config.id){
+          if(i == 0) config.team = 'left'
+          else config.team = 'right'
+          config.teamNumber = j+1;
+        }
+      }
+  })
+  socket.on('teamFight',function( roomData){
+    document.getElementById('findInterface').style.display = "none";
+    document.getElementById('playInterface').style.display = "flex";
+    draw._render(gamecore, myCanvas);
+    draw._renderNoHUD(teammate1Core, teammate1Canvas);
+    draw._renderNoHUD(teammate2Core, teammate2Canvas);
+    draw._renderNoHUD(opponent1Core, opponent1Canvas);
+    draw._renderNoHUD(opponent2Core, opponent2Canvas);
+    draw._renderNoHUD(opponent3Core, opponent3Canvas);
+    let pos;
+    if(config.team == 'left')pos = 0
+    else pos = 1
+    teammate1Canvas.playerName = roomData[pos][config.teamNumber%3]
+    teammate2Canvas.playerName = roomData[pos][config.teamNumber+1%3]
+    opponent1Canvas.playerName = roomData[(pos+1)%2][0]
+    opponent2Canvas.playerName = roomData[(pos+1)%2][1]
+    opponent3Canvas.playerName = roomData[(pos+1)%2][2]
+    console.log(teammate1Canvas.playerName)
+    console.log(teammate2Canvas.playerName)
+    console.log(opponent1Canvas.playerName)
+    console.log(opponent2Canvas.playerName)
+    console.log(opponent3Canvas.playerName)
+    for (let i = 1; i<= 5; ++i){
+      teamHeart[i].paint()
+      opponentHeart[i].paint()
+    }
+    myCanvas._disableUI()
+    gamecore.togglePlayPause()
   })
   // 能量條
   var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
