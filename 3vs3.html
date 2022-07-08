@@ -5,7 +5,8 @@
   <script src='/JS/timer.js'></script>
   <script src='/JS/render.js'></script>
   <script src='/JS/player-interface.js'></script>
-  <script src='/JS/classic-tetris3v3.js'></script>
+  <script src='/JS/classic-tetris-3v3.js'></script>
+  <script src='/JS/classic-tetris.js'></script>
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
   <script src='/JS/heart.js'></script>
@@ -201,6 +202,36 @@
     }
     draw._renderNoHUD(Core, Canvas);
   }
+  window.addEventListener('load', event => {
+
+    // fetch('id')
+    //   .then(function (response) { return response.text(); })
+    //   .then(function (data) {
+    //     id = data;
+    //     P1canvas.playerName = id;
+    //     draw._render(gamecore, P1canvas);
+    //     socket.emit("idstore", id)
+    //   })
+    _startStopBtn = event => {
+      /*
+      timer.settime(P1canvas.togglePlayPause());
+      /*/
+      P1canvas._disableUI()
+      gamecore.togglePlayPause()
+      //*/
+      if (p2 !== undefined) socket.emit('fight', p2);
+    };document.getElementById('start-stop-btn').addEventListener('click', _startStopBtn );
+    /*
+    document.getElementById('GameOver-btn').addEventListener('click', event => {
+      P1canvas.quit()
+    });
+    */
+    _find = event => {
+      document.getElementById('control').style.display = "none"
+      document.getElementById('room').style.display = "block"
+    };document.getElementById('find').addEventListener('click',_find);
+  })
+
   socket.on('teamGamming', function (data, dataConfig) {
     console.log(dataConfig)
     if(dataConfig.id == teammate1Canvas.playerName)

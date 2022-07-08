@@ -339,16 +339,16 @@ class ClassicTetris3v3 {
 
     do {
       this._process();
-      if(p2!= undefined && this.frameCounter% 12 ===0 ){
+      if(this.frameCounter% 12 ===0 ){
         SendData(this); this.burnOn=0;
       }
       //draw._drawEnergy (energyBar, this.lines);
       energyBar.modifyEnergy (this.lines);
-      draw._render(this,P1canvas);
+      draw._render(this, myCanvas);
       
       await this._sleep();
     } while (this.gameLoop);
-    P1canvas._enableUI();
+    myCanvas._enableUI();
     // toggle playing flag
     this.playing = false;
     this._removeEventListeners()
@@ -1120,12 +1120,12 @@ class ClassicTetris3v3 {
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = -1;
-        draw._render(this, P1canvas);
+        draw._render(this, myCanvas);
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;
         SendData(this)
-        draw._render(this, P1canvas);
+        draw._render(this, myCanvas);
         // fire game-over animation end event
         this._dispatch(ClassicTetris.GAME_OVER_END, {
           type: ClassicTetris.GAME_OVER_END,

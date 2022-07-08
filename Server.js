@@ -73,7 +73,7 @@ app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/pi
 
 //JS mode
 app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
-app.get('/JS/classic-tetris3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris3v3.js');})
+app.get('/JS/classic-tetris-3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris-3v3.js');})
 app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
 app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
