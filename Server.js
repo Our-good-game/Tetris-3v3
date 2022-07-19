@@ -56,9 +56,9 @@ app.get('/CSS/style.css', function (req, res){res.sendFile(__dirname + '/CSS/sty
 app.get('/CSS/energyBar.css', function (req, res){res.sendFile(__dirname + '/CSS/energyBar.css');})
 app.get('/picture/background.jpg', function (req, res) {res.sendFile(__dirname +'/picture/background.jpg')})
 app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/picture/pauseitem.png');})
-app.get('/obj/hana1.png', function (req, res) {res.sendFile(__dirname + '/obj/hana1.png');})
-app.get('/obj/hana2.png', function (req, res) {res.sendFile(__dirname + '/obj/hana2.png');})
-app.get('/obj/hana3.png', function (req, res) {res.sendFile(__dirname + '/obj/hana3.png');})
+app.get('/picture/hana1.png', function (req, res) {res.sendFile(__dirname + '/picture/hana1.png');})
+app.get('/picture/hana2.png', function (req, res) {res.sendFile(__dirname + '/picture/hana2.png');})
+app.get('/picture/hana3.png', function (req, res) {res.sendFile(__dirname + '/picture/hana3.png');})
 app.get('/picture/Item/default.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/default.png');})
 app.get('/picture/Item/SpaceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/SpaceChain.png');})
 app.get('/picture/Item/defense.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/defense.png');})
@@ -69,6 +69,7 @@ app.get('/picture/Item/PieceChain.png', function (req, res) {res.sendFile(__dirn
 app.get('/picture/Item/PieceChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChange.png');})
 app.get('/picture/Item/higher.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/higher.png');})
 app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/picture/heart.png');})
+app.get('/picture/shield.png', function (req, res) {res.sendFile(__dirname + '/picture/shield.png');})
 
 
 //JS mode
@@ -78,12 +79,14 @@ app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname +
 app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
 app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
 app.get('/JS/heart.js', function (req, res) {res.sendFile(__dirname + '/JS/heart.js');})
+app.get('/JS/shield.js', function (req, res) {res.sendFile(__dirname + '/JS/shield.js');})
 app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/render.js');})
 app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
 app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
 app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
 app.get('/JS/EnergyBar.js', function (req, res) {res.sendFile(__dirname + '/JS/EnergyBar.js');})
+app.get('/JS/Profession.js', function (req, res) {res.sendFile(__dirname + '/JS/Profession.js');})
 
 // audio
 app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})
@@ -94,7 +97,7 @@ app.get('/audio/line.mp3', function (req, res) {res.sendFile(__dirname + '/audio
 app.get('/audio/tetris.mp3', function (req, res) {res.sendFile(__dirname + '/audio/tetris.mp3');})
 
 //font
-app.get('/huakang_girl_w5.ttf', function (req, res) {res.sendFile(__dirname + '/huakang_girl_w5.ttf');})
+app.get('/CSS/huakang_girl_w5.ttf', function (req, res) {res.sendFile(__dirname + '/CSS/huakang_girl_w5.ttf');})
 
 app.get('/id',function(req,res){res.send(req.session.username)})
 
@@ -185,7 +188,7 @@ io.on('connection', function (socket) {
               i=10;j=10
             }
         for(let j = 0; j<3; ++j){
-          if(rooms3vs3[(posi+1)%2][j] == "--"){
+          if(rooms3vs3[(posi+1)%2][j] == "--") {
             full = false;
             rooms3vs3[(posi+1)%2][j] = config.id
             rooms3vs3[posi][posj] = "--"
@@ -218,16 +221,34 @@ io.on('connection', function (socket) {
             ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
     })
     socket.on('teamGamming',function(data, config){
-      
       for(let i=0; i<2; ++i)
         for(let j=0; j<3; ++j)
-          if (rooms3vs3[i][j] !== "--"){
-            if(config.id == rooms3vs3[i][j])break;
+          if (rooms3vs3[i][j] !== "--" && config.id !== rooms3vs3[i][j]){
             ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config)
-            console.log(config)
+            // console.log(config)
           }
     })
-    
+    socket.on('attack', function(attackerConfig) {
+      console.log ("server receive attack");
+      for(let j=0; j<3; ++j) {
+        for(let i=0; i<2; ++i) {
+          if (rooms3vs3[i][j] !== "--"){
+            ids.get(rooms3vs3[i][j]).socket.emit('attack', attackerConfig)
+          }
+        }
+      } 
+    })
+
+    socket.on ('defend', function(attackerConfig) {
+      console.log ("server receive defend");
+      for(let j=0; j<3; ++j) {
+        for(let i=0; i<2; ++i) {
+          if (rooms3vs3[i][j] !== "--"){
+            ids.get(rooms3vs3[i][j]).socket.emit('defend', attackerConfig)
+          }
+        }
+      } 
+    })
 
     socket.on('disconnect',function(){
       let leaver

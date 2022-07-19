@@ -340,10 +340,10 @@ class ClassicTetris3v3 {
     do {
       this._process();
       if(this.frameCounter% 12 ===0 ){
-        SendData(this); this.burnOn=0;
+        SendData(this); //this.burnOn=0;
       }
       //draw._drawEnergy (energyBar, this.lines);
-      energyBar.modifyEnergy (this.lines);
+      // energyBar.modifyEnergy();
       draw._render(this, myCanvas);
       
       await this._sleep();
@@ -929,17 +929,18 @@ class ClassicTetris3v3 {
       else { this.comboTrigger = true; }
       if(this.cheakTetris)this.burnOn += 4; 
       else if(this.cheakTspin){this.burnOn += this.linesCleared.length*2 }
-      else this.burnOn += this.linesCleared.length -1; 
+      else this.burnOn += this.linesCleared.length -1;
       if(this.backToBack)++this.burnOn
       let temp = [0,1,1,2,2,3,3]
-      if(this.burnOn < 7) this.burnOn+=temp[this.combos]
+      if(this.combos < 7) this.burnOn+=temp[this.combos]
       else this.burnOn+=4;
       if(this.raise > 0)this.raise -= this.burnOn
       if(this.burnOn > 0 && this.raise){
         //triiggertrashanime()
       }
       
-      
+      energyBar.modifyEnergy();
+
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
       for (let i = 0; i < this.linesCleared.length; ++i) {

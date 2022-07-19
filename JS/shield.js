@@ -1,8 +1,8 @@
-class heart{
+class shield{
   constructor(num, direction, inputCanvas){
     this.life = true 
     this.img = new Image();
-    this.img = document.getElementById("heart");
+    this.img = document.getElementById("shield");
     this.number =  num
     this.dir = direction
     this.canvas = inputCanvas.getContext("2d");
@@ -12,7 +12,7 @@ class heart{
       this.x = inputCanvas.width /2 + (this.number*50)
     }
     this.x -= 70
-    this.y  = 10
+    this.y  = 60
   }
   paint (){
     if (this.life){

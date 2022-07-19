@@ -10,16 +10,18 @@
   <script src='/socket.io/socket.io.js'></script>
   <script src='/JS/size.js'></script>
   <script src='/JS/heart.js'></script>
+  <script src='/JS/shield.js'></script>
   <script src='/JS/EnergyBar.js'></script>
+  <script src='/JS/Profession.js'></script>
   <style>
     @import"/CSS/style.css";
     @import"/CSS/energyBar.css";
     @font-face {
       font-family: huakang_girl_w5;
-      src: url(huakang_girl_w5.ttf);
+      src: url(/CSS/huakang_girl_w5.ttf);
     }
   </style>
-  <img src="/picture/heart.png" id ="heart" style="display:none"></img>
+  
 </head>
 
 <body>
@@ -36,12 +38,15 @@
       </div>
       <div class='container' id ='playInterface' style="display: none;"> 
         <canvas id='HUD' style="position:absolute;"></canvas>
-        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
+        <img src="/picture/heart.png" id ="heart" style="display:none"></img>
+        <img src="/picture/shield.png" id ="shield" style="display:none"></img>
+
 
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
-          <span id="energy" style="height: 60%"></span>
+          <span id="energy" style="height: 0%"></span>
         </div>
 
+        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
       
@@ -134,12 +139,23 @@
   var opponent2Canvas = new teamModSize (opponent2);
   var opponent3Canvas = new teamModSize (opponent3);
 
+  let ourLiveHeart = 5;
+  let opponentLiveHeart = 5;
+  let ourLiveShield = 0;
+  let opponentLiveShield = 0;
+  
   var teamHeart = new Array(5)
   var opponentHeart = new Array(5)
-  for (let i = 1; i<= 5; ++i){
+  let teamShield = new Array(5);
+  let opponentShield = new Array(5);
+
+  for (let i = 1; i<= 5; ++i) {
     teamHeart[i] = new heart(i, "left", HUD)
     opponentHeart[i] = new heart(i, "right", HUD)
   }
+  
+  // 能量條
+  var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
   
   var socket = io()
   var config = {
@@ -149,11 +165,12 @@
     profession: undefined, // defind attack annoy
   }
  
-  
+
   window.onload = function () {
     fetch('id')
       .then(function (response) { return response.text(); })
       .then(function (data) {
+        myCanvas.playerName = data;
         config.id = data;
         socket.emit("idstore", config.id)
         socket.emit('enterRoom',config)
@@ -183,7 +200,7 @@
     socket.emit('teamFight',config)
   }
   function _loadData(Core, Canvas, data){
-    console.log(data)
+    // console.log(data)
     Core.gameLoop = data.gameLoop
     Core.gameState = data.gameState
     Core.board = data.board;
@@ -201,6 +218,22 @@
       gamecore._triggerGameOver()
     }
     draw._renderNoHUD(Core, Canvas);
+    // console.log (Canvas.playerName);
+  }
+  function repaintHUD() {
+    HUD.getContext("2d").clearRect(0, 0, HUD.width, HUD.height);
+    for (let i = 1; i<= ourLiveHeart; ++i) {
+      teamHeart[i].paint();
+    }
+    for (let i = 1; i<= opponentLiveHeart; ++i) {
+      opponentHeart[i].paint();
+    }
+    for (let i = 1; i<= ourLiveShield; ++i) {
+      teamShield[i].paint();
+    }
+    for (let i = 1; i<= opponentLiveShield; ++i) {
+      opponentShield[i].paint();
+    }    
   }
   window.addEventListener('load', event => {
 
@@ -233,12 +266,12 @@
   })
 
   socket.on('teamGamming', function (data, dataConfig) {
-    console.log(dataConfig)
+    //console.log(dataConfig)
     if(dataConfig.id == teammate1Canvas.playerName)
       _loadData(teammate1Core, teammate1Canvas, data)
     if(dataConfig.id == teammate2Canvas.playerName)
       _loadData(teammate2Core, teammate2Canvas, data);
-    if(dataConfig.id == opponent1Canvas.playerName)
+    if(dataConfig.id == opponent1Canvas.playerName) 
       _loadData(opponent1Core, opponent1Canvas, data);
     if(dataConfig.id == opponent2Canvas.playerName)
       _loadData(opponent2Core, opponent2Canvas, data);
@@ -250,7 +283,7 @@
     let tmp2 = ['1','2','3']
    
     for(let i=0; i<2; ++i)
-      for(let j=0; j<3; ++j){
+      for(let j=0; j<3; ++j){ 
         document.getElementById(tmp1[i]+tmp2[j]).textContent = roomData[i][j]
         if(roomData[i][j] == config.id){
           if(i == 0) config.team = 'left'
@@ -259,7 +292,7 @@
         }
       }
   })
-  socket.on('teamFight',function( roomData){
+  socket.on('teamFight', function(roomData){
     document.getElementById('findInterface').style.display = "none";
     document.getElementById('playInterface').style.display = "flex";
     draw._render(gamecore, myCanvas);
@@ -272,7 +305,7 @@
     if(config.team == 'left')pos = 0
     else pos = 1
     teammate1Canvas.playerName = roomData[pos][config.teamNumber%3]
-    teammate2Canvas.playerName = roomData[pos][config.teamNumber+1%3]
+    teammate2Canvas.playerName = roomData[pos][(config.teamNumber+1)%3]
     opponent1Canvas.playerName = roomData[(pos+1)%2][0]
     opponent2Canvas.playerName = roomData[(pos+1)%2][1]
     opponent3Canvas.playerName = roomData[(pos+1)%2][2]
@@ -285,11 +318,46 @@
       teamHeart[i].paint()
       opponentHeart[i].paint()
     }
+    if (config.teamNumber == 1) config.profession = new Attacker();
+    if (config.teamNumber == 2) config.profession = new Defender();
+    if (config.teamNumber == 3) config.profession = new Magician();
+    // socket.emit ('defend', config);
     myCanvas._disableUI()
     gamecore.togglePlayPause()
   })
-  // 能量條
-  var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
+  socket.on ('attack', function (attackerConfig) {
+    console.log (config.id + " receive attack");
+    if (config.team == attackerConfig.team) {
+      if (opponentLiveShield > 0) {
+        opponentLiveShield--;    
+      }
+      else { 
+        opponentLiveHeart--;
+      }
+    }  
+    else {
+      if (ourLiveShield > 0) {
+        ourLiveShield--; 
+      }
+      else {
+        ourLiveHeart--;
+      }
+    }
+    repaintHUD();
+  })
+
+  socket.on ('defend', function (attackerConfig) {
+    console.log (config.id + " receive defend");
+    if (config.team == attackerConfig.team) {
+      ourLiveShield = Math.min (5, ++ourLiveShield);
+      teamShield[ourLiveShield] = new shield(ourLiveShield, "left", HUD);
+    }  
+    else {
+      opponentLiveShield = Math.min (5, ++opponentLiveShield);
+      opponentShield[opponentLiveShield] = new shield(opponentLiveShield, "right", HUD);
+    }
+    repaintHUD();
+  })
 </script>
 
 </html>

@@ -564,7 +564,6 @@ class ClassicTetris {
       if(p2!= undefined && this.frameCounter% 12 ===0 ){
         SendData(this); this.burnOn=0;
       }
-      energyBar.modifyEnergy (this.lines);
       draw._render(this,P1canvas);    
       
       await this._sleep();

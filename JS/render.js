@@ -268,6 +268,9 @@ class Render{
       }
       
       _drawPlayerName(tetris, formal) {
+        // console.log (formal.playerName + " draw");
+        formal.context.font = this.canvasFont;
+        formal.context.fillStyle = this.canvasFontColor;
         formal.context.fillText(formal.playerName, formal.nameX, formal.nameY);
       }
       _drawWinner(tetris, formal) {
