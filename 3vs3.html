@@ -20,6 +20,12 @@
       font-family: huakang_girl_w5;
       src: url(/CSS/huakang_girl_w5.ttf);
     }
+    .btn_ani {
+      transition: all 0.3s;
+    }
+    .btn_ani:hover {
+      transform: scale(1.3);
+    }
   </style>
   
 </head>
@@ -65,14 +71,14 @@
             <div class= 'playername'><pre id = 'right3' style="height: 100%;width: 100%; margin: 1px;padding: 5px;">Unknow</pre></div></br>
           </div>
           <div id='control' style='display: none; left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: block;'>
-            <button id='start-stop-btn' style='display: none;'>Play</button><br>
-            <button id='find' style='display: none;'>find</button><br>
-            <input style='display: none;' type="button" onclick="javascript:location.href='index.html'" value="Quit" />
+            <button class = "btn_ani" id='start-stop-btn' style='display: none;'>Play</button><br>
+            <button class = "btn_ani" id='find' style='display: none;'>find</button><br>
+            <input class = "btn_ani" style='display: none;' type="button" onclick="javascript:location.href='index.html'" value="Quit" />
             <pre id = 'roomNumber-out' style='display: none;'>room - </pre>
           </div>
-          <button onclick="changeTeam()">Change</button>
-          <button onclick="start()">Start</button>
-          <input type="button" onclick="javascript:location.href='index.html'" value="Quit">
+          <button class = "btn_ani" onclick="changeTeam()">Change</button>
+          <button class = "btn_ani" onclick="start()">Start</button>
+          <input class = "btn_ani" type="button" onclick="javascript:location.href='index.html'" value="Quit">
         </div>
       </div>
     </div>

@@ -4,7 +4,17 @@
       <meta http-equiv="content-type" content="text/html; charset=utf-8">
       <meta charset="utf-8">
       <title>Tetris Triple</title>
-      <style> @import"/CSS/style.css";</style>
+      <style>
+        @import"/CSS/style.css";
+
+        .btn_ani {
+          transition: all 0.3s;
+        }
+        .btn_ani:hover {
+          transform: scale(1.3);
+        }
+
+      </style>
       <img src="/picture/hana1.png"id ="hana1"style="display:none"></img>
       <img src="/picture/hana2.png"id ="hana2"style="display:none"></img>
       <img src="/picture/hana3.png"id ="hana3"style="display:none"></img>
@@ -16,11 +26,11 @@
         <span style="font-size:3cm; color: #FFF;">~Tetris Triple~</span><br>
       </div>
       <div style='padding:50px 60px 20px 160px; '>
-        <button id='1vs1-btn' style="width:400px;height:100px;">Battle mode </button>
+        <button class = "btn_ani" id='1vs1-btn' style="width:400px;height:100px;">Battle mode </button>
         </br>
-        <button id='3vs3-btn' style="width:400px;height:100px;">TeamFight mode </button>
+        <button class = "btn_ani" id='3vs3-btn' style="width:400px;height:100px;">TeamFight mode </button>
         </br>
-        <button id='talking-btn' style="width:400px;height:100px;margin:20px 0px 0px 0px">Talking mode </button>
+        <button class = "btn_ani" id='talking-btn' style="width:400px;height:100px;margin:20px 0px 0px 0px">Talking mode </button>
         </br>
         <canvas id='player-id' class='canvas' width='200' height='100'></canvas>
       </div>
