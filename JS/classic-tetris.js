@@ -421,7 +421,6 @@ class ClassicTetris {
     this.oldlines = this.lines;
     this.score = 0;
     this.last_sec=0;
-    this.pressDownScore = 0;
     this.result = false;
     
     // event listeners
@@ -614,7 +613,6 @@ class ClassicTetris {
     this.level = this.startLevel;
     this.lines = 0;
     this.score = 0;
-    this.pressDownScore = 0;
 
     // clear board
     for (let i = 0; i < this.boardHeight; ++i)
@@ -743,82 +741,14 @@ class ClassicTetris {
         this.hardDrop = true;
         this.hold = false;
         break;
-      case 27:
-      case 80:
-        // pause
-        /*
-        event.preventDefault();
-        if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
-          this.doUndoPause = true;
-        }
-        break;
-        */
       case 16:
         event.preventDefault();
         // hold piece
-        if (this.haveHold) {
-          if (this.hold ) {
-            var tempPiece = this.holdPiece;
-            this.piecePosition = this.piece.iniPos.slice(0);
-            this.pieceRotation = 0;
-            this.holdPiece = this.piece;
-            this.piece = tempPiece;
-            this.hold = false;
-          } else return;//can't hold
-        } else if(this.hold){
-          this.holdPiece = Object.assign({}, this.piece);
-          this.piecePosition = this.piece.iniPos.slice(0);
-          this.pieceRotation = 0;
-          this.haveHold = true;
-          this.hold = false;
-          // get next piece
-          this.piece = this.next[0];
-          this.piecePosition = this.piece.iniPos.slice(0);
-          this.pieceRotation = 0;
-          this._nextPieceId();
-        }
+        if ( this.hold )
+          this.holdOnPiece = true;
         break;
     }
   }
-
-
-  // pointer coordinates
-  _getEventCoords(event) {
-    const rect = this.canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-  }
-
-  // get current piece's left and right bounds
-  _getPieceBounds() {
-    const p = this.piece.rot[this.pieceRotation];
-    let top = this.boardHeight;
-    let bottom = 0;
-    let left = this.boardWidth;
-    let right = 0;
-    for (let i = 0; i < p.length; ++i) {
-      for (let j = 0; j < p[i].length; ++j) {
-        if (p[i][j] != 0) {
-          const x = this.piecePosition[0] + j;
-          const y = this.piecePosition[1] + i;
-          left = Math.min(left, x);
-          right = Math.max(right, x);
-          top = Math.min(top, y);
-          bottom = Math.max(bottom, y);
-        }
-      }
-    }
-    return {
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right
-    };
-  }
-
-
   //-----------------------------------------------------------
   // 
   // game logic
@@ -1066,10 +996,9 @@ class ClassicTetris {
       // hard drop = push piece as far down as possible
       // score increase is 2x the numer of dropped lines
       const oldPosition = [...this.piecePosition];
-      while (this._canMovePiece(0, 1)) {
+      while (this._canMovePiece(0, 1)) 
         ++this.piecePosition[1];
-        this.pressDownScore += 2;
-      }
+      
 
       // fire hard drop event
       this._dispatch(ClassicTetris.PIECE_HARD_DROP, {
@@ -1109,6 +1038,30 @@ class ClassicTetris {
         this._lockPiece();
       }
     }
+    
+    if( this.holdOnPiece ){
+      if (this.haveHold) {
+        var tempPiece = this.holdPiece;
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.holdPiece = this.piece;
+        this.piece = tempPiece;
+        this.hold = false;
+      } else {
+        this.holdPiece = Object.assign({}, this.piece);
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.haveHold = true;
+        this.hold = false;
+        // get next piece
+        this.piece = this.next[0];
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this._nextPieceId();
+      }
+      this.holdOnPiece = false
+    }
+
   }
 
   _lockPiece() {
@@ -1193,14 +1146,11 @@ class ClassicTetris {
       }
 
       // update score
-      const oldScore = this.score;
       this.score += this.linesCleared.length
 
       // fire score change event
       this._dispatch(ClassicTetris.SCORE_CHANGE, {
         type: ClassicTetris.SCORE_CHANGE,
-        oldScore: oldScore,
-        newScore: this.score
       });
 
       // entry delay for next piece
@@ -1232,9 +1182,7 @@ class ClassicTetris {
         }
 
         // add score and lines
-        const oldScore = this.score;
         const oldLines = this.lines;
-        this.score += this.pressDownScore + this._getLinesScore(this.linesCleared.length, this.level);
         this.lines += this.linesCleared.length;
 
         // fire lines burn end event
@@ -1253,8 +1201,6 @@ class ClassicTetris {
         // fire score change event
         this._dispatch(ClassicTetris.SCORE_CHANGE, {
           type: ClassicTetris.SCORE_CHANGE,
-          oldScore: oldScore,
-          newScore: this.score
         });
 
        
@@ -1277,7 +1223,6 @@ class ClassicTetris {
       this.cheakTspin = false 
       this.cheakTetris = false
       // reset drop points
-      this.pressDownScore = 0;
       this.pointerMoveDownEnabled = false;
 
       // get next piece
@@ -1464,15 +1409,6 @@ class ClassicTetris {
       this.next[p] = this.pieces[this.queue[i]];
       ++i;
     }
-  }
-
-  // score for lines cleared
-  // depends on the level and # of lines cleared
-  _getLinesScore(lines, lvl) {
-    if (lines === 1) return 40 * (lvl + 1);
-    else if (lines === 2) return 100 * (lvl + 1);
-    else if (lines === 3) return 300 * (lvl + 1);
-    return 1200 * (lvl + 1);    // tetris!
   }
   // ARE is 10~18 frames depending on the height at which the piece locked; 
   // pieces that lock in the bottom two rows are followed by 10 frames of entry delay, 

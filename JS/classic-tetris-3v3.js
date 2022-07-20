@@ -3,20 +3,238 @@
 
 //-------------------------------------------------------------------------
 // 
-// ClassicTetris class
+// ClassicTetris3v3 class
 // 
 //-------------------------------------------------------------------------
-class ClassicTetris3v3 {
-
+class ClassicTetris3v3 extends Items{
   //-----------------------------------------------------------------------
   // 
   // piece rotations
   // 
   //-----------------------------------------------------------------------
-  // constructor needs a canvas
+  static Z_ROT = [
+    [
+      [1, 1, 0],
+      [0, 1, 1],
+      [0, 0, 0]
+    ],
+    [
+      [0, 0, 1],
+      [0, 1, 1],
+      [0, 1, 0]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 0],
+      [0, 1, 1]
+    ],
+    [
+      [0, 1, 0],
+      [1, 1, 0],
+      [1, 0, 0]
+    ],
+  ];
+
+  static S_ROT = [
+    [
+      [0, 1, 1],
+      [1, 1, 0],
+      [0, 0, 0]
+    ],
+    [
+      [0, 1, 0],
+      [0, 1, 1],
+      [0, 0, 1]
+    ],
+    [
+      [0, 0, 0],
+      [0, 1, 1],
+      [1, 1, 0]
+    ],
+    [
+      [1, 0, 0],
+      [1, 1, 0],
+      [0, 1, 0]
+    ]
+  ];
+
+  static O_ROT = [
+    [
+      [1, 1],
+      [1, 1]
+    ]
+  ];
+
+  static L_ROT = [
+    [
+      [0, 0, 1],
+      [1, 1, 1],
+      [0, 0, 0]
+    ],
+    [
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 1]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 1],
+      [1, 0, 0]
+    ],
+    [
+      [1, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0]
+    ]
+  ];
+
+  static J_ROT = [
+    [
+      [1, 0, 0],
+      [1, 1, 1],
+      [0, 0, 0]
+    ],
+    [
+      [0, 1, 1],
+      [0, 1, 0],
+      [0, 1, 0]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 1],
+      [0, 0, 1]
+    ],
+    [
+      [0, 1, 0],
+      [0, 1, 0],
+      [1, 1, 0]
+    ]
+  ];
+
+  static T_ROT = [
+    [
+      [0, 1, 0],
+      [1, 1, 1],
+      [0, 0, 0]
+    ],
+    [
+      [0, 1, 0],
+      [0, 1, 1],
+      [0, 1, 0]
+    ],
+    [
+      [0, 0, 0],
+      [1, 1, 1],
+      [0, 1, 0]
+    ],
+    [
+      [0, 1, 0],
+      [1, 1, 0],
+      [0, 1, 0]
+    ]
+  ];
+
+  static I_ROT = [
+    [
+      [0, 0, 0, 0],
+      [1, 1, 1, 1],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [0, 0, 1, 0],
+      [0, 0, 1, 0],
+      [0, 0, 1, 0],
+      [0, 0, 1, 0]
+    ],
+    [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [1, 1, 1, 1],
+      [0, 0, 0, 0]
+    ],
+    [
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0]
+    ]
+  ];
+
+
+  // initial positions
+  static Z_INI_POS = [3, 1];
+  static S_INI_POS = [3, 1];
+  static O_INI_POS = [4, 1];
+  static L_INI_POS = [3, 1];
+  static J_INI_POS = [3, 1];
+  static T_INI_POS = [3, 1];
+  static I_INI_POS = [3, 1];
+
+  static Z_BOX = [0, 0, 2, 3]; // x y hei wid
+  static S_BOX = [0, 0, 2, 3];
+  static O_BOX = [0, 0, 2, 2];
+  static L_BOX = [0, 0, 2, 3];
+  static J_BOX = [0, 0, 2, 3];
+  static T_BOX = [0, 0, 2, 3];
+  static I_BOX = [1, 0, 1, 4];
+
+
+  // piece names
+  static Z_PIECE = 'z';
+  static S_PIECE = 's';
+  static O_PIECE = 'o';
+  static L_PIECE = 'l';
+  static J_PIECE = 'j';
+  static T_PIECE = 't';
+  static I_PIECE = 'i';
+
+
+  // game states
+  static STATE_DROP = 0;
+  static STATE_BURN = 1;
+  static STATE_ARE = 2;
+  static STATE_GAME_OVER = 3;
+  static STATE_PAUSE = 4;
+
+
+  // events
+  static GAME_START = 'game-start';
+  static GAME_OVER = 'game-over';
+
+  static GAME_OVER_START = 'game-over-start';
+  static GAME_OVER_END = 'game-over-end';
+
+  static GAME_PAUSE = 'game-pause';
+  static GAME_RESUME = 'game-resume';
+
+  static PIECE_MOVE_LEFT = 'piece-move-left';
+  static PIECE_MOVE_RIGHT = 'piece-move-right';
+  static PIECE_MOVE_DOWN = 'piece-move-down';
+  static PIECE_HARD_DROP = 'piece-hard-drop';
+
+  static PIECE_ROTATE_CLOCKWISE = 'piece-rotate-clockwise';
+  static PIECE_ROTATE_ANTICLOCKWISE = 'piece-rotate-anticlockwise';
+
+  static PIECE_LOCK = 'piece-lock';
+  static NEXT_PIECE = 'next-piece';
+
+  static LEVEL_CHANGE = 'level-change';
+  static SCORE_CHANGE = 'score-change';
+
+  static LINE_CLEAR_START = 'line-clear-start';
+  static LINE_CLEAR_END = 'line-clear-end';
+
+  static LINE_CLEAR = 'line-clear';
+
+  // board size in terms of squares
+  // this is typically 10x20, but we are adding 2 invisible rows
+  // at the top to have enough room to spawn all pieces
+  static BOARD_WIDTH = 10;
+  static BOARD_HEIGHT = 22;
   constructor( {
-    boardWidth = ClassicTetris.BOARD_WIDTH,
-    boardHeight = ClassicTetris.BOARD_HEIGHT,
+    boardWidth = ClassicTetris3v3.BOARD_WIDTH,
+    boardHeight = ClassicTetris3v3.BOARD_HEIGHT,
 
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
@@ -34,7 +252,7 @@ class ClassicTetris3v3 {
     gameTheme = new Audio ("audio/gameTheme.mp3")
 
   } = {}) {
-
+    super()
     // board dimensions
     this.boardWidth = boardWidth;
     this.boardHeight = boardHeight;
@@ -78,52 +296,52 @@ class ClassicTetris3v3 {
     this.pieces = [
       {
         id: 0,
-        name: ClassicTetris.Z_PIECE,
-        rot: ClassicTetris.Z_ROT,
-        iniPos: ClassicTetris.Z_INI_POS,
-        box: ClassicTetris.Z_BOX
+        name: ClassicTetris3v3.Z_PIECE,
+        rot: ClassicTetris3v3.Z_ROT,
+        iniPos: ClassicTetris3v3.Z_INI_POS,
+        box: ClassicTetris3v3.Z_BOX
       },
       {
         id: 1,
-        name: ClassicTetris.S_PIECE,
-        rot: ClassicTetris.S_ROT,
-        iniPos: ClassicTetris.S_INI_POS,
-        box: ClassicTetris.S_BOX
+        name: ClassicTetris3v3.S_PIECE,
+        rot: ClassicTetris3v3.S_ROT,
+        iniPos: ClassicTetris3v3.S_INI_POS,
+        box: ClassicTetris3v3.S_BOX
       },
       {
         id: 2,
-        name: ClassicTetris.O_PIECE,
-        rot: ClassicTetris.O_ROT,
-        iniPos: ClassicTetris.O_INI_POS,
-        box: ClassicTetris.O_BOX
+        name: ClassicTetris3v3.O_PIECE,
+        rot: ClassicTetris3v3.O_ROT,
+        iniPos: ClassicTetris3v3.O_INI_POS,
+        box: ClassicTetris3v3.O_BOX
       },
       {
         id: 3,
-        name: ClassicTetris.L_PIECE,
-        rot: ClassicTetris.L_ROT,
-        iniPos: ClassicTetris.L_INI_POS,
-        box: ClassicTetris.L_BOX
+        name: ClassicTetris3v3.L_PIECE,
+        rot: ClassicTetris3v3.L_ROT,
+        iniPos: ClassicTetris3v3.L_INI_POS,
+        box: ClassicTetris3v3.L_BOX
       },
       {
         id: 4,
-        name: ClassicTetris.J_PIECE,
-        rot: ClassicTetris.J_ROT,
-        iniPos: ClassicTetris.J_INI_POS,
-        box: ClassicTetris.J_BOX
+        name: ClassicTetris3v3.J_PIECE,
+        rot: ClassicTetris3v3.J_ROT,
+        iniPos: ClassicTetris3v3.J_INI_POS,
+        box: ClassicTetris3v3.J_BOX
       },
       {
         id: 5,
-        name: ClassicTetris.T_PIECE,
-        rot: ClassicTetris.T_ROT,
-        iniPos: ClassicTetris.T_INI_POS,
-        box: ClassicTetris.T_BOX
+        name: ClassicTetris3v3.T_PIECE,
+        rot: ClassicTetris3v3.T_ROT,
+        iniPos: ClassicTetris3v3.T_INI_POS,
+        box: ClassicTetris3v3.T_BOX
       },
       {
         id: 6,
-        name: ClassicTetris.I_PIECE,
-        rot: ClassicTetris.I_ROT,
-        iniPos: ClassicTetris.I_INI_POS,
-        box: ClassicTetris.I_BOX
+        name: ClassicTetris3v3.I_PIECE,
+        rot: ClassicTetris3v3.I_ROT,
+        iniPos: ClassicTetris3v3.I_INI_POS,
+        box: ClassicTetris3v3.I_BOX
       },
     ];
 
@@ -140,15 +358,7 @@ class ClassicTetris3v3 {
     
 
     // items && socre
-    this.items=[
-      {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
-      {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
-      {id: 2, name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
-      {id: 3, name: 'LeftRightChange', url:"picture/Item/MoveChange.png"},
-      {id: 4, name: 'BlockPreview',    url:"picture/Item/shadow.png"},
-      {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
-      {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
-    ];
+    
     this.burnOn = 0
     this.raise = 0;
     this.comboTrigger = false;
@@ -158,14 +368,6 @@ class ClassicTetris3v3 {
     this.lastRotate =  false 
     this.cheakTspin =  false 
     this.cheakTetris = false
-    this.getItem = 'undefined'
-    // changeItemIcon
-    this.itemNumber = -1;
-    this.itemLockSpace = false;
-    this.itemDefense = false
-    this.itemLeftRightChange = false;
-    this.itemBlockPreview = false;
-    this.itemLockTetris = false;
 
     // pointer coords
     this.xIni = undefined;
@@ -204,25 +406,25 @@ class ClassicTetris3v3 {
     
     // event listeners
     this.handlers = new Map();
-    this.handlers.set(ClassicTetris.GAME_START, []);
-    this.handlers.set(ClassicTetris.GAME_OVER, []);
-    this.handlers.set(ClassicTetris.GAME_OVER_START, []);
-    this.handlers.set(ClassicTetris.GAME_OVER_END, []);
-    this.handlers.set(ClassicTetris.GAME_PAUSE, []);
-    this.handlers.set(ClassicTetris.GAME_RESUME, []);
-    this.handlers.set(ClassicTetris.PIECE_MOVE_LEFT, []);
-    this.handlers.set(ClassicTetris.PIECE_MOVE_RIGHT, []);
-    this.handlers.set(ClassicTetris.PIECE_MOVE_DOWN, []);
-    this.handlers.set(ClassicTetris.PIECE_HARD_DROP, []);
-    this.handlers.set(ClassicTetris.PIECE_ROTATE_CLOCKWISE, []);
-    this.handlers.set(ClassicTetris.PIECE_ROTATE_ANTICLOCKWISE, []);
-    this.handlers.set(ClassicTetris.PIECE_LOCK, []);
-    this.handlers.set(ClassicTetris.NEXT_PIECE, []);
-    this.handlers.set(ClassicTetris.LEVEL_CHANGE, []);
-    this.handlers.set(ClassicTetris.SCORE_CHANGE, []);
-    this.handlers.set(ClassicTetris.LINE_CLEAR_START, []);
-    this.handlers.set(ClassicTetris.LINE_CLEAR_END, []);
-    this.handlers.set(ClassicTetris.LINE_CLEAR, []);
+    this.handlers.set(ClassicTetris3v3.GAME_START, []);
+    this.handlers.set(ClassicTetris3v3.GAME_OVER, []);
+    this.handlers.set(ClassicTetris3v3.GAME_OVER_START, []);
+    this.handlers.set(ClassicTetris3v3.GAME_OVER_END, []);
+    this.handlers.set(ClassicTetris3v3.GAME_PAUSE, []);
+    this.handlers.set(ClassicTetris3v3.GAME_RESUME, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_MOVE_LEFT, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_MOVE_RIGHT, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_MOVE_DOWN, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_HARD_DROP, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_ROTATE_CLOCKWISE, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_ROTATE_ANTICLOCKWISE, []);
+    this.handlers.set(ClassicTetris3v3.PIECE_LOCK, []);
+    this.handlers.set(ClassicTetris3v3.NEXT_PIECE, []);
+    this.handlers.set(ClassicTetris3v3.LEVEL_CHANGE, []);
+    this.handlers.set(ClassicTetris3v3.SCORE_CHANGE, []);
+    this.handlers.set(ClassicTetris3v3.LINE_CLEAR_START, []);
+    this.handlers.set(ClassicTetris3v3.LINE_CLEAR_END, []);
+    this.handlers.set(ClassicTetris3v3.LINE_CLEAR, []);
 
     // animation frames counters
     this.frameCounter = 0;
@@ -234,8 +436,8 @@ class ClassicTetris3v3 {
     this.gameOverLine = -1;
 
     // game state
-    this.previousGameState = ClassicTetris.STATE_GAME_OVER;
-    this.gameState = ClassicTetris.STATE_GAME_OVER;
+    this.previousGameState = ClassicTetris3v3.STATE_GAME_OVER;
+    this.gameState = ClassicTetris3v3.STATE_GAME_OVER;
 
     // an empty row used to exploit syntactic sugar
     this.emptyRow = [];
@@ -252,8 +454,8 @@ class ClassicTetris3v3 {
   togglePlayPause() {
     if (this.playing) {
       // this.doUndoPause = true;
-      if (this.gameState !== ClassicTetris.STATE_PAUSE &&
-          this.gameState !== ClassicTetris.STATE_GAME_OVER){
+      if (this.gameState !== ClassicTetris3v3.STATE_PAUSE &&
+          this.gameState !== ClassicTetris3v3.STATE_GAME_OVER){
         return false;
       }
     } else {
@@ -263,47 +465,13 @@ class ClassicTetris3v3 {
   }
 
   quit() {
-    if (this.playing && this.gameState != ClassicTetris.STATE_GAME_OVER) {
+    if (this.playing && this.gameState != ClassicTetris3v3.STATE_GAME_OVER) {
       this._triggerGameOver();
     }
   }
   
   
-  changeItemIcon() {
-    let itemIcon = document.getElementById('itemIcon');
-    let delayTime = 0;
-    let interval;
-    //read-only
-    let t=this
-    // Clears the previous setInterval timer
-    changeIcon()
-
-
-    // Function that run at irregular intervals
-    function changeIcon() {
-      // Clears the previous setInterval timer
-      clearInterval(interval);
-      if (delayTime < 1000) {
-        t.takingItemSound.currentTime = 0;
-        t.takingItemSound.play();
-      }
-      else if (delayTime == 1000){
-        t.takeEndItemSound.currentTime = 0;
-        t.takeEndItemSound.play();
-      }
-      else {return 0;}
-      itemIcon.src = t.items[t.randomIcon()].url;
-      delayTime += 100;
-      interval = setInterval(changeIcon, delayTime);
-    }
-  }
-  randomIcon() {
-    let random = this.itemNumber;
-    while (random === this.itemNumber) {
-      random = Math.floor(Math.random() * this.items.length);
-    }this.itemNumber = random
-    return random;
-  }
+  
 
   // start new game
   async play() {
@@ -321,16 +489,16 @@ class ClassicTetris3v3 {
     }
 
     // fire game start event
-    this._dispatch(ClassicTetris.GAME_START, {
-      type: ClassicTetris.GAME_START,
+    this._dispatch(ClassicTetris3v3.GAME_START, {
+      type: ClassicTetris3v3.GAME_START,
       level: this.level,
       score: this.score,
       lines: this.lines,
     });
 
     // fire new piece placed event
-    this._dispatch(ClassicTetris.NEXT_PIECE, {
-      type: ClassicTetris.NEXT_PIECE,
+    this._dispatch(ClassicTetris3v3.NEXT_PIECE, {
+      type: ClassicTetris3v3.NEXT_PIECE,
       piece: this.piece.name,
       nextPiece: this.next[0].name
     });
@@ -353,8 +521,8 @@ class ClassicTetris3v3 {
     this.playing = false;
     this._removeEventListeners()
     // fire game finish event
-    this._dispatch(ClassicTetris.GAME_OVER, {
-      type: ClassicTetris.GAME_OVER,
+    this._dispatch(ClassicTetris3v3.GAME_OVER, {
+      type: ClassicTetris3v3.GAME_OVER,
       level: this.level,
       score: this.score,
       lines: this.lines,
@@ -410,8 +578,8 @@ class ClassicTetris3v3 {
     // frames until the piece automatically moves down
 
     // initial state
-    this.previousGameState = ClassicTetris.STATE_DROP;
-    this.gameState = ClassicTetris.STATE_DROP;
+    this.previousGameState = ClassicTetris3v3.STATE_DROP;
+    this.gameState = ClassicTetris3v3.STATE_DROP;
     this.result = true
   }
 
@@ -477,7 +645,6 @@ class ClassicTetris3v3 {
 
     switch (event.keyCode || event.which) {
       case 37:
-      case 65:
         // left
         event.preventDefault();
         if ( this.itemLeftRightChange ) {
@@ -487,7 +654,6 @@ class ClassicTetris3v3 {
         }
         break;
       case 39:
-      case 68:
         // right
         event.preventDefault();
         if ( this.itemLeftRightChange ) {
@@ -497,21 +663,16 @@ class ClassicTetris3v3 {
         }
         break;
       case 38:
-      case 75:
-      case 87:
-      case 88:
         // rotate clockwise
         event.preventDefault();
         this.rotateAnticlockwise = !(this.rotateClockwise = true);
         break;
-      case 76:
       case 90:
         // rotate anticlockwise
         event.preventDefault();
         this.rotateClockwise = !(this.rotateAnticlockwise = true);
         break;
       case 40:
-      case 83:
         // down
         event.preventDefault();
         this.moveDown = true;
@@ -522,82 +683,30 @@ class ClassicTetris3v3 {
         if (this.itemLockSpace ) {break;}
         this.hardDrop = true;
         this.hold = false;
-        break;
-      case 27:
-      case 80:
-        // pause
-        /*
-        event.preventDefault();
-        if (this.gameState != ClassicTetris.STATE_GAME_OVER) {
-          this.doUndoPause = true;
-        }
-        break;
-        */
+      break;
       case 16:
         event.preventDefault();
         // hold piece
-        if (this.haveHold) {
-          if (this.hold ) {
-            var tempPiece = this.holdPiece;
-            this.piecePosition = this.piece.iniPos.slice(0);
-            this.pieceRotation = 0;
-            this.holdPiece = this.piece;
-            this.piece = tempPiece;
-            this.hold = false;
-          } else return;//can't hold
-        } else if(this.hold){
-          this.holdPiece = Object.assign({}, this.piece);
-          this.piecePosition = this.piece.iniPos.slice(0);
-          this.pieceRotation = 0;
-          this.haveHold = true;
-          this.hold = false;
-          // get next piece
-          this.piece = this.next[0];
-          this.piecePosition = this.piece.iniPos.slice(0);
-          this.pieceRotation = 0;
-          this._nextPieceId();
-        }
-        break;
+        if ( this.hold )
+          this.holdOnPiece = true;
+      break;
+      case 65: 
+        config.profession = 'Attacker'
+        myProfession.changeProfession(config)
+        // change to Attacker
+      break;
+      case 83: 
+        config.profession = 'Magician'
+        myProfession.changeProfession(config)
+        // change to Magician
+      break;
+      case 68: 
+        config.profession = 'Defender'
+        myProfession.changeProfession(config)
+        // change to Defender
+      break;
     }
   }
-
-
-  // pointer coordinates
-  _getEventCoords(event) {
-    const rect = this.canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-  }
-
-  // get current piece's left and right bounds
-  _getPieceBounds() {
-    const p = this.piece.rot[this.pieceRotation];
-    let top = this.boardHeight;
-    let bottom = 0;
-    let left = this.boardWidth;
-    let right = 0;
-    for (let i = 0; i < p.length; ++i) {
-      for (let j = 0; j < p[i].length; ++j) {
-        if (p[i][j] != 0) {
-          const x = this.piecePosition[0] + j;
-          const y = this.piecePosition[1] + i;
-          left = Math.min(left, x);
-          right = Math.max(right, x);
-          top = Math.min(top, y);
-          bottom = Math.max(bottom, y);
-        }
-      }
-    }
-    return {
-      top: top,
-      bottom: bottom,
-      left: left,
-      right: right
-    };
-  }
-
 
   //-----------------------------------------------------------
   // 
@@ -614,20 +723,19 @@ class ClassicTetris3v3 {
     }
     // process current state
     switch (this.gameState) {
-      case ClassicTetris.STATE_DROP:
-        if ( this.itemLockTetris ) {
-        }else { this._processDrop(); }
+      case ClassicTetris3v3.STATE_DROP:
+        if ( !this.itemLockTetris )  this._processDrop(); 
         break;
-      case ClassicTetris.STATE_BURN:
+      case ClassicTetris3v3.STATE_BURN:
         this._processBurn();
         break;
-      case ClassicTetris.STATE_ARE:
+      case ClassicTetris3v3.STATE_ARE:
         this._processARE();
         break;
-      case ClassicTetris.STATE_GAME_OVER:
+      case ClassicTetris3v3.STATE_GAME_OVER:
         this._processGameOver();
         break;
-      case ClassicTetris.STATE_PAUSE:
+      case ClassicTetris3v3.STATE_PAUSE:
         break;
     }
     // clear input flags
@@ -655,8 +763,8 @@ class ClassicTetris3v3 {
       }
 
       // fire move left event
-      this._dispatch(ClassicTetris.PIECE_MOVE_LEFT, {
-        type: ClassicTetris.PIECE_MOVE_LEFT,
+      this._dispatch(ClassicTetris3v3.PIECE_MOVE_LEFT, {
+        type: ClassicTetris3v3.PIECE_MOVE_LEFT,
         piece: this.piece.name,
         rotation: this.pieceRotation,
         oldPosition: oldPosition,
@@ -675,8 +783,8 @@ class ClassicTetris3v3 {
       }
 
       // fire move right event
-      this._dispatch(ClassicTetris.PIECE_MOVE_RIGHT, {
-        type: ClassicTetris.PIECE_MOVE_RIGHT,
+      this._dispatch(ClassicTetris3v3.PIECE_MOVE_RIGHT, {
+        type: ClassicTetris3v3.PIECE_MOVE_RIGHT,
         piece: this.piece.name,
         rotation: this.pieceRotation,
         oldPosition: oldPosition,
@@ -752,8 +860,8 @@ class ClassicTetris3v3 {
       }
       if(!canrot)this.pieceRotation = oldRotation
       else this.lastRotate = true
-      this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
-        type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+      this._dispatch(ClassicTetris3v3.PIECE_ROTATE_CLOCKWISE, {
+        type: ClassicTetris3v3.PIECE_ROTATE_CLOCKWISE,
         piece: this.piece.name,
         position: [...this.piecePosition],
         oldRotation: oldRotation,
@@ -829,8 +937,8 @@ class ClassicTetris3v3 {
       }
       if(!canrot)this.pieceRotation = oldRotation
       else this.lastRotate = true
-      this._dispatch(ClassicTetris.PIECE_ROTATE_CLOCKWISE, {
-        type: ClassicTetris.PIECE_ROTATE_CLOCKWISE,
+      this._dispatch(ClassicTetris3v3.PIECE_ROTATE_CLOCKWISE, {
+        type: ClassicTetris3v3.PIECE_ROTATE_CLOCKWISE,
         piece: this.piece.name,
         position: [...this.piecePosition],
         oldRotation: oldRotation,
@@ -852,8 +960,8 @@ class ClassicTetris3v3 {
       }
 
       // fire hard drop event
-      this._dispatch(ClassicTetris.PIECE_HARD_DROP, {
-        type: ClassicTetris.PIECE_HARD_DROP,
+      this._dispatch(ClassicTetris3v3.PIECE_HARD_DROP, {
+        type: ClassicTetris3v3.PIECE_HARD_DROP,
         piece: this.piece.name,
         rotation: this.pieceRotation,
         oldPosition: oldPosition,
@@ -872,8 +980,8 @@ class ClassicTetris3v3 {
         // reset auto-drop frames
         this.framesTilDrop = 60
         // fire move down event
-        this._dispatch(ClassicTetris.PIECE_MOVE_DOWN, {
-          type: ClassicTetris.PIECE_MOVE_DOWN,
+        this._dispatch(ClassicTetris3v3.PIECE_MOVE_DOWN, {
+          type: ClassicTetris3v3.PIECE_MOVE_DOWN,
           piece: this.piece.name,
           rotation: this.pieceRotation,
           oldPosition: oldPosition,
@@ -889,6 +997,36 @@ class ClassicTetris3v3 {
         this._lockPiece();
       }
     }
+    
+    if( this.holdOnPiece || this.itemHoldOn){
+      if (this.haveHold) {
+        var tempPiece = this.holdPiece;
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.holdPiece = this.piece;
+        this.piece = tempPiece;
+        this.hold = false;
+      } else {
+        this.holdPiece = Object.assign({}, this.piece);
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this.haveHold = true;
+        this.hold = false;
+        // get next piece
+        this.piece = this.next[0];
+        this.piecePosition = this.piece.iniPos.slice(0);
+        this.pieceRotation = 0;
+        this._nextPieceId();
+      }
+      this.holdOnPiece = false
+      this.itemHoldOn = false
+    }
+    if( this.itemChangeTetris ){
+      this.itemChangeTetris = false
+      for (let i = 0; i < 7; i++) 
+        this._nextPieceId();
+    }
+
   }
 
   _lockPiece() {
@@ -901,8 +1039,8 @@ class ClassicTetris3v3 {
     this._setPiece();
     
     // fire piece lock event
-    this._dispatch(ClassicTetris.PIECE_LOCK, {
-      type: ClassicTetris.PIECE_LOCK,
+    this._dispatch(ClassicTetris3v3.PIECE_LOCK, {
+      type: ClassicTetris3v3.PIECE_LOCK,
       piece: this.piece.name,
       rotation: this.pieceRotation,
       position: [...this.piecePosition]
@@ -912,7 +1050,7 @@ class ClassicTetris3v3 {
     if (this.linesCleared.length > 0) {
       // clear those lines
       this.columnsCleared = 0;
-      this.gameState = ClassicTetris.STATE_BURN;
+      this.gameState = ClassicTetris3v3.STATE_BURN;
       
       // cheak special burnOn
       if(this.linesCleared.length === 4)this.cheakTetris = true;
@@ -956,8 +1094,8 @@ class ClassicTetris3v3 {
       }
       
       // fire burn start event
-      this._dispatch(ClassicTetris.LINE_CLEAR_START, {
-        type: ClassicTetris.LINE_CLEAR_START,
+      this._dispatch(ClassicTetris3v3.LINE_CLEAR_START, {
+        type: ClassicTetris3v3.LINE_CLEAR_START,
         linesBurnt: [...this.linesCleared]
       });
 
@@ -978,15 +1116,15 @@ class ClassicTetris3v3 {
       this.score += this.linesCleared.length
 
       // fire score change event
-      this._dispatch(ClassicTetris.SCORE_CHANGE, {
-        type: ClassicTetris.SCORE_CHANGE,
+      this._dispatch(ClassicTetris3v3.SCORE_CHANGE, {
+        type: ClassicTetris3v3.SCORE_CHANGE,
         oldScore: oldScore,
         newScore: this.score
       });
 
       // entry delay for next piece
       this.areFrames = this._getARE();
-      this.gameState = ClassicTetris.STATE_ARE;
+      this.gameState = ClassicTetris3v3.STATE_ARE;
     }
   }
 
@@ -1019,21 +1157,21 @@ class ClassicTetris3v3 {
         this.lines += this.linesCleared.length;
 
         // fire lines burn end event
-        this._dispatch(ClassicTetris.LINE_CLEAR_END, {
-          type: ClassicTetris.LINE_CLEAR_END,
+        this._dispatch(ClassicTetris3v3.LINE_CLEAR_END, {
+          type: ClassicTetris3v3.LINE_CLEAR_END,
           linesBurnt: [...this.linesCleared]
         });
 
         // fire lines clear event
-        this._dispatch(ClassicTetris.LINE_CLEAR, {
-          type: ClassicTetris.LINE_CLEAR,
+        this._dispatch(ClassicTetris3v3.LINE_CLEAR, {
+          type: ClassicTetris3v3.LINE_CLEAR,
           oldLines: oldLines,
           newLines: this.lines
         });
 
         // fire score change event
-        this._dispatch(ClassicTetris.SCORE_CHANGE, {
-          type: ClassicTetris.SCORE_CHANGE,
+        this._dispatch(ClassicTetris3v3.SCORE_CHANGE, {
+          type: ClassicTetris3v3.SCORE_CHANGE,
           oldScore: oldScore,
           newScore: this.score
         });
@@ -1042,7 +1180,7 @@ class ClassicTetris3v3 {
 
         // entry delay for next piece
         this.areFrames = this._getARE();
-        this.gameState = ClassicTetris.STATE_ARE;
+        this.gameState = ClassicTetris3v3.STATE_ARE;
       }
     }
 
@@ -1070,11 +1208,11 @@ class ClassicTetris3v3 {
       // try to place current piece
       if (this._canMovePiece(0, 0)) {
         this.framesTilDrop = 60
-        this.gameState = ClassicTetris.STATE_DROP;
+        this.gameState = ClassicTetris3v3.STATE_DROP;
 
         // fire new piece placed event
-        this._dispatch(ClassicTetris.NEXT_PIECE, {
-          type: ClassicTetris.NEXT_PIECE,
+        this._dispatch(ClassicTetris3v3.NEXT_PIECE, {
+          type: ClassicTetris3v3.NEXT_PIECE,
           piece: this.piece.name,
           nextPiece: this.next[0].name
         });
@@ -1091,7 +1229,7 @@ class ClassicTetris3v3 {
   
   
   _triggerGameOver() {
-    if(this.gameState === ClassicTetris.STATE_GAME_OVER )return;
+    if(this.gameState === ClassicTetris3v3.STATE_GAME_OVER )return;
     // stop theme song
     if (this.gameTheme) {
       this.gameTheme.pause();
@@ -1102,11 +1240,11 @@ class ClassicTetris3v3 {
       this.gameOverSound.play();
     }
     this.gameOverLine = 1;
-    this.gameState = ClassicTetris.STATE_GAME_OVER;
+    this.gameState = ClassicTetris3v3.STATE_GAME_OVER;
 
     // fire game-over animation start event
-    this._dispatch(ClassicTetris.GAME_OVER_START, {
-      type: ClassicTetris.GAME_OVER_START,
+    this._dispatch(ClassicTetris3v3.GAME_OVER_START, {
+      type: ClassicTetris3v3.GAME_OVER_START,
       level: this.level,
       score: this.score,
       lines: this.lines,
@@ -1128,8 +1266,8 @@ class ClassicTetris3v3 {
         SendData(this)
         draw._render(this, myCanvas);
         // fire game-over animation end event
-        this._dispatch(ClassicTetris.GAME_OVER_END, {
-          type: ClassicTetris.GAME_OVER_END,
+        this._dispatch(ClassicTetris3v3.GAME_OVER_END, {
+          type: ClassicTetris3v3.GAME_OVER_END,
           level: this.level,
           score: this.score,
           lines: this.lines,
@@ -1141,7 +1279,7 @@ class ClassicTetris3v3 {
   // pause or unpause if requested
   _pauseCheck() {
     if (this.doUndoPause) {
-      if (this.gameState === ClassicTetris.STATE_PAUSE) {
+      if (this.gameState === ClassicTetris3v3.STATE_PAUSE) {
         this.gameState = this.previousGameState;
 
         // reset pointer flags
@@ -1153,8 +1291,8 @@ class ClassicTetris3v3 {
         }
 
         // fire resume event
-        this._dispatch(ClassicTetris.GAME_RESUME, {
-          type: ClassicTetris.GAME_RESUME,
+        this._dispatch(ClassicTetris3v3.GAME_RESUME, {
+          type: ClassicTetris3v3.GAME_RESUME,
           level: this.level,
           score: this.score,
           lines: this.lines,
@@ -1162,7 +1300,7 @@ class ClassicTetris3v3 {
 
       } else {
         this.previousGameState = this.gameState;
-        this.gameState = ClassicTetris.STATE_PAUSE;
+        this.gameState = ClassicTetris3v3.STATE_PAUSE;
 
         // pause theme song
         if (this.gameTheme) {
@@ -1176,8 +1314,8 @@ class ClassicTetris3v3 {
         }
 
         // fire pause event
-        this._dispatch(ClassicTetris.GAME_PAUSE, {
-          type: ClassicTetris.GAME_PAUSE,
+        this._dispatch(ClassicTetris3v3.GAME_PAUSE, {
+          type: ClassicTetris3v3.GAME_PAUSE,
           level: this.level,
           score: this.score,
           lines: this.lines,
@@ -1201,7 +1339,7 @@ class ClassicTetris3v3 {
 
   //--------------------------------------------------------------------------------------------
   // 
-  // game rules: https://tetris.wiki/ClassicTetris_(NES,_Nintendo)
+  // game rules: https://tetris.wiki/ClassicTetris3v3_(NES,_Nintendo)
   // 
   //--------------------------------------------------------------------------------------------
 
@@ -1321,97 +1459,6 @@ class ClassicTetris3v3 {
       }
     }
     return true;
-  }
-  //-----------------------------------------------------------
-  // 
-  // items function
-  // 
-  //-----------------------------------------------------------
-  _getItem() {
-      this.oldlines = (this.lines / 5) * 5;
-      this.changeItemIcon();
-      setTimeout( () => {                                       
-        if (this.items[this.itemNumber].name == 'Defense') {
-          this.itemDefense = true; 
-          console.log ('get item-' + this.items[this.itemNumber].name);
-        }
-        else { 
-          socket.emit('item', this.items[this.itemNumber].name, p2);
-          console.log ('emit item-' + this.items[this.itemNumber].name);
-        }
-      }, 6000 )
-  }
-  // 6sec 為changeItemIcon()執行總時間
-  itemdelay() {return new Promise(resolve => { });}
-  _itemProcess(){
-    if(!this.itemDefense){
-      switch(this.getItem){
-        case 'LockSpace':       this.setItemLockSpace();break;
-        case 'Defense':         break;
-        case 'HardHoldOn':      this.setHardHoldOn();break;
-        case 'LeftRightChange': this.setLeftRightChange();break;
-        case 'BlockPreview':    this.setBlockPreview();break;
-        case 'ChangeTetris':    this.setChangeOpponentTetris();break;
-        case 'LockTetris':      this.setLockOpponentTetris();break;
-        case 'BlockALine':      this.setBlockLine();break;
-      }
-      console.log(this.getItem)
-    }else {this.itemDefense=false}
-  }
-  
-  setItemLockSpace() { 
-    this.itemLockSpace = true;
-    setTimeout( () => {
-      this.itemLockSpace = false;
-    }, 10000 );
-  }
-  
-  setHardHoldOn() {
-    if (this.haveHold) {
-        var tempPiece = this.holdPiece;
-        this.piecePosition = this.piece.iniPos.slice(0);
-        this.pieceRotation = 0;
-        this.holdPiece = this.piece;
-        this.piece = tempPiece;
-        this.hold = false;
-    } else {
-      this.holdPiece = Object.assign({}, this.piece);
-      this.piecePosition = this.piece.iniPos.slice(0);
-      this.pieceRotation = 0;
-      this.haveHold = true;
-      this.hold = false;
-      this.piece = this.next[0];
-      this.piecePosition = this.piece.iniPos.slice(0);
-      this.pieceRotation = 0;
-      this._nextPieceId();
-    }
-  }
-  
-  setLeftRightChange() { 
-    this.itemLeftRightChange = true;
-    setTimeout( () => {
-      this.itemLeftRightChange = false;
-    }, 8000 );
-  }
-  
-  setBlockPreview() { 
-    this.itemBlockPreview = true;
-    setTimeout( () => {
-      this.itemBlockPreview = false;
-    }, 10000 );
-  }
-  
-  setChangeOpponentTetris() {
-    for (let i = 0; i < 7; i++) {
-      this._nextPieceId();
-    }
-  }
-  
-  setLockOpponentTetris() { 
-    this.itemLockTetris = true;
-    setTimeout( () => {
-      this.itemLockTetris = false;
-    }, 3000 );
   }
   setBlockLine() {
     /*board 

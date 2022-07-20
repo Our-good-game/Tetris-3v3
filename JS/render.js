@@ -36,13 +36,13 @@ class Render{
       this._drawHUD(tetris, formal);
       this._drawPlayerName(tetris, formal);
       this._drawCombo(tetris, formal);
-      //if ( !tetris.itemBlockPreview ) {
+      if (tetris.itemBlockPreview == undefined || tetris.itemBlockPreview !== true) {
         this._drawNext(tetris, formal)
-      // }
+      }
       if ( tetris.haveHold ) {
         this._drawHold(tetris, formal)
       }
-      if(tetris.gameState === ClassicTetris.STATE_GAME_OVER) this._drawWinner(tetris, formal)
+      if(tetris.gameState === 3 ) this._drawWinner(tetris, formal)
     }   
     
     _renderNoHUD (tetris, formal) {
@@ -83,7 +83,7 @@ class Render{
       formal.context.strokeStyle = this.borderColor;
       formal.context.fill();
       formal.context.stroke();
-      if (tetris.gameState === ClassicTetris.STATE_PAUSE) {
+      if (tetris.gameState === 4) {
         // pause overlay:
         // write PAUSE on the board if game is paused
         
@@ -155,7 +155,7 @@ class Render{
     } 
       // draw current piece
       _drawPiece(tetris, formal) {
-        if(tetris.gameState !== ClassicTetris.STATE_DROP)return;
+        if(tetris.gameState !== 0)return;
         // current piece is only drawn in drop state
         const p = tetris.piece.rot[tetris.pieceRotation];
         for (let i = 0; i < p.length; ++i) {
@@ -175,7 +175,7 @@ class Render{
       // draw ghost piece
       // it is a representation of where a tetromino or other piece will land if allowed to drop into the playfield
       _drawGhost(tetris, formal) {
-        if(tetris.gameState !== ClassicTetris.STATE_DROP)return;
+        if(tetris.gameState !== 0)return;
           // find ghost piece position, which is lowest position for current piece
           const piecePos = [tetris.piecePosition[0], tetris.piecePosition[1]];
           while (tetris._canMove(tetris.piece, tetris.pieceRotation, piecePos, 0, 1)) {
