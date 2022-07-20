@@ -8,13 +8,13 @@ class EnergyBar {
   }    
 
   modifyEnergy () {
-    if (gamecore.burnOn >= config.profession.costEnergy) {
-      config.profession.action();
+    if (gamecore.burnOn >= myProfession.costEnergy) {
+      myProfession.act();
       console.log (gamecore.burnOn);
-      gamecore.burnOn %= config.profession.costEnergy;
+      gamecore.burnOn %= myProfession.costEnergy;
       console.log (gamecore.burnOn);
     }
-    energy.style.height = (gamecore.burnOn * (100 / config.profession.costEnergy)) + '%';
+    energy.style.height = (gamecore.burnOn * (100 / myProfession.costEnergy)) + '%';
     console.log (energy.style.height);
     // console.log (gamecore.burnOn);
 

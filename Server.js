@@ -73,20 +73,10 @@ app.get('/picture/shield.png', function (req, res) {res.sendFile(__dirname + '/p
 
 
 //JS mode
-app.get('/JS/classic-tetris.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris.js');})
-app.get('/JS/classic-tetris-3v3.js', function (req, res) {res.sendFile(__dirname + '/JS/classic-tetris-3v3.js');})
-app.get('/JS/player-interface.js', function (req, res) {res.sendFile(__dirname + '/JS/player-interface.js');})
-app.get('/JS/timer.js', function (req, res) {res.sendFile(__dirname + '/JS/timer.js');})
-app.get('/JS/size.js', function (req, res) {res.sendFile(__dirname + '/JS/size.js');})
-app.get('/JS/heart.js', function (req, res) {res.sendFile(__dirname + '/JS/heart.js');})
-app.get('/JS/shield.js', function (req, res) {res.sendFile(__dirname + '/JS/shield.js');})
-app.get('/JS/render.js', function (req, res) {res.sendFile(__dirname + '/JS/render.js');})
-app.get('/JS/background.js', function (req, res) {res.sendFile(__dirname + '/JS/background.js');})
-app.get('/JS/background2.js', function (req, res) {res.sendFile(__dirname + '/JS/background2.js');})
+app.get('/JS/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl);})
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
 app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
-app.get('/JS/EnergyBar.js', function (req, res) {res.sendFile(__dirname + '/JS/EnergyBar.js');})
-app.get('/JS/Profession.js', function (req, res) {res.sendFile(__dirname + '/JS/Profession.js');})
+
 
 // audio
 app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})
@@ -220,23 +210,13 @@ io.on('connection', function (socket) {
           if (rooms3vs3[i][j] !== "--")
             ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
     })
-    socket.on('teamGamming',function(data, config){
+    socket.on('teamGamming',function(data, config, action){// 處理道具
+      let actType = 'none'
+      if( action ) actType = config.profession
       for(let i=0; i<2; ++i)
         for(let j=0; j<3; ++j)
-          if (rooms3vs3[i][j] !== "--" && config.id !== rooms3vs3[i][j]){
-            ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config)
-            // console.log(config)
-          }
-    })
-    socket.on('attack', function(attackerConfig) {
-      console.log ("server receive attack");
-      for(let j=0; j<3; ++j) {
-        for(let i=0; i<2; ++i) {
-          if (rooms3vs3[i][j] !== "--"){
-            ids.get(rooms3vs3[i][j]).socket.emit('attack', attackerConfig)
-          }
-        }
-      } 
+          if (rooms3vs3[i][j] !== "--" && config.id !== rooms3vs3[i][j])
+            ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
     })
 
     socket.on ('defend', function(attackerConfig) {

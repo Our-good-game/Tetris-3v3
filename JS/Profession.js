@@ -1,28 +1,19 @@
-class Attacker {
-  constructor() {
-    this.costEnergy = 5;
+class profession {
+  static COST = {
+    Attacker: 5,
+    Defender: 7,
+    Magician: 10
   }
-  action() {
-    console.log ("I am attacker");
-    socket.emit ('attack', config);
+  constructor(config){
+    this.pro = config.profession
+    this.costEnergy = profession.COST[this.pro]
+    this.action = false
   }
-}
-
-class Defender {
-  constructor() {
-    this.costEnergy = 7;
+  changeProfession(config) {
+    this.pro = config.profession
+    this.costEnergy = profession.COST[this.pro]
   }
-  action() {
-    console.log ("I am defender");
-    socket.emit ('defend', config);
-  }
-}
-
-class Magician {
-  constructor() {
-    this.costEnergy = 10;
-  }
-  action() {
-    console.log ("I am magician");
+  act() {
+    this.action = true
   }
 }
