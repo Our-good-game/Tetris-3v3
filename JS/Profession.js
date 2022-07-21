@@ -11,6 +11,7 @@ class profession {
   }
   changeProfession(config) {
     this.pro = config.profession
+    console.log('change to '+this.pro)
     this.costEnergy = profession.COST[this.pro]
   }
   act() {

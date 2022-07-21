@@ -215,7 +215,7 @@ io.on('connection', function (socket) {
       if( action ) actType = config.profession
       for(let i=0; i<2; ++i)
         for(let j=0; j<3; ++j)
-          if (rooms3vs3[i][j] !== "--" && config.id !== rooms3vs3[i][j])
+          if (rooms3vs3[i][j] !== "--" )
             ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
     })
 

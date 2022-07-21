@@ -9,9 +9,10 @@ class Items{
     {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
   ];
   constructor(){
-    this.itemNumber = -1
-    this.defense = false
     this.getItem = undefined
+    this.itemNumber = -1
+  
+    this.defense = false
     this.itemLeftRightChange = false
     this.itemBlockPreview = false
     this.itemLockTetris = false
@@ -20,6 +21,7 @@ class Items{
     this.itemChangeTetris = false;
   }
   _itemProcess(){
+    console.log(this.getItem)
     if(this.defense !== true){
       switch(this.getItem){
         case 'LockSpace':       this.setItemLockSpace(); break;
@@ -69,13 +71,15 @@ class Items{
     }, 3000 );
   }
   _getItem() {
-    this.changeItemIcon();
+    this.itemNumber = Math.floor( Math.random() * Items.ITEMS.length )
+    this.getItem = Items.ITEMS[this.itemNumber].name
+    /*this.changeItemIcon();
     setTimeout( () => {        
       this.getItem = this.items[this.itemNumber].name                               
       if (this.getItem == 'Defense') 
         _itemProcess()
         this.getItem = undefined
-    }, 6000 )
+    }, 6000 )*/
   }// 6sec 為changeItemIcon()執行總時間
   
   itemdelay() {return new Promise(resolve => { });}
@@ -110,7 +114,7 @@ class Items{
   randomIcon() {
     let random = this.itemNumber;
     while (random === this.itemNumber) {
-      random = Math.floor(Math.random() * this.ITEMS.length);
+      random = Math.floor(Math.random() * Items.ITEMS.length);
     }this.itemNumber = random
     return random;
   }
