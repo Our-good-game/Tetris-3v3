@@ -52,43 +52,17 @@ app.get('/3vs3.html', function (req, res) {
 
 
 //CSS && picture
-app.get('/CSS/style.css', function (req, res){res.sendFile(__dirname + '/CSS/style.css');})
-app.get('/CSS/energyBar.css', function (req, res){res.sendFile(__dirname + '/CSS/energyBar.css');})
-app.get('/picture/background.jpg', function (req, res) {res.sendFile(__dirname +'/picture/background.jpg')})
-app.get('/pauseitem.png', function (req, res) {res.sendFile(__dirname + '/picture/pauseitem.png');})
-app.get('/picture/hana1.png', function (req, res) {res.sendFile(__dirname + '/picture/hana1.png');})
-app.get('/picture/hana2.png', function (req, res) {res.sendFile(__dirname + '/picture/hana2.png');})
-app.get('/picture/hana3.png', function (req, res) {res.sendFile(__dirname + '/picture/hana3.png');})
-app.get('/picture/Item/default.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/default.png');})
-app.get('/picture/Item/SpaceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/SpaceChain.png');})
-app.get('/picture/Item/defense.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/defense.png');})
-app.get('/picture/Item/CompulsoryHold.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/CompulsoryHold.png');})
-app.get('/picture/Item/MoveChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/MoveChange.png');})
-app.get('/picture/Item/shadow.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/shadow.png');})
-app.get('/picture/Item/PieceChain.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChain.png');})
-app.get('/picture/Item/PieceChange.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/PieceChange.png');})
-app.get('/picture/Item/higher.png', function (req, res) {res.sendFile(__dirname + '/picture/Item/higher.png');})
-app.get('/picture/heart.png', function (req, res) {res.sendFile(__dirname + '/picture/heart.png');})
-app.get('/picture/shield.png', function (req, res) {res.sendFile(__dirname + '/picture/shield.png');})
-
+app.get('/CSS/:id', function (req, res){res.sendFile(__dirname + req.originalUrl);})
+app.get('/picture/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl)})
+app.get('/picture/Item/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl);})
 
 //JS mode
 app.get('/JS/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl);})
 app.get('/node_modules/jquery/dist/jquery.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/jquery/dist/jquery.min.js');})
 app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(__dirname + '/node_modules/vue/dist/vue.min.js');})
 
-
 // audio
-app.get('/audio/hard_drop.wav', function (req, res) {res.sendFile(__dirname + '/audio/hard_drop.wav');})
-app.get('/audio/item_taking.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_taking.wav');})
-app.get('/audio/item_takeEnd.wav', function (req, res) {res.sendFile(__dirname + '/audio/item_takeEnd.wav');})
-app.get('/audio/gameTheme.mp3', function (req, res) {res.sendFile(__dirname + '/audio/gameTheme.mp3');})
-app.get('/audio/line.mp3', function (req, res) {res.sendFile(__dirname + '/audio/line.mp3');})
-app.get('/audio/tetris.mp3', function (req, res) {res.sendFile(__dirname + '/audio/tetris.mp3');})
-
-//font
-app.get('/CSS/huakang_girl_w5.ttf', function (req, res) {res.sendFile(__dirname + '/CSS/huakang_girl_w5.ttf');})
-
+app.get('/audio/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl);})
 app.get('/id',function(req,res){res.send(req.session.username)})
 
 //socket

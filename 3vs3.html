@@ -151,8 +151,7 @@
   var opponentHeart = new heart("right", HUD)
   let teamShield = new shield("left", HUD)
   let opponentShield = new shield("right", HUD)
-  // 能量條
-  var energyBar = new EnergyBar (document.getElementsByClassName('meter')[0], document.getElementById('energy'));
+
   var socket = io()
   var config = {
     id: undefined,
@@ -160,6 +159,7 @@
     teamNumber: 0,         // 1 2 3
     profession: undefined, // ['Attacker', 'Defender', 'Magician']
   }
+  // 能量條
   var myProfession 
 
   window.onload = function () {
@@ -278,14 +278,15 @@
         } else {
           pos = document.getElementById('itemIcon2')
         }    
-        gamecore.getItem = 
-        ClassicTetris3v3.ITEMS[gamecore.changeItemIcon(pos, data.itemNumber)].name
+        gamecore.changeItemIcon(pos, data.itemNumber)
           setTimeout( () => {
-            //骰到defense
             if ( dataConfig.team == config.team ) {
-              if ( gamecore.itemNumber == 1) 
+              if ( data.itemNumber == 1) 
                 gamecore.defense = true;
-            } else gamecore._itemExecute()
+            } else {
+              gamecore.getItem = ClassicTetris3v3.ITEMS[data.itemNumber].name
+              gamecore._itemExecute()
+            }
           }, 4000)
       break;
     }
@@ -308,7 +309,7 @@
           else config.team = 'right'
           config.teamNumber = j+1;
           config.profession = tmp3[j]
-          myProfession = new profession(config)
+          myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
         }
       }
     

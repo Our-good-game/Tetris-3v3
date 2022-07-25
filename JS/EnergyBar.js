@@ -1,17 +1,24 @@
 class EnergyBar {
-  constructor(bar, energy) {
+  constructor(bar, energy, cost) {
     this.bar =  bar;
     this.energy = energy
     bar.style.top = window.innerHeight * 0.45 + "px";
     bar.style.left = window.innerWidth * 0.32 + "px";
+    this.cnt = 0
+    this.costEnergy = cost
   }    
 
-  modifyEnergy () {
-    if (gamecore.burnOn >= myProfession.costEnergy) {
-      myProfession.act();
-      gamecore.burnOn %= myProfession.costEnergy;
+  modifyEnergy (burnOn) {
+    this.cnt += burnOn
+    if (this.cnt >= this.costEnergy) {
+      this.act();
+      this.cnt %= this.costEnergy
     }
-    energy.style.height = (gamecore.burnOn * (100 / myProfession.costEnergy)) + '%';
+    energy.style.height = (this.cnt * (100 / this.costEnergy)) + '%';
     console.log (energy.style.height);
+  }
+  resetCnt(){
+    this.cnt = 0
+    this.modifyEnergy (0)
   }
 }

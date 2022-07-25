@@ -427,9 +427,10 @@ class ClassicTetris3v3 extends Items{
     this.handlers.set(ClassicTetris3v3.LINE_CLEAR, []);
 
     // animation frames counters
+    this.maxFramesTilDrop = 70
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = 60;
+    this.framesTilDrop = this.maxFramesTilDrop
 
     // counters for line-clear and game-over animations
     this.columnsCleared = -1;
@@ -507,13 +508,11 @@ class ClassicTetris3v3 extends Items{
 
     do {
       this._process();
-      if(this.frameCounter % 6 === 0 )SendData(this)
+      if(this.frameCounter % 8 === 0 )SendData(this)
       if(this.boardOverLoad){
         SendData(this)
         this._resetParams();
       }
-      //draw._drawEnergy (energyBar, this.lines);
-      // energyBar.modifyEnergy();
       draw._render(this, myCanvas);
       
       await this._sleep();
@@ -576,7 +575,8 @@ class ClassicTetris3v3 extends Items{
     // frame counters
     this.frameCounter = 0;
     this.areFrames = -1;
-    this.framesTilDrop = 60;
+    this.maxFramesTilDrop = 70
+    this.framesTilDrop = this.maxFramesTilDrop;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
     // frames until the piece automatically moves down
@@ -717,9 +717,6 @@ class ClassicTetris3v3 extends Items{
 
   _process() {
     
-    // game possibly paused/unpaused
-    // this._pauseCheck();
-    // process current state
     switch (this.gameState) {
       case ClassicTetris3v3.STATE_DROP:
         if ( !this.itemLockTetris )  this._processDrop(); 
@@ -741,6 +738,10 @@ class ClassicTetris3v3 extends Items{
 
     // global frame counter
     ++this.frameCounter;
+    if(this.frameCounter == 180){
+      --this.maxFramesTilDrop
+      this.frameCounter = 0
+    }
   }
 
 
@@ -976,7 +977,7 @@ class ClassicTetris3v3 extends Items{
         ++this.piecePosition[1];
 
         // reset auto-drop frames
-        this.framesTilDrop = 60
+        this.framesTilDrop = this.maxFramesTilDrop
         // fire move down event
         this._dispatch(ClassicTetris3v3.PIECE_MOVE_DOWN, {
           type: ClassicTetris3v3.PIECE_MOVE_DOWN,
@@ -1075,8 +1076,8 @@ class ClassicTetris3v3 extends Items{
         //triiggertrashanime()
       }
       
-      energyBar.modifyEnergy();
-
+      myProfession.modifyEnergy(this.burnOn);
+      this.burnOn = 0
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
       for (let i = 0; i < this.linesCleared.length; ++i) {
@@ -1127,17 +1128,6 @@ class ClassicTetris3v3 extends Items{
   }
 
   _processBurn() {
-    if ((this.frameCounter % 8) === 0) {  //4) === 0) {
-      ++this.columnsCleared;this.columnsCleared=3;
-      if (this.columnsCleared < 3) {
-        // // remove another columns of squares
-        // const mid = this.boardWidth / 2;
-        // for (let i = 0; i < this.linesCleared.length; ++i) {
-        //   this.board[this.linesCleared[i]][mid + this.columnsCleared] = -1;
-        //   this.board[this.linesCleared[i]][mid - 1 - this.columnsCleared] = -1;
-        // }
-
-      } else {
         this.columnsCleared = -1;
 
         // clean board up
@@ -1179,9 +1169,6 @@ class ClassicTetris3v3 extends Items{
         // entry delay for next piece
         this.areFrames = this._getARE();
         this.gameState = ClassicTetris3v3.STATE_ARE;
-      }
-    }
-
   }
 
   _processARE() {
@@ -1205,7 +1192,7 @@ class ClassicTetris3v3 extends Items{
 
       // try to place current piece
       if (this._canMovePiece(0, 0)) {
-        this.framesTilDrop = 60
+        this.framesTilDrop = this.maxFramesTilDrop
         this.gameState = ClassicTetris3v3.STATE_DROP;
 
         // fire new piece placed event

@@ -1,4 +1,4 @@
-class Items{
+class Items {
   static ITEMS = [
     {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
     {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
@@ -89,7 +89,6 @@ class Items{
     let NumberTmp = this.randomIcon(-1)
     let t = this
     changeIcon()
-    return num
     // Function that run at irregular intervals
     function changeIcon() {
       // Clears the previous setInterval timer
