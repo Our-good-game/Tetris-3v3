@@ -400,10 +400,10 @@ class ClassicTetris3v3 extends Items{
     this.lines = 0;
     this.oldlines = this.lines;
     this.score = 0;
-    this.last_sec=0;
     this.pressDownScore = 0;
     this.result = false;
-    
+    this.boardOverLoad = false
+
     // event listeners
     this.handlers = new Map();
     this.handlers.set(ClassicTetris3v3.GAME_START, []);
@@ -507,8 +507,10 @@ class ClassicTetris3v3 extends Items{
 
     do {
       this._process();
-      if(this.frameCounter% 12 ===0 ){
-        SendData(this); //this.burnOn=0;
+      if(this.frameCounter % 6 === 0 )SendData(this)
+      if(this.boardOverLoad){
+        SendData(this)
+        this._resetParams();
       }
       //draw._drawEnergy (energyBar, this.lines);
       // energyBar.modifyEnergy();
@@ -535,25 +537,27 @@ class ClassicTetris3v3 extends Items{
     this.pointerMoveDownEnabled = false;
 
     // movement/control flags
-    this.moveLeft = false;
-    this.moveRight = false;
-    this.moveDown = false;
-    this.rotateClockwise = false;
-    this.rotateAnticlockwise = false;
-    this.hardDrop = false;
-    this.doUndoPause = false;
-    this.hold = true;
-    this.haveHold = false;
-    this.queue = [0, 1, 2, 3, 4, 5, 6, -1, 0, 1, 2, 3, 4, 5, 6];
-    //  pointer coords
-    this.xIni = undefined;
-    this.yIni = undefined;
-    this.tIni = undefined;
+    this.moveLeft = false
+    this.moveRight = false
+    this.moveDown = false
+    this.rotateClockwise = false
+    this.rotateAnticlockwise = false
+    this.hardDrop = false
+    this.doUndoPause = false
+    this.hold = true
+    this.haveHold = false
+    this.boardOverLoad = false
 
+    //  pointer coords
+    this.xIni = undefined
+    this.yIni = undefined
+    this.tIni = undefined
+    
     // select random pieces
+    this.queue = [0, 1, 2, 3, 4, 5, 6, -1, 0, 1, 2, 3, 4, 5, 6]
     this._nextPieceId();
     this.piece = this.pieces[this.queue[14]];
-    
+    for (let i = 0; i < 3; ++i)this.next[i] = this.pieces[this.queue[i]]
     // initial piece's position and rotation
     this.piecePosition = this.piece.iniPos.slice(0);
     this.pieceRotation = 0;
@@ -717,10 +721,7 @@ class ClassicTetris3v3 extends Items{
   _process() {
     
     // game possibly paused/unpaused
-    this._pauseCheck();
-    if(this.last_sec){
-      
-    }
+    // this._pauseCheck();
     // process current state
     switch (this.gameState) {
       case ClassicTetris3v3.STATE_DROP:
@@ -1220,8 +1221,7 @@ class ClassicTetris3v3 extends Items{
       } else {
         // can't place piece -it's game over
         this._setPiece();
-        this.result = false 
-        this._triggerGameOver();
+        this.boardOverLoad = true
       }
       
     }
@@ -1253,12 +1253,11 @@ class ClassicTetris3v3 extends Items{
   }
 
   _processGameOver() {
-    if ((this.frameCounter % 8) === 0) {  //4) === 0) {
+    if ((this.frameCounter % 6) === 0) {  //4) === 0) {
       ++this.gameOverLine;
-      
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
-        for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = -1;
+        for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
         draw._render(this, myCanvas);
       } else {
         // game-over animation is done -stop the game loop
