@@ -1112,7 +1112,7 @@ class ClassicTetris {
         //triiggertrashanime()
       }
       
-      
+
       // remove initial columns of squares for animation
       const mid = this.boardWidth / 2;
       for (let i = 0; i < this.linesCleared.length; ++i) {
@@ -1133,7 +1133,9 @@ class ClassicTetris {
         linesBurnt: [...this.linesCleared]
       });
 
-    } else {
+    } 
+    // 沒有消行
+    else {
       if(this.raise > 0)this.setBlockLine();
       // combo init
       this.combos = 0;

@@ -581,6 +581,10 @@ class ClassicTetris3v3 extends Items{
     this.previousGameState = ClassicTetris3v3.STATE_DROP;
     this.gameState = ClassicTetris3v3.STATE_DROP;
     this.result = true
+
+    // item icon
+    document.getElementById('itemIcon').src = "/picture/Item/default.png";
+    document.getElementById('itemIcon2').src = "/picture/Item/default.png";
   }
 
 
@@ -629,16 +633,9 @@ class ClassicTetris3v3 extends Items{
   // right                  right arrow     39
   // right                  'd'             68
   // rotate clockwise       up arrow        38
-  // rotate clockwise       'k'             75
-  // rotate clockwise       'w'             87
-  // rotate clockwise       'x'             88
-  // rotate anticlockwise   'l'             76 
   // rotate anticlockwise   'z'             90 
   // down                   down arrow      40
-  // down                   's'             83
   // hard drop              space bar       32
-  // pause                  esc             27
-  // pause                  'p'             80
   // hold                  'shift'          16
   // key event listener
   _handleKeyDown = event => {

@@ -40,12 +40,14 @@
         <canvas id='HUD' style="position:absolute;"></canvas>
         <img src="/picture/heart.png" id ="heart" style="display:none"></img>
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
-
+        <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
+        <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
+        <button class="btn_ani" onclick=dice() style="position: absolute;"">action</button>
 
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
+          
         </div>
-
         <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
@@ -89,19 +91,19 @@
   player.height = window.innerHeight;
   player.width = window.innerWidth * 0.45;
   player.style.top = HUD.height + "px";
-  player.style.left = window.innerWidth / 3.5 + "px";
+  player.style.left = window.innerWidth * 0.29 + "px";
 
   var teammate1 = document.getElementById('teammate1');
   teammate1.height = window.innerHeight;
   teammate1.width = window.innerWidth * 0.45;
   teammate1.style.top = HUD.height + "px";
-  teammate1.style.left = window.innerWidth / 15 + "px";
+  teammate1.style.left = window.innerWidth * 0.066 + "px";
 
   var teammate2 = document.getElementById('teammate2');
   teammate2.height = window.innerHeight;
   teammate2.width = window.innerWidth * 0.45;
   teammate2.style.top = (HUD.height +  teammate2.height * 0.4) + "px";
-  teammate2.style.left = window.innerWidth / 15 + "px";
+  teammate2.style.left = window.innerWidth * 0.066 + "px";
 /* ----------------------------------------------------------------------------------------------*/
   var opponent1 = document.getElementById('opponent1');
   opponent1.height = window.innerHeight
@@ -120,6 +122,12 @@
   opponent3.width = window.innerWidth * 0.45;
   opponent3.style.top = (HUD.height +  opponent3.height * 0.4) + "px";
   opponent3.style.left = window.innerWidth * 0.83 + "px";
+
+  let myItemIcon = document.getElementById('itemIcon');
+  myItemIcon.style.left = window.innerWidth * 0.13+ "px";
+
+  let opponentItemIcon = document.getElementById('itemIcon2');
+  opponentItemIcon.style.left = window.innerWidth * 0.8+ "px";
   
   var draw = new Render();
   // 主遊戲邏輯
@@ -163,10 +171,9 @@
         socket.emit("idstore", config.id)
         socket.emit('enterRoom', config)
       })
-    
   }
+
   function SendData(data) {
-    if(myProfession.action){gamecore._getItem()}
     let datatmp = {
       gameLoop: data.gameLoop,
       gameState: data.gameState,
@@ -180,19 +187,24 @@
       lines: data.lines,
       burnOn: data.burnOn,
       result: data.result,
-      getItem: data.getItem
+      itemNumber: data.itemNumber,
     }
-    socket.emit('teamGamming', datatmp, config, myProfession.action)
-    myProfession.action = false
+    socket.emit('teamGamming', datatmp, config, myProfession.action);
+    myProfession.action = false;
   };
+
   function changeTeam(){
     socket.emit('enterRoom', config, "change")
   }
+
   function start(){
     socket.emit('teamFight',config)
   }
+
+  function dice(){
+    myProfession.act();
+  }
   function _loadData(Core, Canvas, data){
-    // console.log(data)
     Core.gameLoop = data.gameLoop
     Core.gameState = data.gameState
     Core.board = data.board;
@@ -204,20 +216,22 @@
     Core.holdPiece = data.holdPiece
     Core.lines = data.lines
     Core.result = data.result
+    
     gamecore.raise += 0
     if(!data.result){
       gamecore._triggerGameOver()
     }
     draw._renderNoHUD(Core, Canvas);
-    // console.log (Canvas.playerName);
   }
+
   function repaintHUD() {
     HUD.getContext("2d").clearRect(0, 0, HUD.width, HUD.height);
-      teamHeart.paint();
-      opponentHeart.paint();
-      teamShield.paint();
-      opponentShield.paint();
+    teamHeart.paint();
+    opponentHeart.paint();
+    teamShield.paint();
+    opponentShield.paint();
   }
+
   window.addEventListener('load', event => {
     _startStopBtn = event => {
       /*
@@ -240,8 +254,6 @@
   })
 
   socket.on('teamGamming', function (data, dataConfig, actType) {
-    //console.log(dataConfig)
-    console.log(actType)
     if(dataConfig.id == teammate1Canvas.playerName)
       _loadData(teammate1Core, teammate1Canvas, data)
     if(dataConfig.id == teammate2Canvas.playerName)
@@ -252,6 +264,15 @@
       _loadData(opponent2Core, opponent2Canvas, data);
     if(dataConfig.id == opponent3Canvas.playerName)
       _loadData(opponent3Core, opponent3Canvas, data);
+    
+    if (data.itemNumber !== -1) {
+      if (config.team == dataConfig.team) {
+        document.getElementById('itemIcon').src = Items.ITEMS[data.itemNumber].url;    
+      }
+      else {
+        document.getElementById('itemIcon2').src = Items.ITEMS[data.itemNumber].url;  
+      }
+    }
     switch(actType){
       case 'Attacker':
         if(dataConfig.team !== config.team) {
@@ -270,15 +291,24 @@
         }
       break;
       case 'Magician':
-        if( dataConfig.team !== config.team || data.getItem == 'Defense'){
-          gamecore.getItem = data.getItem
-          console.log( gamecore.getItem )
-          gamecore._itemProcess()
+        if (dataConfig.id == config.id){
+          gamecore._getItem();
+          // 4sec 為changeItemIcon()執行總時間
+          setTimeout( () => {
+            //骰到defense
+            if (gamecore.itemNumber == 1) {
+              gamecore.defense = true;
+            }
+            else {
+              socket.emit ('item', Items.ITEMS[gamecore.itemNumber].name, config);
+            } 
+          }, 4000);
         }
       break;
     }
     repaintHUD()
   })
+
   socket.on('roomInfo', function (roomData) {
     let tmp1 = ["left","right"]
     let tmp2 = ['1','2','3']
@@ -296,6 +326,7 @@
       }
     
   })
+
   socket.on('teamFight', function(roomData){
     document.getElementById('findInterface').style.display = "none";
     document.getElementById('playInterface').style.display = "flex";
@@ -323,7 +354,11 @@
     myCanvas._disableUI()
     gamecore.togglePlayPause()
   })
- 
+  
+  socket.on('item', function(item){
+    gamecore.getItem = item;
+    gamecore._itemExecute();
+  })
 </script>
 
 </html>

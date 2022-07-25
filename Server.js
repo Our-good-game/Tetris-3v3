@@ -164,6 +164,7 @@ io.on('connection', function (socket) {
       ids.get(p2).socket.emit('fight',p2)
     })
 
+/* ---------------------------------------------------------------------------------------------------------------*/
 
     //3vs3
     socket.on('enterRoom', function(config, act){
@@ -219,15 +220,14 @@ io.on('connection', function (socket) {
             ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
     })
 
-    socket.on ('defend', function(attackerConfig) {
-      console.log ("server receive defend");
-      for(let j=0; j<3; ++j) {
-        for(let i=0; i<2; ++i) {
-          if (rooms3vs3[i][j] !== "--"){
-            ids.get(rooms3vs3[i][j]).socket.emit('defend', attackerConfig)
-          }
-        }
-      } 
+    socket.on('item', function(item, config){
+      // right -> i = 0 (丟給left的敵人)
+      // left  -> i = 1 (丟給right的敵人) 
+      let i = 0;
+      if (config.team == "left") i = 1; 
+      for(let j=0; j<3; ++j)
+        if (rooms3vs3[i][j] !== "--")
+          ids.get(rooms3vs3[i][j]).socket.emit('item', item);
     })
 
     socket.on('disconnect',function(){

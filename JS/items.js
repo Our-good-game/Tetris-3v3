@@ -20,7 +20,7 @@ class Items{
     this.itemHoldOn = false
     this.itemChangeTetris = false;
   }
-  _itemProcess(){
+  _itemExecute(){
     console.log(this.getItem)
     if(this.defense !== true){
       switch(this.getItem){
@@ -30,9 +30,13 @@ class Items{
         case 'BlockPreview':    this.setBlockPreview(); break;
         case 'ChangeTetris':    this.setChangeOpponentTetris(); break;
         case 'LockTetris':      this.setLockOpponentTetris(); break;
-        case 'Defense':         this.defense = true; break;
+        // case 'Defense':         this.defense = true; break;
       }
-    }else this.defense = false 
+    }
+    else {
+      this.defense = false;
+      console.log ("防禦成功");
+    }
   }
   
   setItemLockSpace() { 
@@ -70,28 +74,17 @@ class Items{
       this.itemLockTetris = false;
     }, 3000 );
   }
+
   _getItem() {
-    this.itemNumber = Math.floor( Math.random() * Items.ITEMS.length )
-    this.getItem = Items.ITEMS[this.itemNumber].name
-    /*this.changeItemIcon();
-    setTimeout( () => {        
-      this.getItem = this.items[this.itemNumber].name                               
-      if (this.getItem == 'Defense') 
-        _itemProcess()
-        this.getItem = undefined
-    }, 6000 )*/
-  }// 6sec 為changeItemIcon()執行總時間
-  
-  itemdelay() {return new Promise(resolve => { });}
+    this.changeItemIcon();
+  }
+
   changeItemIcon() {
     let itemIcon = document.getElementById('itemIcon');
     let delayTime = 0;
     let interval;
-    //read-only
     let t = this
-    // Clears the previous setInterval timer
     changeIcon()
-
 
     // Function that run at irregular intervals
     function changeIcon() {
@@ -106,8 +99,8 @@ class Items{
         t.takeEndItemSound.play();
       }
       else {return 0;}
-      itemIcon.src = t.ITEMS[t.randomIcon()].url;
-      delayTime += 100;
+      itemIcon.src = Items.ITEMS[t.randomIcon()].url;
+      delayTime += 200;
       interval = setInterval(changeIcon, delayTime);
     }
   }
@@ -115,7 +108,9 @@ class Items{
     let random = this.itemNumber;
     while (random === this.itemNumber) {
       random = Math.floor(Math.random() * Items.ITEMS.length);
-    }this.itemNumber = random
+    }
+    this.itemNumber = random;
     return random;
   }
+  // itemdelay() {return new Promise(resolve => { });}
 }
