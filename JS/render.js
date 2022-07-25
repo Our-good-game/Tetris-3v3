@@ -214,6 +214,7 @@ class Render{
       // draw next piece
       _drawNext(tetris, formal) {
         if(!tetris.gameLoop)return
+        if(tetris.gameState == 3)return;
         for(let num= 0;num< 3;++num){
           let p = tetris.next[num].rot[0];
           let b = tetris.next[num].box;

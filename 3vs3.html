@@ -186,24 +186,17 @@
       holdPiece: data.holdPiece,
       lines: data.lines,
       burnOn: data.burnOn,
-      result: data.result,
       itemNumber: data.itemNumber,
+      getItem: data.getItem,
+      boardOverLoad: data.boardOverLoad
     }
-    socket.emit('teamGamming', datatmp, config, myProfession.action);
-    myProfession.action = false;
-  };
-
-  function changeTeam(){
-    socket.emit('enterRoom', config, "change")
+    socket.emit('teamGamming', datatmp, config, myProfession.action)
+    myProfession.action = false
   }
+  function changeTeam(){socket.emit('enterRoom', config, "change")}
+  function start(){socket.emit('teamFight',config)}
+  function dice(){myProfession.act()}
 
-  function start(){
-    socket.emit('teamFight',config)
-  }
-
-  function dice(){
-    myProfession.act();
-  }
   function _loadData(Core, Canvas, data){
     Core.gameLoop = data.gameLoop
     Core.gameState = data.gameState
@@ -215,12 +208,6 @@
     Core.haveHold = data.haveHold
     Core.holdPiece = data.holdPiece
     Core.lines = data.lines
-    Core.result = data.result
-    
-    gamecore.raise += 0
-    if(!data.result){
-      gamecore._triggerGameOver()
-    }
     draw._renderNoHUD(Core, Canvas);
   }
 
@@ -234,12 +221,8 @@
 
   window.addEventListener('load', event => {
     _startStopBtn = event => {
-      /*
-      timer.settime(P1canvas.togglePlayPause());
-      /*/
       P1canvas._disableUI()
       gamecore.togglePlayPause()
-      //*/
       if (p2 !== undefined) socket.emit('fight', p2);
     };document.getElementById('start-stop-btn').addEventListener('click', _startStopBtn );
     /*
@@ -254,23 +237,29 @@
   })
 
   socket.on('teamGamming', function (data, dataConfig, actType) {
-    if(dataConfig.id == teammate1Canvas.playerName)
-      _loadData(teammate1Core, teammate1Canvas, data)
-    if(dataConfig.id == teammate2Canvas.playerName)
-      _loadData(teammate2Core, teammate2Canvas, data);
-    if(dataConfig.id == opponent1Canvas.playerName) 
-      _loadData(opponent1Core, opponent1Canvas, data);
-    if(dataConfig.id == opponent2Canvas.playerName)
-      _loadData(opponent2Core, opponent2Canvas, data);
-    if(dataConfig.id == opponent3Canvas.playerName)
-      _loadData(opponent3Core, opponent3Canvas, data);
-    
+    //console.log(dataConfig)
+    if(data.boardOverLoad){
+      if(dataConfig.team == config.team) {
+        if(opponentShield.life > 0) opponentShield.life--
+        else opponentHeart.life--
+      } else {
+        if(teamShield.life > 0) teamShield.life--
+        else teamHeart.life--
+      } 
+    }else {
+      switch(dataConfig.id){
+        case teammate1Canvas.playerName: _loadData(teammate1Core, teammate1Canvas, data);break
+        case teammate2Canvas.playerName: _loadData(teammate2Core, teammate2Canvas, data);break
+        case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data);break
+        case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data);break
+        case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data);break
+
     if (data.itemNumber !== -1) {
       if (config.team == dataConfig.team) {
         document.getElementById('itemIcon').src = Items.ITEMS[data.itemNumber].url;    
       }
       else {
-        document.getElementById('itemIcon2').src = Items.ITEMS[data.itemNumber].url;  
+
       }
     }
     switch(actType){
@@ -305,6 +294,10 @@
           }, 4000);
         }
       break;
+    }
+    if( teamHeart.life  == 0 || opponentHeart.life == 0){
+      gamecore._triggerGameOver()
+      SendData(gamecore)
     }
     repaintHUD()
   })
@@ -350,7 +343,6 @@
     console.log(opponent2Canvas.playerName)
     console.log(opponent3Canvas.playerName)
     repaintHUD()
-    // socket.emit ('defend', config);
     myCanvas._disableUI()
     gamecore.togglePlayPause()
   })

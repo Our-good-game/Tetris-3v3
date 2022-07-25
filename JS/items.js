@@ -1,5 +1,5 @@
 class Items{
-  static ITEMS=[
+  static ITEMS = [
     {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
     {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
     {id: 2, name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
@@ -7,7 +7,7 @@ class Items{
     {id: 4, name: 'BlockPreview',    url:"picture/Item/shadow.png"},
     {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
     {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
-  ];
+  ]
   constructor(){
     this.getItem = undefined
     this.itemNumber = -1
