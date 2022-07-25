@@ -174,6 +174,9 @@
   }
 
   function SendData(data) {
+    if(myProfession.action && config.profession == 'Magician')
+      gamecore._randomAItem()
+    
     let datatmp = {
       gameLoop: data.gameLoop,
       gameState: data.gameState,
@@ -225,11 +228,6 @@
       gamecore.togglePlayPause()
       if (p2 !== undefined) socket.emit('fight', p2);
     };document.getElementById('start-stop-btn').addEventListener('click', _startStopBtn );
-    /*
-    document.getElementById('GameOver-btn').addEventListener('click', event => {
-      P1canvas.quit()
-    });
-    */
     _find = event => {
       document.getElementById('control').style.display = "none"
       document.getElementById('room').style.display = "block"
@@ -253,15 +251,9 @@
         case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data);break
         case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data);break
         case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data);break
-
-    if (data.itemNumber !== -1) {
-      if (config.team == dataConfig.team) {
-        document.getElementById('itemIcon').src = Items.ITEMS[data.itemNumber].url;    
-      }
-      else {
-
       }
     }
+    
     switch(actType){
       case 'Attacker':
         if(dataConfig.team !== config.team) {
@@ -273,26 +265,28 @@
         } 
       break;
       case 'Defender':
-        if(dataConfig.team !== config.team){
+        if( dataConfig.team !== config.team){
           teamShield.life = Math.min(teamShield.life+1, 3)
-        }else {
+        } else {
           opponentShield.life = Math.min(opponentShield.life+1, 3)
         }
       break;
       case 'Magician':
-        if (dataConfig.id == config.id){
-          gamecore._getItem();
-          // 4sec 為changeItemIcon()執行總時間
+        let pos
+        if(dataConfig.team == config.team){
+          pos = document.getElementById('itemIcon')
+        } else {
+          pos = document.getElementById('itemIcon2')
+        }    
+        gamecore.getItem = 
+        ClassicTetris3v3.ITEMS[gamecore.changeItemIcon(pos, data.itemNumber)].name
           setTimeout( () => {
             //骰到defense
-            if (gamecore.itemNumber == 1) {
-              gamecore.defense = true;
-            }
-            else {
-              socket.emit ('item', Items.ITEMS[gamecore.itemNumber].name, config);
-            } 
-          }, 4000);
-        }
+            if ( dataConfig.team == config.team ) {
+              if ( gamecore.itemNumber == 1) 
+                gamecore.defense = true;
+            } else gamecore._itemExecute()
+          }, 4000)
       break;
     }
     if( teamHeart.life  == 0 || opponentHeart.life == 0){
@@ -347,10 +341,10 @@
     gamecore.togglePlayPause()
   })
   
-  socket.on('item', function(item){
-    gamecore.getItem = item;
-    gamecore._itemExecute();
-  })
+  // socket.on('item', function(item){
+  //   gamecore.getItem = item;
+  //   gamecore._itemExecute();
+  // })
 </script>
 
 </html>
