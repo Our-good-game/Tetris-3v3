@@ -21,7 +21,7 @@ class Items{
     this.itemChangeTetris = false;
   }
   _itemExecute(){
-    console.log(this.getItem)
+    console.log(this.getItem, this.itemNumber)
     if(this.defense !== true){
       switch(this.getItem){
         case 'LockSpace':       this.setItemLockSpace(); break;
@@ -74,18 +74,22 @@ class Items{
       this.itemLockTetris = false;
     }, 3000 );
   }
-
+  _randomAItem(){
+    this.itemNumber = Math.floor(Math.random() * Items.ITEMS.length)
+  }
   _getItem() {
     this.changeItemIcon();
   }
 
-  changeItemIcon() {
-    let itemIcon = document.getElementById('itemIcon');
+  changeItemIcon(pos, num) {
+    let itemIcon = pos;
     let delayTime = 0;
     let interval;
+    let finalNum = num
+    let NumberTmp = this.randomIcon(-1)
     let t = this
     changeIcon()
-
+    return num
     // Function that run at irregular intervals
     function changeIcon() {
       // Clears the previous setInterval timer
@@ -93,24 +97,26 @@ class Items{
       if (delayTime < 1000) {
         t.takingItemSound.currentTime = 0;
         t.takingItemSound.play();
+        NumberTmp = t.randomIcon(NumberTmp)
+        itemIcon.src = Items.ITEMS[NumberTmp].url;
       }
       else if (delayTime == 1000){
         t.takeEndItemSound.currentTime = 0;
         t.takeEndItemSound.play();
+        itemIcon.src = Items.ITEMS[finalNum].url;
       }
       else {return 0;}
-      itemIcon.src = Items.ITEMS[t.randomIcon()].url;
+      
       delayTime += 200;
       interval = setInterval(changeIcon, delayTime);
     }
+    
   }
-  randomIcon() {
-    let random = this.itemNumber;
-    while (random === this.itemNumber) {
+  randomIcon(tmp) {
+    let random = tmp
+    while (random === tmp) {
       random = Math.floor(Math.random() * Items.ITEMS.length);
-    }
-    this.itemNumber = random;
-    return random;
+    }return random;
   }
   // itemdelay() {return new Promise(resolve => { });}
 }
