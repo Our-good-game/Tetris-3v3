@@ -403,7 +403,7 @@ class ClassicTetris3v3 extends Items{
     this.oldlines = this.lines;
     this.score = 0;
     this.pressDownScore = 0;
-    this.result = false;
+    this.result = undefined;
     this.boardOverLoad = false
 
     // event listeners
@@ -586,7 +586,7 @@ class ClassicTetris3v3 extends Items{
     // initial state
     this.previousGameState = ClassicTetris3v3.STATE_DROP;
     this.gameState = ClassicTetris3v3.STATE_DROP;
-    this.result = true
+    this.result = undefined
 
     // item icon
     document.getElementById('itemIcon').src = "/picture/Item/default.png";
@@ -596,8 +596,6 @@ class ClassicTetris3v3 extends Items{
 
   // add and remove event listeners
   _addEventListeners() {
-    document.getElementById('start-stop-btn').removeEventListener('start-stop-btn', _startStopBtn,false)
-    document.getElementById('find').removeEventListener('click',_find,false)
     document.addEventListener('pointerdown', this._handlePointerDown, { capture: true, passive: false });
     document.addEventListener('pointermove', this._handlePointerMove, { capture: true, passive: false });
     document.addEventListener('pointerup', this._handlePointerUp, { capture: true, passive: false });
@@ -607,8 +605,6 @@ class ClassicTetris3v3 extends Items{
   }
 
   _removeEventListeners() {
-    document.getElementById('start-stop-btn').addEventListener('start-stop-btn',_startStopBtn,false)
-    document.getElementById('find').addEventListener('click',_find,false)
     document.removeEventListener('pointerdown', this._handlePointerDown, true);
     document.removeEventListener('pointermove', this._handlePointerMove, true);
     document.removeEventListener('pointerup', this._handlePointerUp, true);
@@ -1252,7 +1248,6 @@ class ClassicTetris3v3 extends Items{
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
-        draw._render(this, myCanvas);
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;

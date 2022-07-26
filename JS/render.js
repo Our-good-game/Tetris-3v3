@@ -18,6 +18,8 @@ class Render{
     this.tetrisBackgroundColor = '#000000'
     this.borderColor = '#fff'
     this.gridColor = '#ddd'
+    this.displayTetris = false
+    this.displayTspin = false
   }
     _rendertime(canvas, time){
       canvas.context.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
@@ -200,13 +202,10 @@ class Render{
     
       // draw heads-up display
       _drawHUD(tetris, formal) {
-        let scoreStr = 'Lines:   ';
         let nextStr = 'Next';
         let holdStr = 'Hold';
         formal.context.font = this.canvasFont;
         formal.context.fillStyle = this.canvasFontColor;
-        formal.context.fillText(scoreStr, formal.scoreX, formal.scoreY);
-        formal.context.fillText(tetris.lines, formal.scoreX, formal.scoreY + 50);
         formal.context.fillText(nextStr, formal.nextX, formal.nextY);
         formal.context.fillText(holdStr, formal.holdX, formal.holdY);
       }
@@ -236,6 +235,7 @@ class Render{
       
       _drawHold(tetris, formal) {
         if(!tetris.gameLoop)return
+        if(tetris.gameState == 3)return;
         const p = tetris.holdPiece.rot[0];
         const b = tetris.holdPiece.box;
         for (let i = b[0]; i < b[0] + b[2]; ++i) {
@@ -253,18 +253,27 @@ class Render{
       }
       _drawCombo(tetris, formal) {
         if(!tetris.gameLoop)return
+        if(tetris.gameState == 3)return;
+       
+        if(tetris.cheakTetris){
+          this.displayTetris = true
+          setTimeout( ()=>{this.displayTetris = false},1000)
+        }
+        if(tetris.cheakTspin){
+          this.displayTspin = true
+          setTimeout( ()=>{this.displayTspin = false},1000)
+        }
         if(tetris.combos > 0){
           formal.context.fillText("Combo", formal.comboX, formal.comboY);
           formal.context.fillText(tetris.combos, formal.comboX+50, formal.comboY + 50);
         }
-        if(tetris.cheakTspin)
-          formal.context.fillText("T-spin", formal.comboX, formal.comboY + 150);
-          
-        if(tetris.cheakTetris)
-          formal.context.fillText("Tetris", formal.comboX - 10, formal.comboY + 200);
-        
         if(tetris.backToBack)
-          formal.context.fillText("Back-2", formal.comboX, formal.comboY + 250);
+          formal.context.fillText("BackTwo", formal.comboX, formal.comboY + 150);
+        if(tetris.cheakTspin)
+          formal.context.fillText("T-spin", formal.comboX, formal.comboY + 250);
+        if(this.displayTetris)  
+          formal.context.fillText("Tetris", formal.comboX , formal.comboY + 200);
+        
         
       }
       
