@@ -243,8 +243,8 @@ class ClassicTetris {
     tapClickMaxDuration = 30000,
     tapClickMaxDistance = 1,
 
-    rotateSound = undefined,
-    moveSound = undefined,
+    rotateSound = new Audio ("audio/move.mp3"),
+    moveSound = new Audio ("audio/move.mp3"),
     setSound = new Audio ("audio/hard_drop.wav"),
     gameOverSound = undefined,
     lineSound = new Audio ("audio/line.mp3"),
@@ -295,6 +295,8 @@ class ClassicTetris {
      this.takingEndItemSound = 1.0;
      this.gameTheme.volume = 0.1;
      this.setSound.volume = 0.3;
+     this.moveSound.volume = 0.05;
+     this.rotateSound.volume = 0.05;
 
     // pieces
     this.pieces = [
@@ -835,6 +837,10 @@ class ClassicTetris {
 
     }
     if (this.rotateClockwise) {
+      if (this.rotateSound) {
+        this.rotateSound.currentTime = 0;
+        this.rotateSound.play();
+      }
       const oldRotation = this.pieceRotation;
       this.pieceRotation = (this.pieceRotation + 1 + this.piece.rot.length ) % this.piece.rot.length;
       let canrot=false
@@ -912,6 +918,10 @@ class ClassicTetris {
     }
 
     if (this.rotateAnticlockwise) {
+      if (this.rotateSound) {
+        this.rotateSound.currentTime = 0;
+        this.rotateSound.play();
+      }
       const oldRotation = this.pieceRotation;
       this.pieceRotation = (this.pieceRotation - 1 + this.piece.rot.length ) % this.piece.rot.length;
       let canrot=false

@@ -158,6 +158,14 @@
   }
   // 能量條
   var myProfession 
+  // sound effect
+  var got_attack = new Audio("audio/got_attack.mp3")
+  var shield_sound = new Audio("audio/shield.mp3")
+
+  //sound effect volume
+  got_attack.volume = 1.0;
+  shield_sound.volume = 1.0;
+  
   window.onload = function () {
     fetch('id')
       .then(function (response) { return response.text(); })
@@ -244,11 +252,25 @@
     switch(actType){
       case 'Attacker':
         if(dataConfig.team == config.team) {
-          if(opponentShield.life > 0) opponentShield.life--
-          else opponentHeart.life--
+          if(opponentShield.life > 0) {
+            opponentShield.life--;
+            shield_sound.currentTime = 0;
+            shield_sound.play();
+          } else {
+            opponentHeart.life--;
+            got_attack.currentTime = 0;
+            got_attack.play();
+          }
         } else {
-          if(teamShield.life > 0) teamShield.life--
-          else teamHeart.life--
+          if(teamShield.life > 0) {
+            teamShield.life--;
+            shield_sound.currentTime = 0;
+            shield_sound.play();
+          } else {
+            teamHeart.life--;
+            got_attack.currentTime = 0;
+            got_attack.play();
+          }
         } 
       break;
       case 'Defender':
