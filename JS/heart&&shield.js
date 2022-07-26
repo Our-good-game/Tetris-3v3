@@ -13,8 +13,8 @@ class heart{
   }
   paint (){
     let constant = 0
-    if( this.dir == "left") constant = 1
-    else constant = -1 
+    if( this.dir == "left") constant = -1
+    else constant = 1 
     for(let i=1; i <= this.life; ++i){
       this.canvas.beginPath();
       this.canvas.drawImage(this.img, this.canvasWidth /2 + (i*50*constant)-70, 10, 50, 50)
@@ -33,8 +33,8 @@ class shield extends heart{
   }
   paint (){
     let constant = 0
-    if( this.dir == "left") constant = 1
-    else constant = -1 
+    if( this.dir == "left") constant = -1
+    else constant = 1 
     for(let i=1; i <= this.life; ++i){
       this.canvas.beginPath();
       this.canvas.drawImage(this.img, this.canvasWidth /2 + (i*50*constant)-70, 60, 50, 50)

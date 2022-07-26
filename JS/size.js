@@ -82,12 +82,10 @@ class teamModSize {
     this.nextOffsetX =    this.boardX + this.squareSide * 10.5
     this.nextOffsetY =    this.nextY + this.squareSide * 0.5
     this.nextOffsetvec =  this.squareSide * 3
-    this.pauseX =     this.boardX + this.squareSide * 3
-    this.pauseY =     this.boardY + this.squareSide * 12
     this.holdX =      this.boardX - this.squareSide * 4
     this.holdY =      this.boardY + this.squareSide * 3
-    this.comboX =     this.boardX - this.squareSide * 5
-    this.comboY =     this.boardX + this.squareSide * 12
+    this.comboX =     this.boardX + this.squareSide * 10.5
+    this.comboY =     this.boardX + this.squareSide * 11
     this.nameX =      this.boardX + 3 * this.squareSide
     this.nameY =      this.boardY + this.squareSide
 

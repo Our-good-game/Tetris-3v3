@@ -30,6 +30,7 @@ app.get('/TESTUSE.html', function (req, res) {
 app.post('/login', function(req, res) {
   var user = req.body
   if (user.username !== '' ) {
+    if(ids.get(user.username) !== undefined)res.send("have the same name! ")
     req.session.username = user.username;
     res.redirect('/');
   }else res.send("name error")
@@ -182,10 +183,16 @@ io.on('connection', function (socket) {
     socket.on('teamFight',function(config){
       for(let j=0; j<3; ++j)
         for(let i=0; i<2; ++i)
+          if(rooms3vs3[i][j] == "--"){
+            ids.get(config.id).socket.emit('teamFight', 'none')
+            return;
+          }
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
           if (rooms3vs3[i][j] !== "--")
             ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
     })
-    socket.on('teamGamming',function(data, config, action){// 處理道具
+    socket.on('teamGamming',function(data, config, action){
       let actType = 'none'
       if( action ) actType = config.profession
       for(let i=0; i<2; ++i)
@@ -194,15 +201,6 @@ io.on('connection', function (socket) {
             ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
     })
 
-    socket.on('item', function(item, config){
-      // right -> i = 0 (丟給left的敵人)
-      // left  -> i = 1 (丟給right的敵人) 
-      let i = 0;
-      if (config.team == "left") i = 1; 
-      for(let j=0; j<3; ++j)
-        if (rooms3vs3[i][j] !== "--")
-          ids.get(rooms3vs3[i][j]).socket.emit('item', item);
-    })
 
     socket.on('disconnect',function(){
       let leaver
