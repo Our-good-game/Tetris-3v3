@@ -77,9 +77,6 @@ class Items {
   _randomAItem(){
     this.itemNumber = Math.floor(Math.random() * Items.ITEMS.length)
   }
-  _getItem() {
-    this.changeItemIcon();
-  }
 
   changeItemIcon(pos, num) {
     let itemIcon = pos;
