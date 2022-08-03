@@ -50,7 +50,7 @@ pre{
   height: 100px;width: 150px;
   color:#fff;
 }
-button:hover ,input:hover{
+button:hover {
   color:#003C9D;
   background-color:#fff;
   border:2px #003C9D;

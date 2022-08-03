@@ -510,10 +510,10 @@ class ClassicTetris3v3 extends Items{
 
     do {
       this._process();
-      if(this.frameCounter % 8 === 0 )SendData(this)
+      if(this.frameCounter % 10 === 0 )SendData(this)
       if(this.boardOverLoad){
         SendData(this)
-        this._resetParams();
+        this._resetParams()
       }
       draw._render(this, myCanvas);
       
@@ -694,11 +694,11 @@ class ClassicTetris3v3 extends Items{
         myProfession.changeProfession(config)
         // change to Attacker
       break;
-      case 83: 
-        config.profession = 'Magician'
-        myProfession.changeProfession(config)
-        // change to Magician
-      break;
+      // case 83: 
+      //   config.profession = 'Magician'
+      //   myProfession.changeProfession(config)
+      //   // change to Magician
+      // break;
       case 68: 
         config.profession = 'Defender'
         myProfession.changeProfession(config)
@@ -737,7 +737,7 @@ class ClassicTetris3v3 extends Items{
     // global frame counter
     ++this.frameCounter;
     if(this.frameCounter == 180){
-      --this.maxFramesTilDrop
+      this.maxFramesTilDrop = Math.max(this.maxFramesTilDrop-1,4)
       this.frameCounter = 0
     }
   }
@@ -1248,7 +1248,7 @@ class ClassicTetris3v3 extends Items{
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
-        draw._render(this, myCanvas);
+        draw._render(this, myCanvas)
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;

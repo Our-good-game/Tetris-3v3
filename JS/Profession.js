@@ -1,7 +1,7 @@
 class profession extends EnergyBar{
   static COST = {
-    Attacker: 5,
-    Defender: 7,
+    Attacker: 7,
+    Defender: 8,
     Magician: 10
   }
   constructor(config, bar, energy){

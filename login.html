@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html>
     <head>
-        
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta charset="utf-8">
         <title>Tetris Triple</title>
-        <div style='padding:0px 30px 15px 30px;'>
-            <span style="font-size:3cm;">~Tetris Triple~</span><br>
-        </div>
-
-        <div style='padding:50px 60px 20px 160px; '>
-          <form action="/login" method="POST">
-            請寫下暱稱: <input type="text" name="username"/> <br>
-            <input type="submit" value="login"/>
-          </form>
-        </div>
+        <style>
+          @import"/CSS/style.css";
+          @import"/CSS/energyBar.css";
+          @font-face {
+            font-family: huakang_girl_w5;
+            src: url(/CSS/huakang_girl_w5.ttf);
+          }
+          .btn_ani {
+            transition: all 0.3s;
+          }
+          .btn_ani:hover {
+            transform: scale(1.3);
+          }
+        </style>
+        <img src="/picture/hana1.png"id ="hana1"style="display:none"></img>
+        <img src="/picture/hana2.png"id ="hana2"style="display:none"></img>
+        <img src="/picture/hana3.png"id ="hana3"style="display:none"></img>
+        
     </head>
-    <body background="\picture\background.jpg">
+    <body>
+      <canvas id='js-background'></canvas>
+      <div style='padding:0px 30px 15px 30px;'>
+        <span style="font-size:3cm; color: #FFF;">~Tetris Triple~</span><br>
+      </div>
+
+      <div style='padding:50px 60px 20px 160px; '>
+        <form action="/login" method="POST" style="font-size:36px; color: #FFF;">
+          請寫下暱稱: <input type="text" name="username" style="font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6); width: 500px;"/> <br>
+          <button type="submit">login</button>
+        </form>
+      </div>
+      
     </body>
+    <script src="/JS/background2.js"></script>
 </html>
