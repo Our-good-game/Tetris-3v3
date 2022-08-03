@@ -1,6 +1,3 @@
-// shield 繼承 heart
-
-
 
 class heart{
   constructor(direction, inputCanvas){
@@ -9,7 +6,7 @@ class heart{
     this.img = document.getElementById("heart");
     this.dir = direction
     this.canvas = inputCanvas.getContext("2d");
-    this.canvasWidth = inputCanvas.width
+    this.canvasWidth = parseInt(inputCanvas.width)
   }
   paint (){
     let constant = 0

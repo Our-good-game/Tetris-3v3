@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta charset="utf-8">
+      <title>Tetris Triple</title>
+      <style>
+        @import"/CSS/style.css";
+
+        .btn_ani {
+          transition: all 0.3s;
+        }
+        .btn_ani:hover {
+          transform: scale(1.3);
+        }
+      </style>
+      <script src='/JS/render.js'></script>
+      <script src='/JS/player-interface.js'></script>
+      <script src='/JS/items.js'></script>
+      <script src='/JS/classic-tetris-3v3.js'></script>
+      <script src='/socket.io/socket.io.js'></script>
+      <script src='/JS/size.js'></script>
+      <script src='/JS/heart&&shield.js'></script>
+      <script src='/JS/EnergyBar.js'></script>
+      <script src='/JS/Profession.js'></script>
+      <script src="node_modules/jquery/dist/jquery.min.js" charset="utf-8"></script>  
+      <img src="/picture/heart.png" id ="heart" style="display:none"></img>
+      <img src="/picture/shield.png" id ="shield" style="display:none"></img>  
+    </head>
+    <body>
+      <canvas id='js-background'></canvas>
+      <button class = "btn_ani" id='back-btn' style="position: absolute;z-index:10;width:200px;height:100px;">Quit</button>
+      <div class="container" style="position: absolute; height:auto; width: 100%;">
+        <canvas id='HUD' style="position: absolute;"></canvas>
+      </div>
+      <div class="container" style="position: relative;">
+        <canvas id='left1' class='tetris-canvas' style="position:relative; height: 40%;"></canvas>
+        <canvas id='left2' class='tetris-canvas' style="position:relative; height: 40%;"></canvas>
+        <canvas id='left3' class='tetris-canvas' style="position:relative; height: 40%;"></canvas>
+      </div>  
+      </br>
+      <div class="container" style="position: relative;">
+        <canvas id='right1' class='tetris-canvas' style="position:relative; height: 40%;"></canvas>
+        <canvas id='right2' class='tetris-canvas' style="position:relative; height: 40%;"></canvas>
+        <canvas id='right3' class='tetris-canvas' style="position:relative; height: 40%;"></canvas> 
+      </div>
+      
+    </body>
+    <script src="/JS/background.js"></script>
+    <script> 
+      var draw = new Render();
+      var allElement = new Array(6)
+      var allCanvas = new Array(6)
+      var allCore = new Array(6)
+      var HUD = document.getElementById('HUD');
+      HUD.height = window.innerHeight * 0.15;
+      HUD.width = window.innerWidth;
+      HUD.style.height = ((window.innerHeight * 0.15).toString()) + 'px'
+      HUD.style.width = ((window.innerWidth).toString()) + 'px'
+      var teamHeart = new heart("left", HUD)
+      var opponentHeart = new heart("right", HUD)
+      var teamShield = new shield("left", HUD)
+      var opponentShield = new shield("right", HUD)
+      var pacCnt = 0
+       
+      allElement[0] = document.getElementById('left1')
+      allElement[1] = document.getElementById('left2');
+      allElement[2] = document.getElementById('left3');
+      allElement[3] = document.getElementById('right1');
+      allElement[4] = document.getElementById('right2');
+      allElement[5] = document.getElementById('right3');
+      for(let i=0; i<6; ++i){
+        let j = window.innerHeight, k = window.innerWidth
+        allElement[i].style.top = HUD.style.height
+        allElement[i].style.height = ((j * 0.41).toString()) + 'px'
+        allElement[i].style.width = ((k * 0.33).toString()) + 'px'
+        allElement[i].height = j * 0.41
+        allElement[i].width = k * 0.33
+        allCanvas[i] = new viewModSize( allElement[i] )
+        allCore[i] = new PlayerInterface()
+        draw._renderNoHUD(allCore[i], allCanvas[i])
+      };repaintHUD()
+      var socket = io()
+      fetch('id')
+        .then(function(response) {return response.text()})
+        .then(function(data){
+          id = data
+          socket.emit("idstore", id)
+          socket.emit("viewer", id)
+        })
+        
+        socket.on('teamGamming', function (data, dataConfig, actType){
+          pacCnt++;console.log("catch package",pacCnt)
+          for(let i=0; i<6; ++i){
+            if(dataConfig.id == allCanvas[i].playerName){
+              _loadData(allCore[i], allCanvas[i], data)
+              break
+            }
+          }
+          if(dataConfig.team =='left'){
+            teamHeart.life = data.teamHeart
+            teamShield.life = data.teamShield
+          }else {
+            opponentHeart.life = data.teamHeart
+            opponentShield.life = data.teamShield
+          }
+          repaintHUD()
+        })
+        socket.on('teamFight', function(roomData){
+          for(let i=0; i<6; ++i){
+            allCanvas[i].playerName = roomData[parseInt(i/3)][i%3]
+            console.log(allCanvas[i].playerName)
+            repaintHUD()
+          }
+        })
+        function repaintHUD() {
+          HUD.getContext("2d").clearRect(0, 0, HUD.width, HUD.height);
+          teamHeart.paint();
+          opponentHeart.paint();
+          teamShield.paint();
+          opponentShield.paint();
+        }
+        function _loadData(Core, Canvas, data){
+          Core.gameLoop = data.gameLoop
+          Core.gameState = data.gameState
+          Core.board = data.board;
+          Core.piecePosition = data.piecePosition
+          Core.pieceRotation = data.pieceRotation
+          Core.piece = data.piece
+          for (let i = 0; i < 3; ++i)Core.next[i] = data.next[i]
+          Core.haveHold = data.haveHold
+          Core.holdPiece = data.holdPiece
+          Core.lines = data.lines
+          draw._renderNoHUD(Core, Canvas);
+        }
+      document.getElementById('back-btn').addEventListener('click', event => {
+        document.location.href="index.html"
+      });
+    </script>
+</html>

@@ -42,11 +42,10 @@
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
         <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
         <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
-        <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
+        <!-- <button class="btn_ani" onclick=dice() style="position: absolute;">action</button> -->
 
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
-          
         </div>
         <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
@@ -146,8 +145,8 @@
 
   var teamHeart = new heart("left", HUD)
   var opponentHeart = new heart("right", HUD)
-  let teamShield = new shield("left", HUD)
-  let opponentShield = new shield("right", HUD)
+  var teamShield = new shield("left", HUD)
+  var opponentShield = new shield("right", HUD)
 
   var socket = io()
   var config = {
@@ -205,7 +204,9 @@
       burnOn: data.burnOn,
       itemNumber: data.itemNumber,
       getItem: data.getItem,
-      boardOverLoad: data.boardOverLoad
+      boardOverLoad: data.boardOverLoad,
+      teamHeart: teamHeart.life,
+      teamShield: teamShield.life
     }
     socket.emit('teamGamming', datatmp, config, myProfession.action)
     myProfession.action = false
@@ -328,17 +329,22 @@
 
   socket.on('teamFight', function(roomData){
     if(roomData == 'none'){
-      alert("Please wait another people")
+      alert("Please wait for others")
+      return
+    }
+    if(roomData == 'full'){
+      alert("TeamFight room is full! ")
+      javascript:location.href='index.html'
       return
     }
     document.getElementById('findInterface').style.display = "none";
     document.getElementById('playInterface').style.display = "flex";
-    draw._render(gamecore, myCanvas);
-    draw._renderNoHUD(teammate1Core, teammate1Canvas);
-    draw._renderNoHUD(teammate2Core, teammate2Canvas);
-    draw._renderNoHUD(opponent1Core, opponent1Canvas);
-    draw._renderNoHUD(opponent2Core, opponent2Canvas);
-    draw._renderNoHUD(opponent3Core, opponent3Canvas);
+    draw._render(gamecore, myCanvas)
+    draw._renderNoHUD(teammate1Core, teammate1Canvas)
+    draw._renderNoHUD(teammate2Core, teammate2Canvas)
+    draw._renderNoHUD(opponent1Core, opponent1Canvas)
+    draw._renderNoHUD(opponent2Core, opponent2Canvas)
+    draw._renderNoHUD(opponent3Core, opponent3Canvas)
     let pos;
     if(config.team == 'left') pos = 0
     else pos = 1

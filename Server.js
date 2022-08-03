@@ -50,6 +50,11 @@ app.get('/3vs3.html', function (req, res) {
   if(username==undefined){res.redirect('/login');}
   else res.sendFile(__dirname +'/3vs3.html');
 })
+app.get('/viewing.html', function (req, res) {
+  let username = req.session.username;
+  if(username==undefined){res.redirect('/login');}
+  else res.sendFile(__dirname +'/viewing.html');
+})
 
 
 //CSS && picture
@@ -71,6 +76,7 @@ var messages=[{name: "Who",message: "test message"}]
 var typing = false
 var timer = null
 var ids = new Map();
+let viewer = new Array();
 var people = 0 
 var rooms = new Array(3)
 var rooms3vs3 = new Array(2)
@@ -143,6 +149,11 @@ io.on('connection', function (socket) {
 
     //3vs3
     socket.on('enterRoom', function(config, act){
+      let full = true
+      for(let j=0; j<3; ++j)
+        for(let i=0; i<2; ++i)
+          if(rooms3vs3[i][j] == '--')full = false
+      if(full)ids.get(config.id).socket.emit('teamFight', 'none')
       let same = false 
       if(act === "change"){
         let posi,posj,full = true
@@ -179,18 +190,22 @@ io.on('connection', function (socket) {
         for(let i=0; i<2; ++i)
           if (rooms3vs3[i][j] !== "--")
             ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3) 
+      console.log(rooms3vs3)
     })
     socket.on('teamFight',function(config){
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if(rooms3vs3[i][j] == "--"){
-            ids.get(config.id).socket.emit('teamFight', 'none')
-            return;
-          }
+      // for(let j=0; j<3; ++j)
+      //   for(let i=0; i<2; ++i)
+      //     if(rooms3vs3[i][j] == "--"){
+      //       ids.get(config.id).socket.emit('teamFight', 'none')
+      //       return;
+      //     }
       for(let j=0; j<3; ++j)
         for(let i=0; i<2; ++i)
           if (rooms3vs3[i][j] !== "--")
             ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
+      for(let i=0; i<viewer.length; ++i)
+        ids.get(viewer[i]).socket.emit('teamFight', rooms3vs3)
+      
     })
     socket.on('teamGamming',function(data, config, action){
       let actType = 'none'
@@ -199,14 +214,30 @@ io.on('connection', function (socket) {
         for(let j=0; j<3; ++j)
           if (rooms3vs3[i][j] !== "--" )
             ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
+      for(let i=0; i<viewer.length; ++i)
+        ids.get(viewer[i]).socket.emit('teamGamming', data, config, actType)
     })
-
+    socket.on("viewer", function(id){
+      if(ids.get(id) !== 'undefined')
+        ids.get(id).socket.emit('teamFight', rooms3vs3)
+      for(let i=0; i<viewer.length; ++i)
+        if(viewer[i]==id)return  
+      viewer.push(id)
+    })
 
     socket.on('disconnect',function(){
       let leaver
       ids.forEach((value, key)=>{
         if(socket.id === value.socket.id)leaver = key
       });ids.delete(leaver)
+
+      for(let i=0; i<viewer.length; ++i){
+        if(viewer[i]==leaver){
+          viewer[i] = viewer[0]
+          viewer.shift();
+          break
+        }
+      }
       let result
       for(let i=0; i<rooms.length; ++i){
         if(rooms[i][0] == leaver){rooms[i][0] = undefined; result = rooms[i][1]}
