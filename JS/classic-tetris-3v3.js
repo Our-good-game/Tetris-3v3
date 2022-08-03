@@ -1248,6 +1248,7 @@ class ClassicTetris3v3 extends Items{
       if (this.gameOverLine < this.boardHeight) {
         // paint next row
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
+        draw._render(this, myCanvas);
       } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;

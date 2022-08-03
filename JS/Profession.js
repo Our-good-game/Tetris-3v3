@@ -11,6 +11,9 @@ class profession extends EnergyBar{
     this.attack_sound = new Audio ("audio/attack_sound.wav");
     this.defence_sound = new Audio ("audio/defence_sound.wav");
     this.magician_sound = new Audio ("audio/magician_sound.wav");
+    this.attack_sound.volume = 0.5;
+    this.defence_sound.volume = 0.5;
+    this.magician_sound.volume = 0.5;
   }
   changeProfession(config) {
     this.pro = config.profession

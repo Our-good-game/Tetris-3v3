@@ -181,12 +181,13 @@ io.on('connection', function (socket) {
             ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3) 
     })
     socket.on('teamFight',function(config){
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if(rooms3vs3[i][j] == "--"){
-            ids.get(config.id).socket.emit('teamFight', 'none')
-            return;
-          }
+      // 滿六人才可開始
+      // for(let j=0; j<3; ++j)
+      //   for(let i=0; i<2; ++i)
+      //     if(rooms3vs3[i][j] == "--"){
+      //       ids.get(config.id).socket.emit('teamFight', 'none')
+      //       return;
+      //     }
       for(let j=0; j<3; ++j)
         for(let i=0; i<2; ++i)
           if (rooms3vs3[i][j] !== "--")

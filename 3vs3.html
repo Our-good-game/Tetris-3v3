@@ -150,21 +150,27 @@
   let opponentShield = new shield("right", HUD)
 
   var socket = io()
+
   var config = {
     id: undefined,
     team: undefined,       // left or right
     teamNumber: 0,         // 1 2 3
     profession: undefined, // ['Attacker', 'Defender', 'Magician']
   }
-  // 能量條
+  
   var myProfession 
+  
+  // Item
+  let teamLock = false;
+  let opponentLock = false;
+
   // sound effect
   var got_attack = new Audio("audio/got_attack.mp3")
   var shield_sound = new Audio("audio/shield.mp3")
-
+  
   //sound effect volume
-  got_attack.volume = 1.0;
-  shield_sound.volume = 1.0;
+  got_attack.volume = 0.5;
+  shield_sound.volume = 0.5;
   
   window.onload = function () {
     fetch('id')
@@ -205,10 +211,14 @@
       burnOn: data.burnOn,
       itemNumber: data.itemNumber,
       getItem: data.getItem,
-      boardOverLoad: data.boardOverLoad
+      boardOverLoad: data.boardOverLoad,
     }
     socket.emit('teamGamming', datatmp, config, myProfession.action)
-    myProfession.action = false
+    if (myProfession.action && config.profession == 'Magician' && teamLock) {
+      myProfession.action = true;
+    } else {
+      myProfession.action = false
+    }
   }
   function changeTeam(){socket.emit('enterRoom', config, "change")}
   function start(){socket.emit('teamFight',config)}
@@ -283,23 +293,35 @@
       case 'Magician':
         let pos
         if(dataConfig.team == config.team){
-          pos = document.getElementById('itemIcon')
+          if (teamLock == false) {
+            teamLock = true;
+            pos = document.getElementById('itemIcon')
+          } else {
+            break;
+          }
         } else {
-          pos = document.getElementById('itemIcon2')
-        }    
+          if (opponentLock == false) {
+            opponentLock = true;
+            pos = document.getElementById('itemIcon2')
+          } else {
+            break;
+          }
+        }
         gamecore.changeItemIcon(pos, data.itemNumber)
-          setTimeout( () => {
-            if ( dataConfig.team == config.team ) {
-              if ( data.itemNumber == 1) 
-                gamecore.defense = true;
-            } else {
-              gamecore.getItem = ClassicTetris3v3.ITEMS[data.itemNumber].name
-              gamecore._itemExecute()
-            }
-          }, 4000)
+        setTimeout( () => {
+          if ( dataConfig.team == config.team ) {
+            if (data.itemNumber == 1)
+              gamecore.defense = true;
+            teamLock = false;
+          } else {
+            gamecore.getItem = ClassicTetris3v3.ITEMS[data.itemNumber].name
+            gamecore._itemExecute()
+            opponentLock = false;
+          }
+        }, 4000)
       break;
     }
-    if( teamHeart.life  == 0 || opponentHeart.life == 0){
+    if( teamHeart.life == 0 || opponentHeart.life == 0){
       gamecore.result = teamHeart.life > 0? 'win': 'lose' 
       gamecore._triggerGameOver()
       DisplayResult()
