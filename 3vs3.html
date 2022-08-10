@@ -15,6 +15,7 @@
   <style>
     @import"/CSS/style.css";
     @import"/CSS/energyBar.css";
+    @import"/CSS/countDown.css";
     @font-face {
       font-family: huakang_girl_w5;
       src: url(/CSS/huakang_girl_w5.ttf);
@@ -42,7 +43,7 @@
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
         <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
         <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
-        <!-- <button class="btn_ani" onclick=dice() style="position: absolute;">action</button> -->
+        <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
 
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
@@ -71,6 +72,27 @@
           <button class= "btn_ani" onclick="changeTeam()">Change</button>
           <button class= "btn_ani" onclick="start()">Start</button>
           <input class= "btn_ani" type="button" onclick="javascript:location.href='index.html'" value="Quit">
+        </div>
+      </div>
+      <div class="demo" style="display: none;">
+        <div class="demo__colored-blocks">
+          <div class="demo__colored-blocks-rotater">
+            <div class="demo__colored-block"></div>
+            <div class="demo__colored-block"></div>
+            <div class="demo__colored-block"></div>
+          </div>
+          <div class="demo__colored-blocks-inner"></div>
+          <div class="demo__text">Ready</div>
+        </div>
+        <div class="demo__inner">
+          <svg class="demo__numbers" viewBox="0 0 100 100">
+            <path class="demo__numbers-path" 
+                  d="M-10,20 60,20 40,50 a18,15 0 1,1 -12,19 
+                     Q25,44 34.4,27.4
+                     l7,-7 a16,16 0 0,1 22.6,22.6 l-30,30 l35,0 L69,73 
+                     a20,10 0 0,1 20,10 a17,17 0 0,1 -34,0 L55,83 
+                     l0,-61 L40,28" />
+          </svg>
         </div>
       </div>
     </div>
@@ -124,7 +146,7 @@
 
   let opponentItemIcon = document.getElementById('itemIcon2');
   opponentItemIcon.style.left = window.innerWidth * 0.8+ "px";
-  
+
   var draw = new Render();
   // 主遊戲邏輯
   var gamecore = new ClassicTetris3v3();  
@@ -142,6 +164,10 @@
   var opponent1Canvas = new teamModSize (opponent1);
   var opponent2Canvas = new teamModSize (opponent2);
   var opponent3Canvas = new teamModSize (opponent3);
+
+  // set counter down position
+  document.getElementsByClassName('demo')[0].style.left = myCanvas.countDownX + "px";
+  document.getElementsByClassName('demo')[0].style.top = myCanvas.countDownY + "px";
 
   var teamHeart = new heart("left", HUD)
   var opponentHeart = new heart("right", HUD)
@@ -381,8 +407,12 @@
     console.log(opponent2Canvas.playerName)
     console.log(opponent3Canvas.playerName)
     repaintHUD()
-    myCanvas._disableUI()
-    gamecore.togglePlayPause()
+    document.getElementsByClassName('demo')[0].style.display = "block";
+    setTimeout( () => {
+      myCanvas._disableUI()
+      gamecore.togglePlayPause()
+      document.getElementsByClassName('demo')[0].style.display = "none";
+    }, 3500)
   })
 </script>
 
