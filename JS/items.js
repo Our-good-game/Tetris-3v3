@@ -1,12 +1,12 @@
 class Items {
   static ITEMS = [
-    {id: 0, name: 'LockSpace',       url:"picture/Item/SpaceChain.png"},
-    {id: 1, name: 'Defense',         url:'picture/Item/defense.png'},
-    {id: 2, name: 'HardHoldOn',      url:"picture/Item/CompulsoryHold.png"},
-    {id: 3, name: 'LeftRightChange', url:"picture/Item/MoveChange.png"},
-    {id: 4, name: 'BlockPreview',    url:"picture/Item/shadow.png"},
-    {id: 5, name: 'ChangeTetris',    url:"picture/Item/PieceChange.png"},
-    {id: 6, name: 'LockTetris',      url:"picture/Item/PieceChain.png"},
+    {id: 0, name: 'LockSpace',       url:"/picture/Item/SpaceChain.png"},
+    {id: 1, name: 'Defense',         url:"/picture/Item/defense.png"},
+    {id: 2, name: 'HardHoldOn',      url:"/picture/Item/CompulsoryHold.png"},
+    {id: 3, name: 'LeftRightChange', url:"/picture/Item/MoveChange.png"},
+    {id: 4, name: 'BlockPreview',    url:"/picture/Item/shadow.png"},
+    {id: 5, name: 'ChangeTetris',    url:"/picture/Item/PieceChange.png"},
+    {id: 6, name: 'LockTetris',      url:"/picture/Item/PieceChain.png"},
   ]
   constructor(){
     this.getItem = undefined
@@ -21,7 +21,6 @@ class Items {
     this.itemChangeTetris = false;
   }
   _itemExecute(){
-    console.log(this.getItem, this.itemNumber)
     if(this.defense !== true){
       switch(this.getItem){
         case 'LockSpace':       this.setItemLockSpace(); break;
@@ -30,7 +29,7 @@ class Items {
         case 'BlockPreview':    this.setBlockPreview(); break;
         case 'ChangeTetris':    this.setChangeOpponentTetris(); break;
         case 'LockTetris':      this.setLockOpponentTetris(); break;
-        // case 'Defense':         this.defense = true; break;
+        // case 'Defense':
       }
     }
     else {

@@ -29,4 +29,5 @@ class  timecount{
       this.GameCountTime = 120;
     }
     secondcount() {return new Promise(resolve => { setTimeout( () => {resolve();}, 200 );});}
+    _sleep() { return new Promise(requestAnimationFrame); }
 }

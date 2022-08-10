@@ -29,6 +29,7 @@ class profession extends EnergyBar{
     }
     console.log('change to '+this.pro)
     this.costEnergy = profession.COST[this.pro]
+    this.action = false
     this.resetCnt()
   }
   act() {

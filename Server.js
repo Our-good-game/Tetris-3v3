@@ -1,3 +1,5 @@
+const { create } = require('domain')
+const e = require('express')
 var express = require('express')
 var app = express()
 var session = require('express-session')
@@ -27,14 +29,7 @@ app.get('/login', function (req, res) {
 app.get('/TESTUSE.html', function (req, res) {
   res.sendFile(__dirname +'/TESTUSE.html');
 })
-app.post('/login', function(req, res) {
-  var user = req.body
-  if (user.username !== '' ) {
-    if(ids.get(user.username) !== undefined)res.send("have the same name! ")
-    req.session.username = user.username;
-    res.redirect('/');
-  }else res.send("name error")
-})
+
 app.get('/talking.html', function (req, res) {
   let username = req.session.username;
   if(username==undefined){res.redirect('/login');}
@@ -69,7 +64,6 @@ app.get('/node_modules/vue/dist/vue.min.js', function (req, res) {res.sendFile(_
 
 // audio
 app.get('/audio/:id', function (req, res) {res.sendFile(__dirname + req.originalUrl);})
-app.get('/id',function(req,res){res.send(req.session.username)})
 
 //socket
 var messages=[{name: "Who",message: "test message"}]
@@ -79,16 +73,13 @@ var ids = new Map();
 let viewer = new Array();
 var people = 0 
 var rooms = new Array(3)
-var rooms3vs3 = new Array(2)
+var rooms3vs3 = new Array()
+var rooms_queue = new Array()
+var queueProcess = false
 for(let i=0; i<rooms.length; ++i)rooms[i] = new Array(2);
-for(let i=0; i<rooms3vs3.length; ++i)rooms3vs3[i] = new Array(3);
-for(let i=0; i<2; ++i)
-  for(let j=0; j<3; ++j)
-    rooms3vs3[i][j] = "--"
 function _findroom(id, roomnum){
   if(rooms[roomnum-1][0] == undefined){
     rooms[roomnum-1][0] = id
-
     return id
   }
   else if(rooms[roomnum-1][1] == undefined){
@@ -97,15 +88,25 @@ function _findroom(id, roomnum){
   }
   else return 0
 }
+app.post('/login', function(req, res) {
+  var user = req.body
+  if (user.username !== '' ) {
+    if(ids.get(user.username) !== undefined)res.send("have the same name! ")
+    req.session.username = user.username;
+    res.redirect('/');
+  }else res.send("name error")
+})
+app.get('/id',function(req,res){
+  res.send(req.session.username)
+})
 io.on('connection', function (socket) {
     people++;console.log(people+' user connected');
-    socket.on("idstore", function (id){
+    socket.on("idStore", function (id){
       ids.set(id,{socket:socket})
       let id_queue = new Array();
       ids.forEach(function(value, key) {id_queue.push(key)})
       console.log(id_queue)
     })
-    
     
     socket.emit("allMessage",messages);
     socket.on("sendMessage", function (message){
@@ -146,67 +147,80 @@ io.on('connection', function (socket) {
     })
 
 /* ---------------------------------------------------------------------------------------------------------------*/
-
-    //3vs3
+//3vs3
+function createRooms(inputId){
+  let roomtmp = new Array(4)
+  for(let i=0; i<roomtmp.length; ++i)roomtmp[i] = '--'
+  rooms3vs3.push(roomtmp)
+  let roomId, idCheak = true 
+  while(idCheak){
+    idCheak = false
+    roomId = parseInt(Math.random()*98 + 1)
+    rooms3vs3.forEach(el => { if(el[0] == roomId) idCheak = true})
+  }
+  rooms3vs3[rooms3vs3.length - 1 ][0] = roomId
+  rooms3vs3[rooms3vs3.length - 1 ][1] = inputId
+  socket.emit('roomInfo', rooms3vs3[rooms3vs3.length - 1 ])
+}
+function cheakPeople(inputId){
+  for(let i=0; i<rooms3vs3.length; ++i)
+  for(let j=1; j<rooms3vs3.length; ++j)
+      if(rooms3vs3[i][j] === inputId){
+        rooms3vs3[i] = rooms3vs3[0]
+        rooms3vs3.shift()
+      }
+}
+function cheakRooms(roomsId){
+  rooms_queue.forEach(el => {
+    if( roomsId == el ){
+      return true
+    }return false
+  })
+}
     socket.on('enterRoom', function(config, act){
-      let full = true
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if(rooms3vs3[i][j] == '--')full = false
-      if(full)ids.get(config.id).socket.emit('teamFight', 'none')
-      let same = false 
-      if(act === "change"){
-        let posi,posj,full = true
-        for(let j=0; j<3; ++j)
-          for(let i=0; i<2; ++i)
-            if (rooms3vs3[i][j] == config.id){
-              posi = i
-              posj = j
-              i=10;j=10
-            }
-        for(let j = 0; j<3; ++j){
-          if(rooms3vs3[(posi+1)%2][j] == "--") {
-            full = false;
-            rooms3vs3[(posi+1)%2][j] = config.id
-            rooms3vs3[posi][posj] = "--"
-            break;
-          }
-        }
+      if(act == 0){ // 建立新房間
+        try{
+          cheakPeople(config.id)
+          createRooms(config.id)
+        }catch{createRooms(config.id)}
       }
       else {
-        for(let j=0; j<3; ++j)
-          for(let i=0; i<2; ++i)
-            if(rooms3vs3[i][j] == config.id)same=true;
-        if(same != true)
-          for(let j=0; j<3; ++j)
-            for(let i=0; i<2; ++i)
-              if (rooms3vs3[i][j] == "--"){
-                rooms3vs3[i][j] = config.id
-                i=10;j=10
+        let full = false, find = false
+        rooms3vs3.forEach(el => {
+          if(el[0] == act ){// 找到房間了
+            full = find = true
+            for(let i=0; i<el.length; ++i){
+              if(el[i] === '--'){// 找到房間裡的位置了
+                el[i] = config.id
+                full = false
+                for(let i=1; i<el.length; ++i)
+                  if(el[i] !== '--')ids.get(el[i]).socket.emit('roomInfo',el)
+                break
               }
-      }
-      
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if (rooms3vs3[i][j] !== "--")
-            ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3) 
-      console.log(rooms3vs3)
+            }
+          }
+        })
+        let roomtmp = new Array(4)
+        if(full){ roomtmp[0] = -1
+          socket.emit('roomInfo', roomtmp) // 房間人滿了
+        }
+        if(!find){ roomtmp[0] = -2
+          socket.emit('roomInfo', roomtmp) // 沒找到房間
+        }
+      }console.log(rooms3vs3)
     })
     socket.on('teamFight',function(config){
-      // 滿六人才可開始
-      // for(let j=0; j<3; ++j)
-      //   for(let i=0; i<2; ++i)
-      //     if(rooms3vs3[i][j] == "--"){
-      //       ids.get(config.id).socket.emit('teamFight', 'none')
-      //       return;
-      //     }
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if (rooms3vs3[i][j] !== "--")
-            ids.get(rooms3vs3[i][j]).socket.emit('teamFight', rooms3vs3)
-      for(let i=0; i<viewer.length; ++i)
-        ids.get(viewer[i]).socket.emit('teamFight', rooms3vs3)
-      
+      cheakRooms( config.roomId )
+      rooms_queue.push( config.roomId )
+      while(queueProcess)setTimeout(()=>{queueProcess = false},1000)
+      queueProcess = true
+      if(rooms_queue.length >= 2){
+        rooms3vs3.forEach( el=>{
+          if(el[0] == rooms_queue[0] || el[0] == rooms_queue[1])
+            el.forEach(el2=>{ids.get(el2).socket.emit('teamFight', rooms_queue[0], rooms_queue[1])})
+        })
+      }
+      queueProcess = false
     })
     socket.on('teamGamming',function(data, config, action){
       let actType = 'none'
@@ -228,31 +242,26 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect',function(){
       let leaver
-      ids.forEach((value, key)=>{
-        if(socket.id === value.socket.id)leaver = key
-      });ids.delete(leaver)
-
+      ids.forEach((value, key)=>{if(socket.id === value.socket.id)leaver = key})
+      ids.delete(leaver)
       for(let i=0; i<viewer.length; ++i){
         if(viewer[i]==leaver){
           viewer[i] = viewer[0]
-          viewer.shift();
+          viewer.shift()
           break
         }
       }
+      cheakPeople(leaver)
+      //1vs1 處理房間
       let result
       for(let i=0; i<rooms.length; ++i){
         if(rooms[i][0] == leaver){rooms[i][0] = undefined; result = rooms[i][1]}
         if(rooms[i][1] == leaver){rooms[i][1] = undefined; result = rooms[i][0]}
-      };if(result !== undefined)ids.get(result).socket.emit('find', result)
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if(rooms3vs3[i][j] == leaver)rooms3vs3[i][j] = "--"
-      for(let j=0; j<3; ++j)
-        for(let i=0; i<2; ++i)
-          if (rooms3vs3[i][j] !== "--")
-            ids.get(rooms3vs3[i][j]).socket.emit('roomInfo', rooms3vs3)
+      }
+      if(result !== undefined)ids.get(result).socket.emit('find', result)
+      
       people--;
-      console.log(people+' user disconnected')
+      console.log(leaver+'  disconnected '+people)
     })
 })
 server.listen(22222,'::')
