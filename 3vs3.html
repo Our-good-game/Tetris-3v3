@@ -15,6 +15,7 @@
   <style>
     @import"/CSS/style.css";
     @import"/CSS/energyBar.css";
+    @import"/CSS/countDown.css";
     @font-face {
       font-family: huakang_girl_w5;
       src: url(/CSS/huakang_girl_w5.ttf);
@@ -33,7 +34,15 @@
   <img src="/picture/Item/shadow.png"style="display:none">
   <img src="/picture/Item/PieceChange.png"style="display:none">
   <img src="/picture/Item/PieceChain.png"style="display:none">
-  
+  <style>
+    #self_border{position:absolute; top:209px; left:738px; height:723px; width:365px; border-style:solid; border-width:2px; color: white;}
+    #teammate1_border{position:absolute; top:172px; left:211px; height:342px; width:173px; border-style:solid; border-width:2px; color:white;}
+    #teammate2_border{position:absolute; top:547px; left:211px; height:342px; width:174px; border-style:solid; border-width:2px; color:white;}
+    #opponent1_border{position:absolute; top:167px; left:1513px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
+    #opponent2_border{position:absolute; top:542px; left:1359px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
+    #opponent3_border{position:absolute; top:542px; left:1667px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
+  </style>
+
 </head>
 
 <body>
@@ -42,7 +51,6 @@
     <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
     <canvas id='js-background'></canvas>
     <div>
-      
       <div class='container' id ='playInterface' style="display: none;"> 
         <canvas id='HUD' style="position:absolute;"></canvas>
         <img src="/picture/heart.png" id ="heart" style="display:none"></img>
@@ -50,7 +58,6 @@
         <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
         <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
         <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
-
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
         </div>
@@ -58,14 +65,21 @@
         ></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
-      
         <canvas id='opponent1' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent2' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent3' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <div id= 'result'style="background: rgba(255,255,255,0.1);position: absolute; width:100%; height:10%; display: none; z-index: 10">
           <pre id= 'result-inner'style="padding: 20px 0; margin: auto;">result</pre>
         </div>
+        <!-- 顯示職業表示框框 -->
+        <div id="self_border"></div>
+        <div id="teammate1_border"></div>
+        <div id="teammate2_border"></div>
+        <div id="opponent1_border"></div>
+        <div id="opponent2_border"></div>
+        <div id="opponent3_border"></div>
       </div>
+
       <div class='container' id='findInterface' style="display: block;">
         <div style=" text-align: center; margin: 0; flex-direction: row;height: 100%; width: 100%;">
           <div style="display: block; margin: 0 auto; padding: 5% 0; height: 60%; width: 80%;">
@@ -83,6 +97,27 @@
             <input id= 'textBlock' type="text" style="font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6); width: 500px;"/>
             <button class= "btn_ani" onclick="changeRoomId()">Enter</button>
           </div>
+        </div>
+      </div>
+      <div class="demo" style="display: none;">
+        <div class="demo__colored-blocks">
+          <div class="demo__colored-blocks-rotater">
+            <div class="demo__colored-block"></div>
+            <div class="demo__colored-block"></div>
+            <div class="demo__colored-block"></div>
+          </div>
+          <div class="demo__colored-blocks-inner"></div>
+          <div class="demo__text">Ready</div>
+        </div>
+        <div class="demo__inner">
+          <svg class="demo__numbers" viewBox="0 0 100 100">
+            <path class="demo__numbers-path" 
+                  d="M-10,20 60,20 40,50 a18,15 0 1,1 -12,19 
+                     Q25,44 34.4,27.4
+                     l7,-7 a16,16 0 0,1 22.6,22.6 l-30,30 l35,0 L69,73 
+                     a20,10 0 0,1 20,10 a17,17 0 0,1 -34,0 L55,83 
+                     l0,-61 L40,28" />
+          </svg>
         </div>
       </div>
     </div>
@@ -136,7 +171,7 @@
 
   let opponentItemIcon = document.getElementById('itemIcon2');
   opponentItemIcon.style.left = window.innerWidth * 0.8+ "px";
-  
+
   var draw = new Render();
   // 主遊戲邏輯
   var gamecore = new ClassicTetris3v3();  
@@ -154,6 +189,10 @@
   var opponent1Canvas = new teamModSize (opponent1);
   var opponent2Canvas = new teamModSize (opponent2);
   var opponent3Canvas = new teamModSize (opponent3);
+
+  // set counter down position
+  document.getElementsByClassName('demo')[0].style.left = myCanvas.countDownX + "px";
+  document.getElementsByClassName('demo')[0].style.top = myCanvas.countDownY + "px";
 
   var teamHeart = new heart("left", HUD)
   var opponentHeart = new heart("right", HUD)
@@ -205,6 +244,18 @@
     },7000)
   }
   function SendData(data) {
+    // 切換職業變更邊框
+    if(config.profession == "Attacker") {
+      var s_border = document.querySelector('#self_border');
+      s_border.style.color = "crimson";
+    } else if(config.profession == "Defender") {
+      var s_border = document.querySelector('#self_border');
+      s_border.style.color = "chartreuse";
+    } else {
+      var s_border = document.querySelector('#self_border');
+      s_border.style.color = "deepskyblue";
+    }
+
     if(myProfession.action && config.profession == 'Magician')
       gamecore._randomAItem()
     
@@ -272,6 +323,69 @@
         case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data);break
         case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data);break
         case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data);break
+      }
+      // console.log(dataConfig.id)
+      switch(dataConfig.id){
+        case teammate1Canvas.playerName: 
+          if(dataConfig.profession == "Attacker") {
+            var s_border = document.querySelector('#teammate1_border');
+            s_border.style.color = "crimson";
+          } else if(dataConfig.profession == "Defender") {
+            var s_border = document.querySelector('#teammate1_border');
+            s_border.style.color = "chartreuse";
+          } else {
+            var s_border = document.querySelector('#teammate1_border');
+            s_border.style.color = "deepskyblue";
+          }
+        break;
+        case teammate2Canvas.playerName: 
+          if(dataConfig.profession == "Attacker") {
+              var s_border = document.querySelector('#teammate2_border');
+              s_border.style.color = "crimson";
+            } else if(dataConfig.profession == "Defender") {
+              var s_border = document.querySelector('#teammate2_border');
+              s_border.style.color = "chartreuse";
+            } else {
+              var s_border = document.querySelector('#teammate2_border');
+              s_border.style.color = "deepskyblue";
+            }
+        break;
+        case opponent1Canvas.playerName:
+          if(dataConfig.profession == "Attacker") {
+              var s_border = document.querySelector('#opponent1_border');
+              s_border.style.color = "crimson";
+            } else if(dataConfig.profession == "Defender") {
+              var s_border = document.querySelector('#opponent1_border');
+              s_border.style.color = "chartreuse";
+            } else {
+              var s_border = document.querySelector('#opponent1_border');
+              s_border.style.color = "deepskyblue";
+            }
+        break;
+        case opponent2Canvas.playerName:
+          if(dataConfig.profession == "Attacker") {
+              var s_border = document.querySelector('#opponent2_border');
+              s_border.style.color = "crimson";
+            } else if(dataConfig.profession == "Defender") {
+              var s_border = document.querySelector('#opponent2_border');
+              s_border.style.color = "chartreuse";
+            } else {
+              var s_border = document.querySelector('#opponent2_border');
+              s_border.style.color = "deepskyblue";
+            }
+        break;
+        case opponent3Canvas.playerName:
+          if(dataConfig.profession == "Attacker") {
+              var s_border = document.querySelector('#opponent3_border');
+              s_border.style.color = "crimson";
+            } else if(dataConfig.profession == "Defender") {
+              var s_border = document.querySelector('#opponent3_border');
+              s_border.style.color = "chartreuse";
+            } else {
+              var s_border = document.querySelector('#opponent3_border');
+              s_border.style.color = "deepskyblue";
+            }
+        break;
       }
     }
     
@@ -407,8 +521,12 @@
     draw._renderNoHUD(opponent2Core, opponent2Canvas)
     draw._renderNoHUD(opponent3Core, opponent3Canvas)
     repaintHUD()
-    myCanvas._disableUI()
-    gamecore.togglePlayPause()
+    document.getElementsByClassName('demo')[0].style.display = "block";
+    setTimeout( () => {
+      myCanvas._disableUI()
+      gamecore.togglePlayPause()
+      document.getElementsByClassName('demo')[0].style.display = "none";
+    }, 3500)
   })
 </script>
 

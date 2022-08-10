@@ -289,4 +289,7 @@ class Render{
           formal.context.fillText('Winner', formal.nameX, formal.nameY - 2 * formal.squareSide);
         }
       }
+      _drawItem (formal, itemNumber) {
+              
+      }
 }

@@ -30,6 +30,8 @@ class defaultSize {
     this.comboY        = this.boardX + this.squareSide * 12
     this.nameX         = this.boardX + this.squareSide * 3
     this.nameY         = this.boardY + this.squareSide
+    this.countDownX    = this.boardX + this.squareSide * 5
+    this.countDownY    = this.boardY + this.squareSide * 12
 
     // board's bounding box
     this.boardBorder = [
@@ -88,6 +90,8 @@ class teamModSize {
     this.comboY =     this.boardX + this.squareSide * 11
     this.nameX =      this.boardX + 3 * this.squareSide
     this.nameY =      this.boardY + this.squareSide
+    this.countDownX    = this.boardX + this.squareSide * 16.7
+    this.countDownY    = this.boardY + this.squareSide * 13
 
     // board's bounding box
     this.boardBorder = [
