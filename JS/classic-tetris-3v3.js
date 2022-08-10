@@ -694,11 +694,11 @@ class ClassicTetris3v3 extends Items{
         myProfession.changeProfession(config)
         // change to Attacker
       break;
-      // case 83: 
-      //   config.profession = 'Magician'
-      //   myProfession.changeProfession(config)
-      //   // change to Magician
-      // break;
+      case 83: 
+        config.profession = 'Magician'
+        myProfession.changeProfession(config)
+        // change to Magician
+      break;
       case 68: 
         config.profession = 'Defender'
         myProfession.changeProfession(config)

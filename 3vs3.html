@@ -26,6 +26,13 @@
       transform: scale(1.3);
     }
   </style>
+  <img src="/picture/Item/SpaceChain.png"style="display:none">
+  <img src="/picture/Item/defense.png"style="display:none">
+  <img src="/picture/Item/CompulsoryHold.png"style="display:none">
+  <img src="/picture/Item/MoveChange.png"style="display:none">
+  <img src="/picture/Item/shadow.png"style="display:none">
+  <img src="/picture/Item/PieceChange.png"style="display:none">
+  <img src="/picture/Item/PieceChain.png"style="display:none">
   
 </head>
 
@@ -42,12 +49,13 @@
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
         <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
         <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
-        <!-- <button class="btn_ani" onclick=dice() style="position: absolute;">action</button> -->
+        <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
 
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
         </div>
-        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
+        <canvas id='player' class='tetris-canvas' style="height: 85%;"
+        ></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
       
@@ -61,16 +69,20 @@
       <div class='container' id='findInterface' style="display: block;">
         <div style=" text-align: center; margin: 0; flex-direction: row;height: 100%; width: 100%;">
           <div style="display: block; margin: 0 auto; padding: 5% 0; height: 60%; width: 80%;">
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'left1' style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div>
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'right1'style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div></br>
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'left2' style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div>
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'right2'style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div></br>
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'left3' style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div>
-            <div class= 'playername' style="height: 32%;width: 49%; margin: 5px;"><pre id = 'right3'style="height: 100%;width: 100%; padding: 5% 0; margin: 0;">Unknow</pre></div></br>
+            <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
+              <pre id = 'left1' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
+            <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
+              <pre id = 'left2' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
+            <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
+              <pre id = 'left3' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
           </div>
           <button class= "btn_ani" onclick="changeTeam()">Change</button>
           <button class= "btn_ani" onclick="start()">Start</button>
-          <input class= "btn_ani" type="button" onclick="javascript:location.href='index.html'" value="Quit">
+          <button class= "btn_ani" onclick="javascript:location.href='index.html'">Quit</button></br>
+          <div id= 'changInterface' style="display: none;">
+            <input id= 'textBlock' type="text" style="font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6); width: 500px;"/>
+            <button class= "btn_ani" onclick="changeRoomId()">Enter</button>
+          </div>
         </div>
       </div>
     </div>
@@ -155,14 +167,14 @@
     team: undefined,       // left or right
     teamNumber: 0,         // 1 2 3
     profession: undefined, // ['Attacker', 'Defender', 'Magician']
+    roomId: -1
   }
   
   var myProfession 
-  
-  // Item
-  let teamLock = false;
-  let opponentLock = false;
-
+  var itemTmp = new Array()
+  var itemOpponent = new Array()
+  var itemRunning = false
+  var itemOpponentRun = false
   // sound effect
   var got_attack = new Audio("audio/got_attack.mp3")
   var shield_sound = new Audio("audio/shield.mp3")
@@ -177,8 +189,8 @@
       .then(function (data) {
         config.id = data;
         myCanvas.playerName = data;
-        socket.emit("idstore", config.id)
-        socket.emit('enterRoom', config)
+        socket.emit('idStore', config.id)
+        socket.emit('enterRoom', config, 0)
       })
   }
   function DisplayResult(){
@@ -215,13 +227,15 @@
       teamShield: teamShield.life
     }
     socket.emit('teamGamming', datatmp, config, myProfession.action)
-    if (myProfession.action && config.profession == 'Magician' && teamLock) {
-      myProfession.action = true;
-    } else {
-      myProfession.action = false
-    }
+    myProfession.action = false
   }
-  function changeTeam(){socket.emit('enterRoom', config, "change")}
+  function changeTeam(){
+    document.getElementById('changInterface').style.display = "block";
+  }
+  function changeRoomId(){
+    socket.emit('enterRoom', config, document.getElementById('textBlock').value)
+    document.getElementById('changInterface').style.display = "none";
+  }
   function start(){socket.emit('teamFight',config)}
   function dice(){myProfession.act()}
 
@@ -247,6 +261,7 @@
     opponentShield.paint();
   }
   socket.on('teamGamming', function (data, dataConfig, actType) {
+
     if(data.boardOverLoad){
       if(dataConfig.team == config.team) teamHeart.life--
       else opponentHeart.life--
@@ -292,35 +307,40 @@
         }
       break;
       case 'Magician':
-        let pos
-        if(dataConfig.team == config.team){
-          if (teamLock == false) {
-            teamLock = true;
-            pos = document.getElementById('itemIcon')
-          } else {
-            break;
-          }
-        } else {
-          if (opponentLock == false) {
-            opponentLock = true;
-            pos = document.getElementById('itemIcon2')
-          } else {
-            break;
-          }
-        }
-        gamecore.changeItemIcon(pos, data.itemNumber)
-        setTimeout( () => {
-          if ( dataConfig.team == config.team ) {
-            if (data.itemNumber == 1)
-              gamecore.defense = true;
-            teamLock = false;
-          } else {
-            gamecore.getItem = ClassicTetris3v3.ITEMS[data.itemNumber].name
-            gamecore._itemExecute()
-            opponentLock = false;
-          }
-        }, 4000)
+        if(dataConfig.team == config.team) itemTmp.push(data.itemNumber) 
+        else  itemOpponent.push(data.itemNumber) 
       break;
+    }
+    if( !itemRunning && itemTmp.length != 0){
+      itemRunning = true
+      gamecore.changeItemIcon(document.getElementById('itemIcon'), itemTmp[0])
+      setTimeout( () => {
+        if ( dataConfig.team == config.team ) {
+          if (data.itemNumber == 1)
+            gamecore.defense = true;
+        } else {
+          gamecore.getItem = ClassicTetris3v3.ITEMS[itemTmp[0]].name
+          gamecore._itemExecute()
+        }
+        itemTmp.shift()
+        itemRunning = false
+      }, 4000)
+    }
+    if( !itemOpponentRun && itemOpponent.length != 0){
+      itemOpponentRun = true
+      gamecore.changeItemIcon(document.getElementById('itemIcon2'), itemOpponent[0])
+      setTimeout( () => {
+        if ( dataConfig.team == config.team ) {
+          if (data.itemNumber == 1)
+            gamecore.defense = true;
+        } else {
+          gamecore.getItem = ClassicTetris3v3.ITEMS[itemOpponent[0]].name
+          gamecore._itemExecute()
+        }
+        itemOpponent.shift()
+        itemOpponentRun = false
+      }, 4000)
+
     }
     if( teamHeart.life == 0 || opponentHeart.life == 0){
       gamecore.result = teamHeart.life > 0? 'win': 'lose' 
@@ -332,54 +352,60 @@
   })
 
   socket.on('roomInfo', function (roomData) {
-    let tmp1 = ["left","right"]
     let tmp2 = ['1','2','3']
     let tmp3 = ['Attacker', 'Defender', 'Magician']
-    for(let i=0; i<2; ++i)
-      for(let j=0; j<3; ++j){ 
-        document.getElementById(tmp1[i]+tmp2[j]).textContent = roomData[i][j]
-        if(roomData[i][j] == config.id){
-          if(i == 0) config.team = 'left'
-          else config.team = 'right'
-          config.teamNumber = j+1;
-          config.profession = tmp3[j]
-          myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
-        }
-      }
-    
+    if(roomData[0] == -1){ alert(" Room is full! ")}
+    if(roomData[0] == -2){ alert(" Can't find ")}
+    for(let i=1; i<4; ++i){
+      document.getElementById('left'+tmp2[i-1]).textContent = roomData[i]
+      config.profession = tmp3[i-1]
+    }
+    config.roomId = roomData[0]
+    // let tmp1 = ["left","right"]
+    // let tmp2 = ['1','2','3']
+    // let tmp3 = ['Attacker', 'Defender', 'Magician']
+    // for(let i=0; i<2; ++i)
+    //   for(let j=0; j<3; ++j){ 
+    //     document.getElementById(tmp1[i]+tmp2[j]).textContent = roomData[i][j]
+    //     if(roomData[i][j] == config.id){
+    //       if(i == 0) config.team = 'left'
+    //       else config.team = 'right'
+    //       config.teamNumber = j+1;
+    //       config.profession = tmp3[j]
+    //       myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
+    //     }
+    //   }
   })
 
-  socket.on('teamFight', function(roomData){
-    if(roomData == 'none'){
-      alert("Please wait for others")
-      return
-    }
-    if(roomData == 'full'){
-      alert("TeamFight room is full! ")
-      javascript:location.href='index.html'
-      return
-    }
+  socket.on('teamFight', function(teamLeft, teamRight){
     document.getElementById('findInterface').style.display = "none";
     document.getElementById('playInterface').style.display = "flex";
+    if( teamLeft[0] !== config.roomId ){
+      let tmp = teamRight
+      teamRight = teamLeft
+      teamLeft = tmp
+    }
+    let index 
+    for(index=0; index<teamLeft.length; ++index){
+      if(tamLeft[index] == config.id)break
+    }
+    teammate1Canvas.playerName = teamLeft[(index+1)%3]
+    teammate2Canvas.playerName = teamLeft[(index+2)%3]
+    opponent1Canvas.playerName = teamRight[1]
+    opponent2Canvas.playerName = teamRight[2]
+    opponent3Canvas.playerName = teamRight[3]
+    console.log(teammate1Canvas.playerName)
+    console.log(teammate2Canvas.playerName)
+    console.log(opponent1Canvas.playerName)
+    console.log(opponent2Canvas.playerName)
+    console.log(opponent3Canvas.playerName)
+
     draw._render(gamecore, myCanvas)
     draw._renderNoHUD(teammate1Core, teammate1Canvas)
     draw._renderNoHUD(teammate2Core, teammate2Canvas)
     draw._renderNoHUD(opponent1Core, opponent1Canvas)
     draw._renderNoHUD(opponent2Core, opponent2Canvas)
     draw._renderNoHUD(opponent3Core, opponent3Canvas)
-    let pos;
-    if(config.team == 'left') pos = 0
-    else pos = 1
-    teammate1Canvas.playerName = roomData[pos][config.teamNumber%3]
-    teammate2Canvas.playerName = roomData[pos][(config.teamNumber+1)%3]
-    opponent1Canvas.playerName = roomData[(pos+1)%2][0]
-    opponent2Canvas.playerName = roomData[(pos+1)%2][1]
-    opponent3Canvas.playerName = roomData[(pos+1)%2][2]
-    console.log(teammate1Canvas.playerName)
-    console.log(teammate2Canvas.playerName)
-    console.log(opponent1Canvas.playerName)
-    console.log(opponent2Canvas.playerName)
-    console.log(opponent3Canvas.playerName)
     repaintHUD()
     myCanvas._disableUI()
     gamecore.togglePlayPause()
