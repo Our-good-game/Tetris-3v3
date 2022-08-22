@@ -68,7 +68,7 @@
         <canvas id='opponent1' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent2' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
         <canvas id='opponent3' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
-        <div id= 'result'style="background: rgba(255,255,255,0.1);position: absolute; width:100%; height:10%; display: none; z-index: 10">
+        <div id= 'result'style="background: rgba(255, 255, 255,0.1);position: absolute; width:100%; height:10%; display: none; z-index: 10">
           <pre id= 'result-inner'style="padding: 20px 0; margin: auto;">result</pre>
         </div>
         <!-- 顯示職業表示框框 -->
@@ -349,7 +349,7 @@
               var s_border = document.querySelector('#teammate2_border');
               s_border.style.color = "deepskyblue";
             }
-        break;
+        break
         case opponent1Canvas.playerName:
           if(dataConfig.profession == "Attacker") {
               var s_border = document.querySelector('#opponent1_border');
@@ -474,6 +474,7 @@
       document.getElementById('left'+tmp2[i-1]).textContent = roomData[i]
       config.profession = tmp3[i-1]
     }
+    myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
     config.roomId = roomData[0]
     // let tmp1 = ["left","right"]
     // let tmp2 = ['1','2','3']
@@ -492,19 +493,23 @@
   })
 
   socket.on('teamFight', function(teamLeft, teamRight){
+    console.log(teamLeft, teamRight)
+    config.roomId = teamLeft[0]
     document.getElementById('findInterface').style.display = "none";
     document.getElementById('playInterface').style.display = "flex";
-    if( teamLeft[0] !== config.roomId ){
-      let tmp = teamRight
-      teamRight = teamLeft
-      teamLeft = tmp
+    teamLeft.forEach(el => {if(el == config.id)config.team = 'left'})
+    teamRight.forEach(el => {if(el == config.id)config.team = 'right'})
+    if(config.team == 'right'){
+      tmp = teamLeft
+      teamLeft = teamRight
+      teamRight = tmp
     }
     let index 
     for(index=0; index<teamLeft.length; ++index){
-      if(tamLeft[index] == config.id)break
-    }
-    teammate1Canvas.playerName = teamLeft[(index+1)%3]
-    teammate2Canvas.playerName = teamLeft[(index+2)%3]
+      if(teamLeft[index] == config.id)break
+    };
+    teammate1Canvas.playerName = teamLeft[(index%3)+1]
+    teammate2Canvas.playerName = teamLeft[(index+1)%3+1]
     opponent1Canvas.playerName = teamRight[1]
     opponent2Canvas.playerName = teamRight[2]
     opponent3Canvas.playerName = teamRight[3]

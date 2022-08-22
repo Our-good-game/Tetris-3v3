@@ -150,7 +150,7 @@ class Render{
               formal.boardY + i * formal.squareSide,
               this.piececolor[tetris.board[i][j]][0], 
               this.piececolor[tetris.board[i][j]][1],
-              formal);
+              formal)
           }
         }
       }
@@ -174,6 +174,7 @@ class Render{
         }
       }
     
+      
       // draw ghost piece
       // it is a representation of where a tetromino or other piece will land if allowed to drop into the playfield
       _drawGhost(tetris, formal) {

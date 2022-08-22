@@ -3,6 +3,7 @@ const e = require('express')
 var express = require('express')
 var app = express()
 var session = require('express-session')
+const { uniqueSort } = require('jquery')
 var server = require('http').createServer(app)
 var {Server, Socket} = require('socket.io')
 var io = new Server (server);
@@ -72,10 +73,12 @@ var timer = null
 var ids = new Map();
 let viewer = new Array();
 var people = 0 
-var rooms = new Array(3)
 var rooms3vs3 = new Array()
-var rooms_queue = new Array()
+var roomsQueue = new Array()
+var fightingQueue = new Array()
 var queueProcess = false
+
+var rooms = new Array(3)
 for(let i=0; i<rooms.length; ++i)rooms[i] = new Array(2);
 function _findroom(id, roomnum){
   if(rooms[roomnum-1][0] == undefined){
@@ -133,6 +136,7 @@ io.on('connection', function (socket) {
       }
       if(result !== undefined)ids.get(result).socket.emit('find', result)
       result = _findroom(id, roomnum)
+      console.log(result)
       socket.emit('find' , result)
       if(result !== id && result !== 0){
         ids.get(result).socket.emit('find', id)
@@ -155,7 +159,7 @@ function createRooms(inputId){
   let roomId, idCheak = true 
   while(idCheak){
     idCheak = false
-    roomId = parseInt(Math.random()*98 + 1)
+    roomId = parseInt(Math.random()*8 + 1)*10 + parseInt(Math.random()*8 + 1)
     rooms3vs3.forEach(el => { if(el[0] == roomId) idCheak = true})
   }
   rooms3vs3[rooms3vs3.length - 1 ][0] = roomId
@@ -171,7 +175,7 @@ function cheakPeople(inputId){
       }
 }
 function cheakRooms(roomsId){
-  rooms_queue.forEach(el => {
+  roomsQueue.forEach(el => {
     if( roomsId == el ){
       return true
     }return false
@@ -194,7 +198,7 @@ function cheakRooms(roomsId){
                 el[i] = config.id
                 full = false
                 for(let i=1; i<el.length; ++i)
-                  if(el[i] !== '--')ids.get(el[i]).socket.emit('roomInfo',el)
+                  if(el[i] !== '--')ids.get(el[i]).socket.emit('roomInfo', el)
                 break
               }
             }
@@ -211,26 +215,39 @@ function cheakRooms(roomsId){
     })
     socket.on('teamFight',function(config){
       cheakRooms( config.roomId )
-      rooms_queue.push( config.roomId )
+      rooms3vs3.forEach(el=>{if(el[0] == config.roomId){
+        roomsQueue.push(el)
+      }})
       while(queueProcess)setTimeout(()=>{queueProcess = false},1000)
       queueProcess = true
-      if(rooms_queue.length >= 2){
+      if(roomsQueue.length >= 2){
         rooms3vs3.forEach( el=>{
-          if(el[0] == rooms_queue[0] || el[0] == rooms_queue[1])
-            el.forEach(el2=>{ids.get(el2).socket.emit('teamFight', rooms_queue[0], rooms_queue[1])})
-        })
+          if(el[0] == roomsQueue[0][0] || el[0] == roomsQueue[1][0]){
+            roomsQueue[0][0] = roomsQueue[1][0] = parseInt(Math.random()*8 + 1)
+            for(let i=1; i<el.length; ++i){
+              if(el[i] !== '--')
+                ids.get(el[i]).socket.emit('teamFight', roomsQueue[0], roomsQueue[1])
+            }
+          }
+        });
+        fightingQueue.push(roomsQueue[0]);fightingQueue.push(roomsQueue[1])
+        roomsQueue.shift();roomsQueue.shift()
+        console.log(fightingQueue)
       }
       queueProcess = false
     })
     socket.on('teamGamming',function(data, config, action){
       let actType = 'none'
       if( action ) actType = config.profession
-      for(let i=0; i<2; ++i)
-        for(let j=0; j<3; ++j)
-          if (rooms3vs3[i][j] !== "--" )
-            ids.get(rooms3vs3[i][j]).socket.emit('teamGamming', data, config, actType)
-      for(let i=0; i<viewer.length; ++i)
-        ids.get(viewer[i]).socket.emit('teamGamming', data, config, actType)
+      fightingQueue.forEach(el => {
+        if(el[0] == config.roomId)
+          for(let j=1; j<4; ++j)
+            if (el[j] !== "--" )
+              ids.get(el[j]).socket.emit('teamGamming', data, config, actType)
+      });
+        
+      // for(let i=0; i<viewer.length; ++i)
+      //   ids.get(viewer[i]).socket.emit('teamGamming', data, config, actType)
     })
     socket.on("viewer", function(id){
       if(ids.get(id) !== 'undefined')

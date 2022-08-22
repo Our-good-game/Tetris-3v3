@@ -136,7 +136,7 @@
         id = data;
         P1canvas.playerName = id;
         draw._render(gamecore, P1canvas);
-        socket.emit("idstore", id)
+        socket.emit("idStore", id)
       })
     _startStopBtn = event => {
       // timer.settime(P1canvas.togglePlayPause());
