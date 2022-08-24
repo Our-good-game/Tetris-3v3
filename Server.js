@@ -167,12 +167,18 @@ function createRooms(inputId){
   socket.emit('roomInfo', rooms3vs3[rooms3vs3.length - 1 ])
 }
 function cheakPeople(inputId){
-  for(let i=0; i<rooms3vs3.length; ++i)
-  for(let j=1; j<rooms3vs3.length; ++j)
-      if(rooms3vs3[i][j] === inputId){
-        rooms3vs3[i] = rooms3vs3[0]
-        rooms3vs3.shift()
-      }
+  for(let i=0; i<rooms3vs3.length; ++i){
+    for(let j=1; j<rooms3vs3[i].length; ++j)
+      if(rooms3vs3[i][j] === inputId)
+        rooms3vs3[i][j] = '--'
+    let roomUse = false
+    for(let j=1; j<rooms3vs3[i].length; ++j)
+      if(rooms3vs3[i][j] !== '--')roomUse = true;
+    if(!roomUse){
+      rooms3vs3[i] = rooms3vs3[0]
+      rooms3vs3.shift()
+    }
+  }
 }
 function cheakRooms(roomsId){
   roomsQueue.forEach(el => {
@@ -195,6 +201,7 @@ function cheakRooms(roomsId){
             full = find = true
             for(let i=0; i<el.length; ++i){
               if(el[i] === '--'){// 找到房間裡的位置了
+                cheakPeople(config.id)
                 el[i] = config.id
                 full = false
                 for(let i=1; i<el.length; ++i)
