@@ -484,20 +484,6 @@
     }
     myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
     config.roomId = roomData[0]
-    // let tmp1 = ["left","right"]
-    // let tmp2 = ['1','2','3']
-    // let tmp3 = ['Attacker', 'Defender', 'Magician']
-    // for(let i=0; i<2; ++i)
-    //   for(let j=0; j<3; ++j){ 
-    //     document.getElementById(tmp1[i]+tmp2[j]).textContent = roomData[i][j]
-    //     if(roomData[i][j] == config.id){
-    //       if(i == 0) config.team = 'left'
-    //       else config.team = 'right'
-    //       config.teamNumber = j+1;
-    //       config.profession = tmp3[j]
-    //       myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
-    //     }
-    //   }
   })
 
   socket.on('teamFight', function(teamLeft, teamRight){

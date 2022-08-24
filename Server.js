@@ -166,12 +166,23 @@ function createRooms(inputId){
   rooms3vs3[rooms3vs3.length - 1 ][1] = inputId
   socket.emit('roomInfo', rooms3vs3[rooms3vs3.length - 1 ])
 }
+function refreshRooms(){
+  rooms3vs3.forEach(el => {console.log(el[0])
+    for(let i=1; i<el.length; ++i)
+      if(el[i] !== '--')ids.get(el[i]).socket.emit('roomInfo', el)
+  })
+}
 function cheakPeople(inputId){
   for(let i=0; i<rooms3vs3.length; ++i){
     for(let j=1; j<rooms3vs3[i].length; ++j)
       if(rooms3vs3[i][j] === inputId)
         rooms3vs3[i][j] = '--'
-    let roomUse = false
+  }
+}
+function clearRooms(){
+  let roomUse = false
+  for(let i=0; i<rooms3vs3.length; ++i){
+    roomUse = false
     for(let j=1; j<rooms3vs3[i].length; ++j)
       if(rooms3vs3[i][j] !== '--')roomUse = true;
     if(!roomUse){
@@ -180,14 +191,26 @@ function cheakPeople(inputId){
     }
   }
 }
+function clearFightingQueue(){
+  let roomUse = false
+  for(let i=0; i<fightingQueue.length; ++i){
+    for(let j=1; j<fightingQueue[i].length; ++j)
+      if(fightingQueue[i][j] !== '--')roomUse = true;
+    if(!roomUse){
+      fightingQueue[i] = fightingQueue[0]
+      fightingQueue.shift()
+    }
+  }
+}
 function cheakRooms(roomsId){
+  let haveRooms = false
   roomsQueue.forEach(el => {
-    if( roomsId == el ){
-      return true
-    }return false
+    if( roomsId == el[0] ) haveRooms = true
   })
+  return haveRooms
 }
     socket.on('enterRoom', function(config, act){
+      if(act == config.roomId)return;
       if(act == 0){ // 建立新房間
         try{
           cheakPeople(config.id)
@@ -204,8 +227,6 @@ function cheakRooms(roomsId){
                 cheakPeople(config.id)
                 el[i] = config.id
                 full = false
-                for(let i=1; i<el.length; ++i)
-                  if(el[i] !== '--')ids.get(el[i]).socket.emit('roomInfo', el)
                 break
               }
             }
@@ -218,13 +239,19 @@ function cheakRooms(roomsId){
         if(!find){ roomtmp[0] = -2
           socket.emit('roomInfo', roomtmp) // 沒找到房間
         }
-      }console.log("ROOMS" ,rooms3vs3)
+        
+      }
+      clearRooms()
+      refreshRooms()
+      console.log("ROOMS" ,rooms3vs3)
     })
     socket.on('teamFight',function(config){
-      cheakRooms( config.roomId )
-      rooms3vs3.forEach(el=>{if(el[0] == config.roomId){
-        roomsQueue.push(el)
-      }})
+      console.log(cheakRooms( config.roomId ))
+      if( cheakRooms( config.roomId ) == false){
+        rooms3vs3.forEach(el=>{if(el[0] == config.roomId){
+          roomsQueue.push(el)
+        }});console.log(roomsQueue)
+      }
       while(queueProcess)setTimeout(()=>{queueProcess = false},1000)
       queueProcess = true
       if(roomsQueue.length >= 2){
@@ -251,7 +278,7 @@ function cheakRooms(roomsId){
       }
       queueProcess = false
     })
-    socket.on('teamGamming',function(data, config, action){console.log(config)
+    socket.on('teamGamming',function(data, config, action){
       let actType = 'none'
       if( action ) actType = config.profession
       fightingQueue.forEach(el => {
@@ -285,6 +312,9 @@ function cheakRooms(roomsId){
           leaver = key
           ids.delete(leaver)
           cheakPeople(leaver)
+          clearRooms()
+          clearFightingQueue()
+          refreshRooms()
         }
       })
       console.log(id_queue , ' --- out ')
