@@ -312,7 +312,7 @@
     opponentShield.paint();
   }
   socket.on('teamGamming', function (data, dataConfig, actType) {
-
+    console.log(dataConfig.id)
     if(data.boardOverLoad){
       if(dataConfig.team == config.team) teamHeart.life--
       else opponentHeart.life--
@@ -324,7 +324,7 @@
         case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data);break
         case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data);break
       }
-      // console.log(dataConfig.id)
+      
       switch(dataConfig.id){
         case teammate1Canvas.playerName: 
           if(dataConfig.profession == "Attacker") {
@@ -504,12 +504,11 @@
       teamLeft = teamRight
       teamRight = tmp
     }
-    let index 
-    for(index=0; index<teamLeft.length; ++index){
-      if(teamLeft[index] == config.id)break
-    };
-    teammate1Canvas.playerName = teamLeft[(index%3)+1]
-    teammate2Canvas.playerName = teamLeft[(index+1)%3+1]
+    for(let i=0; i<teamLeft.length; ++i){
+      if(teamLeft[i] == config.id)config.teamNumber = i
+    }
+    teammate1Canvas.playerName = teamLeft[(config.teamNumber%3)+1]
+    teammate2Canvas.playerName = teamLeft[(config.teamNumber+1)%3+1]
     opponent1Canvas.playerName = teamRight[1]
     opponent2Canvas.playerName = teamRight[2]
     opponent3Canvas.playerName = teamRight[3]

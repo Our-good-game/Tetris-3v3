@@ -103,12 +103,13 @@ app.get('/id',function(req,res){
   res.send(req.session.username)
 })
 io.on('connection', function (socket) {
-    people++;console.log(people+' user connected');
+    people++
+    console.log('user connected' + people)
     socket.on("idStore", function (id){
       ids.set(id,{socket:socket})
       let id_queue = new Array();
       ids.forEach(function(value, key) {id_queue.push(key)})
-      console.log(id_queue)
+      console.log(id_queue , ' --- in ')
     })
     
     socket.emit("allMessage",messages);
@@ -136,7 +137,6 @@ io.on('connection', function (socket) {
       }
       if(result !== undefined)ids.get(result).socket.emit('find', result)
       result = _findroom(id, roomnum)
-      console.log(result)
       socket.emit('find' , result)
       if(result !== id && result !== 0){
         ids.get(result).socket.emit('find', id)
@@ -211,7 +211,7 @@ function cheakRooms(roomsId){
         if(!find){ roomtmp[0] = -2
           socket.emit('roomInfo', roomtmp) // 沒找到房間
         }
-      }console.log(rooms3vs3)
+      }console.log("ROOMS" ,rooms3vs3)
     })
     socket.on('teamFight',function(config){
       cheakRooms( config.roomId )
@@ -221,29 +221,42 @@ function cheakRooms(roomsId){
       while(queueProcess)setTimeout(()=>{queueProcess = false},1000)
       queueProcess = true
       if(roomsQueue.length >= 2){
+        let num = parseInt(Math.random()*8 + 1)
         rooms3vs3.forEach( el=>{
           if(el[0] == roomsQueue[0][0] || el[0] == roomsQueue[1][0]){
-            roomsQueue[0][0] = roomsQueue[1][0] = parseInt(Math.random()*8 + 1)
+            let tmp = el 
+            tmp[0] = num
+            fightingQueue.push(tmp)
             for(let i=1; i<el.length; ++i){
               if(el[i] !== '--')
                 ids.get(el[i]).socket.emit('teamFight', roomsQueue[0], roomsQueue[1])
             }
           }
-        });
-        fightingQueue.push(roomsQueue[0]);fightingQueue.push(roomsQueue[1])
+        })
+        rooms3vs3.forEach( el=>{
+          for(let i=1; i<el.length; ++i){
+            if(el[i] !== '--')
+              ids.get(el[i]).socket.emit('teamFight', fightingQueue[0], fightingQueue[1])
+          }
+        })
         roomsQueue.shift();roomsQueue.shift()
-        console.log(fightingQueue)
+        console.log("Queuing" , fightingQueue)
       }
       queueProcess = false
     })
-    socket.on('teamGamming',function(data, config, action){
+    socket.on('teamGamming',function(data, config, action){console.log(config)
       let actType = 'none'
       if( action ) actType = config.profession
       fightingQueue.forEach(el => {
         if(el[0] == config.roomId)
           for(let j=1; j<4; ++j)
-            if (el[j] !== "--" )
-              ids.get(el[j]).socket.emit('teamGamming', data, config, actType)
+            if (el[j] !== "--" ){
+              try{
+                ids.get(el[j]).socket.emit('teamGamming', data, config, actType)
+              }catch{
+                console.log('sending error')
+              }
+            }
       });
         
       // for(let i=0; i<viewer.length; ++i)
@@ -258,9 +271,17 @@ function cheakRooms(roomsId){
     })
 
     socket.on('disconnect',function(){
-      let leaver
-      ids.forEach((value, key)=>{if(socket.id === value.socket.id)leaver = key})
-      ids.delete(leaver)
+      let leaver,id_queue = new Array()
+      ids.forEach((value, key)=>{
+        id_queue.push(key)
+        if(socket.id === value.socket.id){
+          leaver = key
+          ids.delete(leaver)
+          cheakPeople(leaver)
+        }
+      })
+      console.log(id_queue , ' --- out ')
+      
       for(let i=0; i<viewer.length; ++i){
         if(viewer[i]==leaver){
           viewer[i] = viewer[0]
@@ -268,7 +289,6 @@ function cheakRooms(roomsId){
           break
         }
       }
-      cheakPeople(leaver)
       //1vs1 處理房間
       let result
       for(let i=0; i<rooms.length; ++i){
@@ -278,7 +298,7 @@ function cheakRooms(roomsId){
       if(result !== undefined)ids.get(result).socket.emit('find', result)
       
       people--;
-      console.log(leaver+'  disconnected '+people)
+      console.log(leaver+' disconnected '+people)
     })
 })
 server.listen(22222,'::')

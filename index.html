@@ -46,7 +46,7 @@
         .then(function(response) {return response.text()})
         .then(function(data){
           id = data
-          socket.emit("idstore", id)
+          socket.emit("idStore", id)
           document.getElementById('player-name').textContent = id
         })
       document.getElementById('talking-btn').addEventListener('click', event => {

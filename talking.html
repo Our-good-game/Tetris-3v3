@@ -37,6 +37,15 @@
       </div>
     </body>
     <script>
+    var userName 
+    window.onload = function () {
+        fetch('id')
+        .then(function (response) { return response.text(); })
+        .then(function (data) {
+          userName = data
+          socket.emit('idStore', userName)
+        })
+    }
     Vue.directive('scroll', {
       inserted: function (el, binding) {
       let f = function (evt) {
