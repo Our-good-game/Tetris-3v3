@@ -29,9 +29,9 @@ class Render{
       canvas.context.fillText('Time：', 0, 100);
       canvas.context.fillText(timeStr, 15, 140);
     }
-    _render(tetris, formal) {
+    _render(tetris, formal, prof) {
       formal.context.clearRect(formal.paintposA, formal.paintposB, formal.paintposC, formal.paintposD);
-      this._drawBackground(tetris, formal);
+      this._drawBackground(tetris, formal, prof);
       this._drawBoard(tetris, formal);
       this._drawGhost(tetris, formal);
       this._drawPiece(tetris, formal);
@@ -47,9 +47,9 @@ class Render{
       if(tetris.gameState === 3 ) this._drawWinner(tetris, formal)
     }   
     
-    _renderNoHUD (tetris, formal) {
+    _renderNoHUD (tetris, formal, prof) {
       formal.context.clearRect(formal.paintposA, formal.paintposB, formal.paintposC, formal.paintposD);
-      this._drawBackgroundSimple(tetris, formal);
+      this._drawBackgroundSimple(tetris, formal, prof);
       this._drawBoard(tetris, formal);
       this._drawGhost(tetris, formal);
       this._drawPiece(tetris, formal);
@@ -70,7 +70,7 @@ class Render{
       formal.context.stroke();
     }
 
-    _drawBackground(tetris, formal) {
+    _drawBackground(tetris, formal, prof) {
       formal.context.lineWidth = 1;
       // if burning a this, make background color flash
       const fillColor = this.backgroundColor;
@@ -82,7 +82,18 @@ class Render{
       formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
       formal.context.closePath();
       formal.context.fillStyle = fillColor;
-      formal.context.strokeStyle = this.borderColor;
+      if (prof == 'Attacker'){
+        formal.context.strokeStyle = '#ff0000';
+      }
+      if (prof == 'Defender') {
+        formal.context.strokeStyle = 'chartreuse';
+      }
+      if (prof == 'Magician') {
+        formal.context.strokeStyle = 'deepskyblue';
+      }
+
+      formal.context.lineWidth = 5;
+
       formal.context.fill();
       formal.context.stroke();
       if (tetris.gameState === 4) {
@@ -124,7 +135,7 @@ class Render{
       } 
     }
     // 沒有網格線
-    _drawBackgroundSimple(tetris, formal) {
+    _drawBackgroundSimple(tetris, formal, prof) {
       formal.context.lineWidth = 1;
       // if burning a this, make background color flash
       const fillColor = this.backgroundColor;
@@ -136,7 +147,16 @@ class Render{
       formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
       formal.context.closePath();
       formal.context.fillStyle = fillColor;
-      formal.context.strokeStyle = this.borderColor;
+      if (prof == 'Attacker'){
+        formal.context.strokeStyle = '#ff0000';
+      }
+      if (prof == 'Defender') {
+        formal.context.strokeStyle = 'chartreuse';
+      }
+      if (prof == 'Magician') {
+        formal.context.strokeStyle = 'deepskyblue';
+      }
+      formal.context.lineWidth = 5;
       formal.context.fill();
       formal.context.stroke();
     }

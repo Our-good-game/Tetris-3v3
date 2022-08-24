@@ -34,14 +34,6 @@
   <img src="/picture/Item/shadow.png"style="display:none">
   <img src="/picture/Item/PieceChange.png"style="display:none">
   <img src="/picture/Item/PieceChain.png"style="display:none">
-  <style>
-    #self_border{position:absolute; top:209px; left:738px; height:723px; width:365px; border-style:solid; border-width:2px; color: white;}
-    #teammate1_border{position:absolute; top:172px; left:211px; height:342px; width:173px; border-style:solid; border-width:2px; color:white;}
-    #teammate2_border{position:absolute; top:547px; left:211px; height:342px; width:174px; border-style:solid; border-width:2px; color:white;}
-    #opponent1_border{position:absolute; top:167px; left:1513px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
-    #opponent2_border{position:absolute; top:542px; left:1359px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
-    #opponent3_border{position:absolute; top:542px; left:1667px; height:301px; width:153px; border-style:solid; border-width:2px; color: white;}
-  </style>
 
 </head>
 
@@ -71,13 +63,6 @@
         <div id= 'result'style="background: rgba(255, 255, 255,0.1);position: absolute; width:100%; height:10%; display: none; z-index: 10">
           <pre id= 'result-inner'style="padding: 20px 0; margin: auto;">result</pre>
         </div>
-        <!-- 顯示職業表示框框 -->
-        <div id="self_border"></div>
-        <div id="teammate1_border"></div>
-        <div id="teammate2_border"></div>
-        <div id="opponent1_border"></div>
-        <div id="opponent2_border"></div>
-        <div id="opponent3_border"></div>
       </div>
 
       <div class='container' id='findInterface' style="display: block;">
@@ -244,17 +229,6 @@
     },7000)
   }
   function SendData(data) {
-    // 切換職業變更邊框
-    if(config.profession == "Attacker") {
-      var s_border = document.querySelector('#self_border');
-      s_border.style.color = "crimson";
-    } else if(config.profession == "Defender") {
-      var s_border = document.querySelector('#self_border');
-      s_border.style.color = "chartreuse";
-    } else {
-      var s_border = document.querySelector('#self_border');
-      s_border.style.color = "deepskyblue";
-    }
 
     if(myProfession.action && config.profession == 'Magician')
       gamecore._randomAItem()
@@ -290,7 +264,7 @@
   function start(){socket.emit('teamFight',config)}
   function dice(){myProfession.act()}
 
-  function _loadData(Core, Canvas, data){
+  function _loadData(Core, Canvas, data, prof){
     Core.gameLoop = data.gameLoop
     Core.gameState = data.gameState
     Core.board = data.board;
@@ -301,7 +275,7 @@
     Core.haveHold = data.haveHold
     Core.holdPiece = data.holdPiece
     Core.lines = data.lines
-    draw._renderNoHUD(Core, Canvas);
+    draw._renderNoHUD(Core, Canvas, prof);
   }
 
   function repaintHUD() {
@@ -318,11 +292,11 @@
       else opponentHeart.life--
     } else {
       switch(dataConfig.id){
-        case teammate1Canvas.playerName: _loadData(teammate1Core, teammate1Canvas, data);break
-        case teammate2Canvas.playerName: _loadData(teammate2Core, teammate2Canvas, data);break
-        case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data);break
-        case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data);break
-        case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data);break
+        case teammate1Canvas.playerName: _loadData(teammate1Core, teammate1Canvas, data, dataConfig.profession);break
+        case teammate2Canvas.playerName: _loadData(teammate2Core, teammate2Canvas, data, dataConfig.profession);break
+        case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data, dataConfig.profession);break
+        case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data, dataConfig.profession);break
+        case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data, dataConfig.profession);break
       }
       
       switch(dataConfig.id){

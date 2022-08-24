@@ -515,7 +515,7 @@ class ClassicTetris3v3 extends Items{
         SendData(this)
         this._resetParams()
       }
-      draw._render(this, myCanvas);
+      draw._render(this, myCanvas, config.profession);
       
       await this._sleep();
     } while (this.gameLoop);
