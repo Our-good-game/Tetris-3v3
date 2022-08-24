@@ -47,8 +47,8 @@
         <canvas id='HUD' style="position:absolute;"></canvas>
         <img src="/picture/heart.png" id ="heart" style="display:none"></img>
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
-        <img id="itemIcon"  src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
-        <img id="itemIcon2" src="/picture/Item/default.png" style="width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
+        <img id="itemIcon"  src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
+        <img id="itemIcon2" src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
         <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
@@ -286,7 +286,7 @@
     opponentShield.paint();
   }
   socket.on('teamGamming', function (data, dataConfig, actType) {
-    console.log(dataConfig.id)
+    // console.log(dataConfig.id)
     if(data.boardOverLoad){
       if(dataConfig.team == config.team) teamHeart.life--
       else opponentHeart.life--
@@ -297,69 +297,6 @@
         case opponent1Canvas.playerName: _loadData(opponent1Core, opponent1Canvas, data, dataConfig.profession);break
         case opponent2Canvas.playerName: _loadData(opponent2Core, opponent2Canvas, data, dataConfig.profession);break
         case opponent3Canvas.playerName: _loadData(opponent3Core, opponent3Canvas, data, dataConfig.profession);break
-      }
-      
-      switch(dataConfig.id){
-        case teammate1Canvas.playerName: 
-          if(dataConfig.profession == "Attacker") {
-            var s_border = document.querySelector('#teammate1_border');
-            s_border.style.color = "crimson";
-          } else if(dataConfig.profession == "Defender") {
-            var s_border = document.querySelector('#teammate1_border');
-            s_border.style.color = "chartreuse";
-          } else {
-            var s_border = document.querySelector('#teammate1_border');
-            s_border.style.color = "deepskyblue";
-          }
-        break;
-        case teammate2Canvas.playerName: 
-          if(dataConfig.profession == "Attacker") {
-              var s_border = document.querySelector('#teammate2_border');
-              s_border.style.color = "crimson";
-            } else if(dataConfig.profession == "Defender") {
-              var s_border = document.querySelector('#teammate2_border');
-              s_border.style.color = "chartreuse";
-            } else {
-              var s_border = document.querySelector('#teammate2_border');
-              s_border.style.color = "deepskyblue";
-            }
-        break
-        case opponent1Canvas.playerName:
-          if(dataConfig.profession == "Attacker") {
-              var s_border = document.querySelector('#opponent1_border');
-              s_border.style.color = "crimson";
-            } else if(dataConfig.profession == "Defender") {
-              var s_border = document.querySelector('#opponent1_border');
-              s_border.style.color = "chartreuse";
-            } else {
-              var s_border = document.querySelector('#opponent1_border');
-              s_border.style.color = "deepskyblue";
-            }
-        break;
-        case opponent2Canvas.playerName:
-          if(dataConfig.profession == "Attacker") {
-              var s_border = document.querySelector('#opponent2_border');
-              s_border.style.color = "crimson";
-            } else if(dataConfig.profession == "Defender") {
-              var s_border = document.querySelector('#opponent2_border');
-              s_border.style.color = "chartreuse";
-            } else {
-              var s_border = document.querySelector('#opponent2_border');
-              s_border.style.color = "deepskyblue";
-            }
-        break;
-        case opponent3Canvas.playerName:
-          if(dataConfig.profession == "Attacker") {
-              var s_border = document.querySelector('#opponent3_border');
-              s_border.style.color = "crimson";
-            } else if(dataConfig.profession == "Defender") {
-              var s_border = document.querySelector('#opponent3_border');
-              s_border.style.color = "chartreuse";
-            } else {
-              var s_border = document.querySelector('#opponent3_border');
-              s_border.style.color = "deepskyblue";
-            }
-        break;
       }
     }
     
@@ -403,12 +340,9 @@
       itemRunning = true
       gamecore.changeItemIcon(document.getElementById('itemIcon'), itemTmp[0])
       setTimeout( () => {
-        if ( dataConfig.team == config.team ) {
-          if (data.itemNumber == 1)
-            gamecore.defense = true;
-        } else {
-          gamecore.getItem = ClassicTetris3v3.ITEMS[itemTmp[0]].name
-          gamecore._itemExecute()
+        if (data.itemNumber == 1) {
+          draw._setItemImage(Items.ITEMS[1].url);
+          gamecore.defense = true;
         }
         itemTmp.shift()
         itemRunning = false
@@ -418,10 +352,8 @@
       itemOpponentRun = true
       gamecore.changeItemIcon(document.getElementById('itemIcon2'), itemOpponent[0])
       setTimeout( () => {
-        if ( dataConfig.team == config.team ) {
-          if (data.itemNumber == 1)
-            gamecore.defense = true;
-        } else {
+        if (data.itemNumber !== 1) {
+          draw._setItemImage(Items.ITEMS[itemOpponent[0]].url);
           gamecore.getItem = ClassicTetris3v3.ITEMS[itemOpponent[0]].name
           gamecore._itemExecute()
         }

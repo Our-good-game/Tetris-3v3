@@ -20,6 +20,9 @@ class Render{
     this.gridColor = '#ddd'
     this.displayTetris = false
     this.displayTspin = false
+    this.itemImageShow = false;
+    this.itemImageOpacity = 0.0;
+    this.itemImage = new Image();
   }
     _rendertime(canvas, time){
       canvas.context.clearRect(0, 0, canvas.canvas.width, canvas.canvas.height);
@@ -45,6 +48,9 @@ class Render{
         this._drawHold(tetris, formal)
       }
       if(tetris.gameState === 3 ) this._drawWinner(tetris, formal)
+      if (this.itemImageShow) {
+        this._drawItem(tetris, formal);
+      }
     }   
     
     _renderNoHUD (tetris, formal, prof) {
@@ -82,6 +88,7 @@ class Render{
       formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
       formal.context.closePath();
       formal.context.fillStyle = fillColor;
+      formal.context.strokeStyle = this.borderColor;
       if (prof == 'Attacker'){
         formal.context.strokeStyle = '#ff0000';
       }
@@ -147,6 +154,7 @@ class Render{
       formal.context.lineTo(formal.boardBorder[0], formal.boardBorder[3]);
       formal.context.closePath();
       formal.context.fillStyle = fillColor;
+      formal.context.strokeStyle = this.borderColor;
       if (prof == 'Attacker'){
         formal.context.strokeStyle = '#ff0000';
       }
@@ -159,6 +167,7 @@ class Render{
       formal.context.lineWidth = 5;
       formal.context.fill();
       formal.context.stroke();
+      formal.context.lineWidth = 1;
     }
     _drawBoard(tetris, formal) { 
       if(!tetris.gameLoop )return;
@@ -310,7 +319,25 @@ class Render{
           formal.context.fillText('Winner', formal.nameX, formal.nameY - 2 * formal.squareSide);
         }
       }
-      _drawItem (formal, itemNumber) {
-              
+      _setItemImage (itemImageSrc) {
+        this.itemImage.src = itemImageSrc;
+        this.itemImageShow = true;
+        this.itemImageOpacity = 0.5;
+      }
+      _drawItem (tetris, formal) {
+        if (this.itemImageOpacity - 0.0056 > 0.0) {
+          // 大約1.5s會歸0
+          this.itemImageOpacity -= 0.0056;
+        }
+        else {
+          this.itemImageOpacity = 0.0;
+          this.itemImageShow = false;
+        }
+        formal.context.globalAlpha = this.itemImageOpacity;
+        formal.context.drawImage (this.itemImage, 
+                                  formal.boardBorder[0] + 1 * formal.squareSide, 
+                                  formal.boardBorder[1] + 6 * formal.squareSide,
+                                  8 * formal.squareSide, 8 * formal.squareSide);
+        formal.context.globalAlpha = 1.0;
       }
 }
