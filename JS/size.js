@@ -4,7 +4,9 @@ class defaultSize {
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
     this.playerName = ' '
-    
+    this._setPosition(canvas);
+  }
+  _setPosition(canvas) {
     this.boardWidth  = 10
     this.boardHeight = 22
     this.paintposA   = 0
@@ -13,7 +15,7 @@ class defaultSize {
     this.paintposD   = canvas.height
     this.boardX      = canvas.width * 0.25
     this.boardY      = canvas.height * 0.15
-    this.squareSide  = canvas.height * 0.035
+    this.squareSide  = Math.sqrt (canvas.height * canvas.width / 700)
     
     this.scoreX        = this.boardX + this.squareSide * 10.5
     this.scoreY        = this.boardY + this.squareSide * 18
@@ -21,14 +23,12 @@ class defaultSize {
     this.nextY         = this.boardY + this.squareSide * 3
     this.nextOffsetX   = this.boardX + this.squareSide * 10.5
     this.nextOffsetY   = this.nextY  + this.squareSide * 0.5
-    this.nextOffsetvec = this.squareSide * 3
-    this.pauseX        = this.boardX + this.squareSide * 3
-    this.pauseY        = this.boardY + this.squareSide * 12
+    this.nextOffsetvec =               this.squareSide * 3
     this.holdX         = this.boardX - this.squareSide * 4
     this.holdY         = this.boardY + this.squareSide * 3
     this.comboX        = this.boardX - this.squareSide * 5
     this.comboY        = this.boardX + this.squareSide * 12
-    this.nameX         = this.boardX + this.squareSide * 3
+    this.nameX         = this.boardX + this.squareSide * 4
     this.nameY         = this.boardY + this.squareSide
     this.countDownX    = this.boardX + this.squareSide * 5
     this.countDownY    = this.boardY + this.squareSide * 12
@@ -40,9 +40,6 @@ class defaultSize {
       0.5 +   this.boardX + this.boardWidth * this.squareSide + 1,
       0.5 +   this.boardY + this.boardHeight * this.squareSide
     ];
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
-    this.context.lineJoin = 'round';
   }
   // disable/enable UI
   _disableUI() {
@@ -56,8 +53,6 @@ class defaultSize {
   _handleContextMenu = event => {
     event.preventDefault();
   }
-  
-  
 }
 
 class teamModSize {
@@ -66,7 +61,9 @@ class teamModSize {
     this.context = this.canvas.getContext('2d');
     this.context.lineJoin = 'round';
     this.playerName = " "
-    
+    this._setPosition(canvas);
+  }
+  _setPosition (canvas) {
     this.boardWidth = 10
     this.boardHeight = 22
     this.paintposA = 0
@@ -75,22 +72,22 @@ class teamModSize {
     this.paintposD = canvas.height
     this.boardX = canvas.width * 0.25
     this.boardY = 0
-    this.squareSide = window.innerWidth * 0.022
+    this.squareSide = Math.sqrt (canvas.height * canvas.width / 500)
     
-    this.scoreX =   this.boardX + this.squareSide * 10.5
-    this.scoreY =   this.boardY + this.squareSide * 18
-    this.nextX =    this.boardX + this.squareSide * 10.5 
-    this.nextY =    this.boardY + this.squareSide * 3
-    this.nextOffsetX =    this.boardX + this.squareSide * 10.5
-    this.nextOffsetY =    this.nextY + this.squareSide * 0.5
-    this.nextOffsetvec =  this.squareSide * 3
-    this.holdX =      this.boardX - this.squareSide * 4
-    this.holdY =      this.boardY + this.squareSide * 3
-    this.comboX =     this.boardX + this.squareSide * 10.5
-    this.comboY =     this.boardX + this.squareSide * 11
-    this.nameX =      this.boardX + 3 * this.squareSide
-    this.nameY =      this.boardY + this.squareSide
-    this.countDownX    = this.boardX + this.squareSide * 16.7
+    this.scoreX        = this.boardX + this.squareSide * 10.5
+    this.scoreY        = this.boardY + this.squareSide * 18
+    this.nextX         = this.boardX + this.squareSide * 10.5 
+    this.nextY         = this.boardY + this.squareSide * 3
+    this.nextOffsetX   = this.boardX + this.squareSide * 10.5
+    this.nextOffsetY   = this.nextY  + this.squareSide * 0.5
+    this.nextOffsetvec =               this.squareSide * 3
+    this.holdX         = this.boardX - this.squareSide * 4
+    this.holdY         = this.boardY + this.squareSide * 3
+    this.comboX        = this.boardX + this.squareSide * 10.5
+    this.comboY        = this.boardX + this.squareSide * 11
+    this.nameX         = this.boardX + this.squareSide * 4
+    this.nameY         = this.boardY + this.squareSide
+    this.countDownX    = this.boardX + this.squareSide * 17
     this.countDownY    = this.boardY + this.squareSide * 13
 
     // board's bounding box
@@ -100,9 +97,6 @@ class teamModSize {
       0.5 +   this.boardX + this.boardWidth * this.squareSide + 1,
       0.5 +   this.boardY + this.boardHeight * this.squareSide
     ];
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
-    this.context.lineJoin = 'round';
   }
   _disableUI() {
     this.canvas.style.touchAction = 'none';
@@ -155,8 +149,5 @@ class viewModSize {
       0.5 +   this.boardX + this.boardWidth * this.squareSide + 1,
       0.5 +   this.boardY + this.boardHeight * this.squareSide
     ];
-    this.canvas = canvas;
-    this.context = this.canvas.getContext('2d');
-    this.context.lineJoin = 'round';
   }
 }

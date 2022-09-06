@@ -53,8 +53,7 @@
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
         </div>
-        <canvas id='player' class='tetris-canvas' style="height: 85%;"
-        ></canvas>
+        <canvas id='player' class='tetris-canvas' style="height: 85%;"></canvas>
         <canvas id='teammate1' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='teammate2' class='tetris-canvas' style="position:absolute; height: 40%;"></canvas>
         <canvas id='opponent1' class='tetris-canvas' style="position:absolute; height: 35%;"></canvas>
@@ -112,50 +111,16 @@
 <script>
 
   var HUD = document.getElementById('HUD');
-  HUD.height = window.innerHeight * 0.15;
-  HUD.width = window.innerWidth;
-
   var player = document.getElementById('player');
-  player.height = window.innerHeight;
-  player.width = window.innerWidth * 0.45;
-  player.style.top = HUD.height + "px";
-  player.style.left = window.innerWidth * 0.29 + "px";
-
   var teammate1 = document.getElementById('teammate1');
-  teammate1.height = window.innerHeight;
-  teammate1.width = window.innerWidth * 0.45;
-  teammate1.style.top = HUD.height + "px";
-  teammate1.style.left = window.innerWidth * 0.066 + "px";
-
   var teammate2 = document.getElementById('teammate2');
-  teammate2.height = window.innerHeight;
-  teammate2.width = window.innerWidth * 0.45;
-  teammate2.style.top = (HUD.height +  teammate2.height * 0.4) + "px";
-  teammate2.style.left = window.innerWidth * 0.066 + "px";
-/* ----------------------------------------------------------------------------------------------*/
   var opponent1 = document.getElementById('opponent1');
-  opponent1.height = window.innerHeight
-  opponent1.width = window.innerWidth * 0.45;
-  opponent1.style.top = HUD.height + "px";
-  opponent1.style.left = window.innerWidth * 0.75 + "px";
-
   var opponent2 = document.getElementById('opponent2');
-  opponent2.height = window.innerHeight;
-  opponent2.width = window.innerWidth * 0.45;
-  opponent2.style.top = (HUD.height +  opponent2.height * 0.4) + "px";
-  opponent2.style.left = window.innerWidth * 0.67 + "px";
-
   var opponent3 = document.getElementById('opponent3');
-  opponent3.height = window.innerHeight;
-  opponent3.width = window.innerWidth * 0.45;
-  opponent3.style.top = (HUD.height +  opponent3.height * 0.4) + "px";
-  opponent3.style.left = window.innerWidth * 0.83 + "px";
-
   let myItemIcon = document.getElementById('itemIcon');
-  myItemIcon.style.left = window.innerWidth * 0.13+ "px";
-
   let opponentItemIcon = document.getElementById('itemIcon2');
-  opponentItemIcon.style.left = window.innerWidth * 0.8+ "px";
+  setPlayerInterfaceStyle();
+  
 
   var draw = new Render();
   // 主遊戲邏輯
@@ -284,6 +249,43 @@
     opponentHeart.paint();
     teamShield.paint();
     opponentShield.paint();
+  }
+  function setPlayerInterfaceStyle() {
+    HUD.height = window.innerHeight * 0.15;
+    HUD.width = window.innerWidth;
+
+    player.height = window.innerHeight;
+    player.width = window.innerWidth * 0.45;
+    player.style.top = HUD.height + "px";
+    player.style.left = window.innerWidth * 0.29 + "px";
+
+    teammate1.height = window.innerHeight;
+    teammate1.width = window.innerWidth * 0.45;
+    teammate1.style.top = HUD.height + "px";
+    teammate1.style.left = window.innerWidth * 0.066 + "px";
+
+    teammate2.height = window.innerHeight;
+    teammate2.width = window.innerWidth * 0.45;
+    teammate2.style.top = (HUD.height +  teammate2.height * 0.4) + "px";
+    teammate2.style.left = window.innerWidth * 0.066 + "px";
+
+    opponent1.height = window.innerHeight
+    opponent1.width = window.innerWidth * 0.45;
+    opponent1.style.top = HUD.height + "px";
+    opponent1.style.left = window.innerWidth * 0.75 + "px";
+
+    opponent2.height = window.innerHeight;
+    opponent2.width = window.innerWidth * 0.45;
+    opponent2.style.top = (HUD.height +  opponent2.height * 0.4) + "px";
+    opponent2.style.left = window.innerWidth * 0.67 + "px";
+    
+    opponent3.height = window.innerHeight;
+    opponent3.width = window.innerWidth * 0.45;
+    opponent3.style.top = (HUD.height +  opponent3.height * 0.4) + "px";
+    opponent3.style.left = window.innerWidth * 0.83 + "px";
+
+    myItemIcon.style.left = window.innerWidth * 0.13+ "px";
+    opponentItemIcon.style.left = window.innerWidth * 0.8+ "px";
   }
   socket.on('teamGamming', function (data, dataConfig, actType) {
     // console.log(dataConfig.id)
@@ -432,6 +434,38 @@
       document.getElementsByClassName('demo')[0].style.display = "none";
     }, 3500)
   })
+
+  const observer = new ResizeObserver(function (entries) {
+    setPlayerInterfaceStyle();
+    myCanvas._setPosition(player);
+    teammate1Canvas._setPosition(teammate1);
+    teammate2Canvas._setPosition(teammate2);
+    opponent1Canvas._setPosition(opponent1);
+    opponent2Canvas._setPosition(opponent2);
+    opponent3Canvas._setPosition(opponent3);
+    draw._render(gamecore, myCanvas)
+    draw._renderNoHUD(teammate1Core, teammate1Canvas)
+    draw._renderNoHUD(teammate2Core, teammate2Canvas)
+    draw._renderNoHUD(opponent1Core, opponent1Canvas)
+    draw._renderNoHUD(opponent2Core, opponent2Canvas)
+    draw._renderNoHUD(opponent3Core, opponent3Canvas)
+
+    teamHeart.canvasWidth = window.innerWidth;
+    opponentHeart.canvasWidth = window.innerWidth;
+    teamShield.canvasWidth = window.innerWidth;
+    opponentShield.canvasWidth = window.innerWidth;
+    repaintHUD();
+
+    myProfession.bar.style.top = window.innerHeight * 0.45 + "px";
+    myProfession.bar.style.left = window.innerWidth * 0.32 + "px";
+    // console.log(entries);
+    // console.log (P1canvas.squareSide);
+  });
+
+  const playInterface = document.getElementById('playInterface');
+  observer.observe(playInterface, {
+    box: "border-box",
+  });
 </script>
 
 </html>

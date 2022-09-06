@@ -56,7 +56,6 @@
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
         </div>
-
       </div>
     </div>
     <div id='control' style='left:45%; top:50%; z-index: 3; position:fixed; text-align: center; display: block;'>
@@ -107,7 +106,7 @@
 
   var HUD = document.getElementById('HUD');
   HUD.height = window.innerHeight
-  HUD.width = window.innerWidth
+  HUD.width = window.innerWidth * 0.1;
 
   var draw = new Render();
   var gamecore = new ClassicTetris();                  //主遊戲邏輯
@@ -229,6 +228,27 @@
       document.getElementsByClassName('demo')[0].style.display = "none";
     }, 3500)
   })
+
+  const observer = new ResizeObserver(function (entries) {
+    canvas_player.height = window.innerHeight;
+    canvas_player.width = window.innerWidth * 0.45;
+    canvas_opponent.height = window.innerHeight;
+    canvas_opponent.width = window.innerWidth * 0.45;
+    HUD.height = window.innerHeight;
+    HUD.width = window.innerWidth * 0.1;
+    P1canvas._setPosition(canvas_player);
+    P2canvas._setPosition(canvas_opponent);
+    draw._render(gamecore, P1canvas);
+    draw._render(P2core, P2canvas);
+    // console.log(entries);
+    // console.log (P1canvas.squareSide);
+  });
+
+  const container = document.getElementsByClassName('container')[0];
+  observer.observe(container, {
+    box: "border-box",
+  });
+
 </script>
 
 </html>
