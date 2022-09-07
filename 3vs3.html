@@ -68,15 +68,24 @@
         <div style=" text-align: center; margin: 0; flex-direction: row;height: 100%; width: 100%;">
           <div style="display: block; margin: 0 auto; padding: 5% 0; height: 60%; width: 80%;">
             <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
-              <pre id = 'left1' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
+              <pre id= 'left1' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre>
+            </div>
             <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
-              <pre id = 'left2' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
+              <pre id= 'left2' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre>
+            </div>
             <div class= 'playername' style="height: 32%;width: 100%; margin: 5px;">
-              <pre id = 'left3' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre></div>
+              <pre id= 'left3' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre>
+            </div>
+          </div>
+          <div style="height:15%">
+            <pre id = 'roomID' style="width: 98%; height: 100%; padding: 0;">RoomID</pre>
           </div>
           <button class= "btn_ani" onclick="changeTeam()">Change</button>
           <button class= "btn_ani" onclick="start()">Start</button>
           <button class= "btn_ani" onclick="javascript:location.href='index.html'">Quit</button></br>
+          <pre id= 'proLeft1' style="padding:0; position: absolute; display: none;"></pre>
+          <pre id= 'proLeft2' style="padding:0; position: absolute; display: none;"></pre>
+          <pre id= 'proLeft3' style="padding:0; position: absolute; display: none;"></pre>
           <div id= 'changInterface' style="display: none;">
             <input id= 'textBlock' type="text" style="font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6); width: 500px;"/>
             <button class= "btn_ani" onclick="changeRoomId()">Enter</button>
@@ -376,21 +385,24 @@
   socket.on('roomInfo', function (roomData) {
     let tmp2 = ['1','2','3']
     let tmp3 = ['Attacker', 'Defender', 'Magician']
-    if(roomData[0] == -1){ 
-      alert(" Room is full! ").then( () =>{
-        socket.emit('enterRoom', config, config.roomId)
-      })
-    }
-    if(roomData[0] == -2){
-      alert(" Can't find ").then( () =>{
-        socket.emit('enterRoom', config, config.roomId)
-      })
-    }
+    if(roomData[0] == -1)
+      alert(" Room is full! ").then( () =>{socket.emit('enterRoom', config, config.roomId)})
+    if(roomData[0] == -2)
+      alert(" Can't find ").then( () =>{socket.emit('enterRoom', config, config.roomId)})
+    
     for(let i=1; i<4; ++i){
-      document.getElementById('left'+tmp2[i-1]).textContent = roomData[i]
+      let playerID = document.getElementById('left' + tmp2[i-1])
+      let playerPro = document.getElementById('proLeft' + tmp2[i-1])
+      playerID.textContent = roomData[i]
+      playerPro.style.height = playerID.height+'px'
+      playerPro.style.top = playerID.offsetTop+'px'
+      playerPro.textContent = tmp3[i-1]
+      playerPro.style.display = 'block'
       config.profession = tmp3[i-1]
     }
     myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
+    let tmp = 'RoomID : '
+    document.getElementById('roomID').textContent = tmp +roomData[0]
     config.roomId = roomData[0]
   })
 
