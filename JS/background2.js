@@ -9,12 +9,12 @@ function randomFloat(min, max) {return (max - min) * Math.random() + min;}
 class obj{
   constructor(num){
     this.img=new Image();
-    this.img=document.getElementById("hana"+randomInt(1,4));
+    this.img=document.getElementById("Tetris"+randomInt(1,8));
     this.x=randomFloat(0,window.innerWidth*num);
     this.y=randomFloat(0,canvas.height-100);
     this.a=randomInt(0,90)
     this.dx=randomFloat(0.8,2) 
-    this.dy=randomFloat(-0.1 , 0.3); 
+    this.dy=randomFloat(-0.1 , 0.3);
     this.dr=randomInt(1,3);
   }
   center(){
@@ -59,7 +59,8 @@ function drawobj(obj) {
   drawcvs.save()
   transform (obj)
   drawcvs.beginPath();
-  drawcvs.drawImage(obj.img,obj.x,obj.y,30,30)
+console.log (obj.img.width);
+  drawcvs.drawImage(obj.img, obj.x, obj.y, obj.img.width * 0.5, obj.img.height * 0.5);
   drawcvs.closePath();
   drawcvs.fill();
   drawcvs.restore()

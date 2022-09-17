@@ -15,7 +15,6 @@ class EnergyBar {
       this.cnt %= this.costEnergy
     }
     energy.style.height = (this.cnt * (100 / this.costEnergy)) + '%';
-    console.log (energy.style.height);
   }
   resetCnt(){
     this.cnt = 0

@@ -26,8 +26,8 @@ class defaultSize {
     this.nextOffsetvec =               this.squareSide * 3
     this.holdX         = this.boardX - this.squareSide * 4
     this.holdY         = this.boardY + this.squareSide * 3
-    this.comboX        = this.boardX - this.squareSide * 5
-    this.comboY        = this.boardX + this.squareSide * 12
+    this.comboX        = this.boardX - this.squareSide * 4.5
+    this.comboY        = this.boardY + this.squareSide * 12
     this.nameX         = this.boardX + this.squareSide * 4
     this.nameY         = this.boardY + this.squareSide
     this.countDownX    = this.boardX + this.squareSide * 5
@@ -84,7 +84,7 @@ class teamModSize {
     this.holdX         = this.boardX - this.squareSide * 4
     this.holdY         = this.boardY + this.squareSide * 3
     this.comboX        = this.boardX + this.squareSide * 10.5
-    this.comboY        = this.boardX + this.squareSide * 11
+    this.comboY        = this.boardY + this.squareSide * 14
     this.nameX         = this.boardX + this.squareSide * 4
     this.nameY         = this.boardY + this.squareSide
     this.countDownX    = this.boardX + this.squareSide * 17
