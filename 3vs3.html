@@ -398,7 +398,7 @@
       playerPro.style.top = playerID.offsetTop+'px'
       playerPro.textContent = tmp3[i-1]
       playerPro.style.display = 'block'
-      config.profession = tmp3[i-1]
+      if(roomData[i] == config.id) config.profession = tmp3[i-1]
     }
     myProfession = new profession(config,document.getElementsByClassName('meter')[0], document.getElementById('energy'))
     let tmp = 'RoomID : '
@@ -470,6 +470,7 @@
 
     myProfession.bar.style.top = window.innerHeight * 0.45 + "px";
     myProfession.bar.style.left = window.innerWidth * 0.32 + "px";
+    myProfession.bar.style.height = 500+'px'
     // console.log(entries);
     // console.log (P1canvas.squareSide);
   });
