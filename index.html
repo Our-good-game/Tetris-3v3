@@ -40,6 +40,80 @@
         <button class = "btn_ani" id='talking-btn' style="width:400px;height:100px;margin:20px 0px 0px 0px">Talking mode </button>
         </br>
         <div style="width:400px;height:100px; color: #FFF;"><pre id="player-name" style="padding-top: 30px;"></pre></div>
+        <button class = "btn_ani" id='help-btn' style="width: 100px; height:50px; top:5%; left: 88%; position: absolute;" onclick="PrintText()">Help </button>
+      </div>
+      <div id="text-container"style="display: none; position: absolute;top: 10%; left: 50%; ">
+        <div id ="text-inner">
+          <button class = "btn_ani" id='controlT-btn' style="font: 18px georgia; width: 100px; height:50px;" onclick="AssignText('Control-text')">Control</button>
+          <button class = "btn_ani" id='teamfightT-btn' style="font: 18px georgia; width: 100px; height:50px;" onclick="AssignText('TeamFight-text')">TeamFight</button>
+          <button class = "btn_ani" id='itemsT-btn' style="font: 18px georgia; width: 100px; height:50px;" onclick="AssignText('Items-text')">Items</button>
+        </div>
+        <div id="TeamFight-text" style="display: none;">
+        <pre style="top: 0;font: 18px georgia; text-align:left">
+隊伍生命: 5顆愛心
+勝利條件: 將敵方愛心歸零      
+  (ps: 當玩家版面堆滿，扣一顆自己隊伍愛心並清空其版面)
+職業: 攻擊 防禦 道具
+          
+  每個職業有自己的能量條，集滿能量條即可執行一次行動
+    1. 攻擊 (7點) : 扣一顆愛心，有防禦盾先攻擊防禦盾
+    2. 防禦 (8點) : 產生一個防禦盾
+    3. 道具 (10點): 骰一個特殊道具
+  玩家可自由變換，但更換職業後能量將會歸零
+          
+能量計算: 
+  (同時)消除一行: 0點
+  (同時)消除兩行: 1點
+  (同時)消除三行: 2點
+  (同時)消除四行: 4點 (Tetris)     
+  Combo:
+    1   -> 1點  2   -> 1點
+    3   -> 2點  4   -> 2點
+    5   -> 3點  6   -> 3點
+    >=7 -> 4點 
+  T轉:
+    T轉後消除一行: 2點
+    T轉後消除兩行: 4點
+    T轉後消除三行: 6點
+ 
+        </pre></div>
+        <div id="Control-text" style="display: none;">
+        <pre style="font: 18px georgia; text-align:left">
+遊戲操作:
+
+  left-right : 左右移動
+
+  up : 順時針旋轉方塊
+    
+  down : 加速落下
+
+  Space: 直接落下
+
+  Shift: 與暫存區(Hold)的方塊互相交換
+
+在團隊模式下:
+
+  Z: 逆時針旋轉方塊
+
+  A: 切換為攻擊職業
+
+  S: 切換成道具職業
+
+  D: 切換成防禦職業
+
+        </pre></div>
+        <div id="Items-text" style="display: none;">
+        <pre style="font: 18px georgia; text-align:left">
+道具效果 : 
+  1.	不疾不徐，禁止對手用瞬間落下的操作，讓對手在放置方塊時受到阻礙，藉此稍微減緩對手的速度。
+  2.	銅牆鐵壁，阻擋對手的道具效果，讓自己可以受到保護。
+  3.	偷天換日，使對手強制互換暫存區的方塊，讓對手會被自己放在站存區的方塊給陷害。
+  4.	鏡像世界，反向左右移動，當左右方向相反的話，相信大家都很難把方塊放到自己想要的位置。
+  5.	昏天暗地，遮住對手下一個方塊的提示，原本可以看到下一個方塊提前作準備，現在不給你這個機會了。
+  6.	風雲變幻，瞬間將後續會出現的方塊打亂，現在要重新規劃每個方塊擺放的位置
+  7.	靜止世界，就名副其實讓對手的畫面完全停佇一小段時間，可能這是最厲害的道具。
+          
+        </pre></div>
       </div>
     </body>
     <script src="/JS/background2.js"></script>
@@ -65,5 +139,19 @@
       // document.getElementById('viewing-btn').addEventListener('click', event => {
       //   document.location.href="viewing.html"
       // });
+      function PrintText(){
+        document.getElementById('text-container').style.display='block'
+        document.getElementById('help-btn').onclick= function(){ OffText()}
+      }
+      function OffText(){
+        document.getElementById('text-container').style.display='none'
+        document.getElementById('help-btn').onclick=function(){ PrintText()}
+      }
+      function AssignText(s){
+        document.getElementById('TeamFight-text').style.display='none'
+        document.getElementById('Control-text').style.display='none'
+        document.getElementById('Items-text').style.display='none'
+        document.getElementById(s).style.display='block'
+      }
     </script>
 </html>
