@@ -479,8 +479,10 @@
     opponentShield.canvasWidth = window.innerWidth;
     repaintHUD();
 
-    myProfession.bar.style.top = window.innerHeight * 0.45 + "px";
+    myProfession.bar.style.top = myCanvas.squareSide * 12 + "px";
     myProfession.bar.style.left = window.innerWidth * 0.32 + "px";
+    myProfession.bar.style.height = myCanvas.squareSide * 8 + "px";
+    myProfession.bar.style.width  = myCanvas.squareSide * 0.5 + "px";
     // console.log(entries);
     // console.log (P1canvas.squareSide);
   });
