@@ -449,12 +449,22 @@
 
   const observer = new ResizeObserver(function (entries) {
     setPlayerInterfaceStyle();
+
+    // modify defaultSize member position
     myCanvas._setPosition(player);
     teammate1Canvas._setPosition(teammate1);
     teammate2Canvas._setPosition(teammate2);
     opponent1Canvas._setPosition(opponent1);
     opponent2Canvas._setPosition(opponent2);
     opponent3Canvas._setPosition(opponent3);
+
+    // modify start-animation position
+    document.getElementsByClassName('demo')[0].style.left = myCanvas.countDownX + "px";
+    document.getElementsByClassName('demo')[0].style.top = myCanvas.countDownY + "px";
+
+    // modify canvas font size
+    draw.canvasFont = myCanvas.squareSide + 'px huakang_girl_w5';
+
     draw._render(gamecore, myCanvas)
     draw._renderNoHUD(teammate1Core, teammate1Canvas)
     draw._renderNoHUD(teammate2Core, teammate2Canvas)
@@ -462,6 +472,7 @@
     draw._renderNoHUD(opponent2Core, opponent2Canvas)
     draw._renderNoHUD(opponent3Core, opponent3Canvas)
 
+    // modify heart & shield position
     teamHeart.canvasWidth = window.innerWidth;
     opponentHeart.canvasWidth = window.innerWidth;
     teamShield.canvasWidth = window.innerWidth;

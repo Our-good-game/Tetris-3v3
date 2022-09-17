@@ -295,15 +295,17 @@ class Render{
         }
         if(tetris.combos > 0){
           formal.context.fillText("Combo", formal.comboX, formal.comboY);
-          formal.context.fillText(tetris.combos, formal.comboX+50, formal.comboY + 50);
+          formal.context.fillText(tetris.combos, formal.comboX + formal.squareSide * 1.5, formal.comboY + formal.squareSide * 1.5);
         }
-        if(tetris.backToBack)
-          formal.context.fillText("BackTwo", formal.comboX, formal.comboY + 150);
+      
+        if(tetris.backToBack){
+          formal.context.fillText("Back-  ", formal.comboX, formal.comboY + formal.squareSide * 3);
+          formal.context.fillText("ToBack", formal.comboX, formal.comboY + formal.squareSide * 4);
+        }
+        if(this.displayTetris)
+          formal.context.fillText("Tetris", formal.comboX , formal.comboY + formal.squareSide * 6); 
         if(tetris.cheakTspin)
-          formal.context.fillText("T-spin", formal.comboX, formal.comboY + 250);
-        if(this.displayTetris)  
-          formal.context.fillText("Tetris", formal.comboX , formal.comboY + 200);
-        
+          formal.context.fillText("T-spin", formal.comboX, formal.comboY + formal.squareSide * 8);
         
       }
       

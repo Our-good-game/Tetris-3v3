@@ -236,8 +236,17 @@
     canvas_opponent.width = window.innerWidth * 0.45;
     HUD.height = window.innerHeight;
     HUD.width = window.innerWidth * 0.1;
+
+    // modify defaultSize member position
     P1canvas._setPosition(canvas_player);
     P2canvas._setPosition(canvas_opponent);
+
+    // modify start-animation position
+    document.getElementsByClassName('demo')[0].style.left = P1canvas.countDownX + "px";
+    document.getElementsByClassName('demo')[0].style.top = P1canvas.countDownY + "px";
+    
+    // modify canvas font size
+    draw.canvasFont = P1canvas.squareSide + 'px huakang_girl_w5';
     draw._render(gamecore, P1canvas);
     draw._render(P2core, P2canvas);
     // console.log(entries);
