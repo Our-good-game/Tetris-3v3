@@ -87,8 +87,8 @@ class teamModSize {
     this.comboY        = this.boardY + this.squareSide * 14
     this.nameX         = this.boardX + this.squareSide * 4
     this.nameY         = this.boardY + this.squareSide
-    this.countDownX    = this.boardX + this.squareSide * 17
-    this.countDownY    = this.boardY + this.squareSide * 13
+    this.countDownX    = this.boardX + this.squareSide * 3.5
+    this.countDownY    = this.boardY + this.squareSide * 10
 
     // board's bounding box
     this.boardBorder = [

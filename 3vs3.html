@@ -22,6 +22,8 @@
     }
     .btn_ani {
       transition: all 0.3s;
+      width: 10%;
+      height: 30%;
     }
     .btn_ani:hover {
       transform: scale(1.3);
@@ -77,18 +79,18 @@
               <pre id= 'left3' style="height: 100%;width: 100%; padding: 3% 0; margin: 0;">Unknow</pre>
             </div>
           </div>
-          <div style="height:15%">
-            <pre id = 'roomID' style="width: 98%; height: 100%; padding: 0;">RoomID</pre>
-          </div>
-          <button class= "btn_ani" onclick="changeTeam()">Change</button>
-          <button class= "btn_ani" onclick="start()">Start</button>
-          <button class= "btn_ani" onclick="javascript:location.href='index.html'">Quit</button></br>
-          <pre id= 'proLeft1' style="padding:0; position: absolute; display: none;"></pre>
-          <pre id= 'proLeft2' style="padding:0; position: absolute; display: none;"></pre>
-          <pre id= 'proLeft3' style="padding:0; position: absolute; display: none;"></pre>
-          <div id= 'changInterface' style="display: none;">
-            <input id= 'textBlock' type="text" style="font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6); width: 500px;"/>
-            <button class= "btn_ani" onclick="changeRoomId()">Enter</button>
+          <pre id= 'proLeft1' style="text-align: left; padding: 0; position: fixed; top: 10%; display: none;"></pre>
+          <pre id= 'proLeft2' style="text-align: left; padding: 0; position: fixed; top: 20%; display: none;"></pre>
+          <pre id= 'proLeft3' style="text-align: left; padding: 0; position: fixed; top: 30%; display: none;"></pre>
+          <div style="width: 100%; height:40%">
+            <pre id = 'roomID' style="width: 100%; height: 20%; padding: 0;">RoomID</pre>
+            <button class= "btn_ani" onclick="changeTeam()">Change</button>
+            <button class= "btn_ani" onclick="start()">Start</button>
+            <button class= "btn_ani" onclick="javascript:location.href='index.html'">Quit</button></br>
+            <div id= 'changInterface' style="height: 50%; display: none;">
+              <input id= 'textBlock' type="text" style="width: 20%; height: 40%; font-size:36px; color: #FFF; background-color:rgba(136, 145, 161, 0.6);"/>
+              <button class= "btn_ani" onclick="changeRoomId()">Enter</button>
+            </div>
           </div>
         </div>
       </div>
@@ -197,10 +199,10 @@
       document.getElementById('result').style.display = 'flex'
       let i = window.innerHeight/2-150
       document.getElementById('result').style.top = (i.toString())+'px'
-    }, 2000)
+    }, 1500)
     setTimeout( ()=> {
       javascript:location.href='index.html'
-    },7000)
+    },1000)
   }
   function SendData(data) {
 
@@ -446,8 +448,9 @@
       document.getElementsByClassName('demo')[0].style.display = "none";
     }, 3500)
   })
-
-  const observer = new ResizeObserver(function (entries) {
+  // dynamic observe 3v3 playing screen size
+  const playingObserver = new ResizeObserver(function (entries) {
+    // console.log(entries);
     setPlayerInterfaceStyle();
 
     // modify defaultSize member position
@@ -459,12 +462,11 @@
     opponent3Canvas._setPosition(opponent3);
 
     // modify start-animation position
-    document.getElementsByClassName('demo')[0].style.left = myCanvas.countDownX + "px";
-    document.getElementsByClassName('demo')[0].style.top = myCanvas.countDownY + "px";
+    document.getElementsByClassName('demo')[0].style.left = (parseInt (player.style.left, 10) + myCanvas.countDownX) + "px";
+    document.getElementsByClassName('demo')[0].style.top  = (parseInt (player.style.top, 10)  + myCanvas.countDownY) + "px";
 
     // modify canvas font size
     draw.canvasFont = myCanvas.squareSide + 'px huakang_girl_w5';
-
     draw._render(gamecore, myCanvas)
     draw._renderNoHUD(teammate1Core, teammate1Canvas)
     draw._renderNoHUD(teammate2Core, teammate2Canvas)
@@ -483,13 +485,31 @@
     myProfession.bar.style.left = window.innerWidth * 0.32 + "px";
     myProfession.bar.style.height = myCanvas.squareSide * 8 + "px";
     myProfession.bar.style.width  = myCanvas.squareSide * 0.5 + "px";
-
-    // console.log(entries);
-    // console.log (P1canvas.squareSide);
   });
 
   const playInterface = document.getElementById('playInterface');
-  observer.observe(playInterface, {
+  playingObserver.observe(playInterface, {
+    box: "border-box",
+  });
+
+  // dynamic observe 3v3 team find screen size
+  const findObserver = new ResizeObserver(function (entries) {
+    Array.from (document.getElementsByTagName('pre')).forEach (pre => {
+      pre.style.fontSize = Math.sqrt (window.innerHeight * window.innerWidth / 1000) + "px";
+    });
+    Array.from (document.getElementsByClassName('btn_ani')).forEach (button => {
+      button.style.fontSize = Math.sqrt (window.innerHeight * window.innerWidth / 1000) + "px";
+    });
+    
+    document.getElementById('proLeft1').style.top = document.getElementsByClassName('playername')[0].offsetTop + "px"
+    document.getElementById('proLeft1').style.left = "0px";
+    document.getElementById('proLeft2').style.top = document.getElementsByClassName('playername')[1].offsetTop + "px"
+    document.getElementById('proLeft3').style.top = document.getElementsByClassName('playername')[2].offsetTop + "px"
+    //console.log (document.getElementsByClassName('playername')[0].offsetTop);
+  })
+
+  const findInterface = document.getElementById('findInterface');
+  findObserver.observe(findInterface, {
     box: "border-box",
   });
 </script>

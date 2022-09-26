@@ -1244,12 +1244,12 @@ class ClassicTetris3v3 extends Items{
 
   _processGameOver() {
     if ((this.frameCounter % 6) === 0) {  //4) === 0) {
-      ++this.gameOverLine;
-      if (this.gameOverLine < this.boardHeight) {
-        // paint next row
-        for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
-        draw._render(this, myCanvas)
-      } else {
+      // ++this.gameOverLine;
+      // if (this.gameOverLine < this.boardHeight) {
+      //   // paint next row
+      //   // for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = 7;
+      //   draw._render(this, myCanvas)
+      // } else {
         // game-over animation is done -stop the game loop
         this.gameLoop = false;
         SendData(this)
@@ -1261,7 +1261,7 @@ class ClassicTetris3v3 extends Items{
           score: this.score,
           lines: this.lines,
         });
-      }
+      // }
     }
   }
 

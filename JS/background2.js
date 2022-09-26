@@ -59,7 +59,6 @@ function drawobj(obj) {
   drawcvs.save()
   transform (obj)
   drawcvs.beginPath();
-console.log (obj.img.width);
   drawcvs.drawImage(obj.img, obj.x, obj.y, obj.img.width * 0.5, obj.img.height * 0.5);
   drawcvs.closePath();
   drawcvs.fill();
