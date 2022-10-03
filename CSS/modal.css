@@ -25,10 +25,11 @@
 .modal-content {
   background-color: #fefefe;
   margin: auto;
-  padding: 20px;
   border: 1px solid #888;
   width: 50%;
-  position: relative;
+  top: 10%;
+  left: 25%;
+  position: fixed;
 }
 
 /* The Close Button */
@@ -51,8 +52,8 @@
   font-size: 40px;
   font-weight: bold;
   position: absolute;
-  top: 90%;
-  left: 95%;
+  top: 85%;
+  left: 92%;
 }
 
 .page-previous {
@@ -61,8 +62,8 @@
   font-size: 40px;
   font-weight: bold;
   position: absolute;
-  top: 90%;
-  left: 85%;
+  top: 85%;
+  left: 82%;
 }
 
 .page-next:hover,

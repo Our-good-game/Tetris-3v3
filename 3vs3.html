@@ -49,8 +49,8 @@
         <canvas id='HUD' style="position:absolute;"></canvas>
         <img src="/picture/heart.png" id ="heart" style="display:none"></img>
         <img src="/picture/shield.png" id ="shield" style="display:none"></img>
-        <img id="itemIcon"  src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:35px; left:300px;">
-        <img id="itemIcon2" src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:35px; left:1200px;">
+        <img id="itemIcon"  src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:5%; left:10%;">
+        <img id="itemIcon2" src="/picture/Item/default.png" style="background-color:#fff; width: 70px; height: 70px; position:absolute; top:5%; left:80%;">
         <button class="btn_ani" onclick=dice() style="position: absolute;">action</button>
         <div class="meter" style="height: 40%; position:absolute; top: 0px; left: 0px; ">
           <span id="energy" style="height: 0%"></span>
@@ -474,17 +474,29 @@
     draw._renderNoHUD(opponent2Core, opponent2Canvas)
     draw._renderNoHUD(opponent3Core, opponent3Canvas)
 
-    // modify heart & shield position
+    // modify heart & shield position & size
     teamHeart.canvasWidth = window.innerWidth;
+    teamHeart.canvasHeight = window.innerHeight * 0.15;
     opponentHeart.canvasWidth = window.innerWidth;
+    opponentHeart.canvasHeight = window.innerHeight * 0.15;
     teamShield.canvasWidth = window.innerWidth;
+    teamShield.canvasHeight = window.innerHeight * 0.15;
     opponentShield.canvasWidth = window.innerWidth;
+    opponentShield.canvasHeight = window.innerHeight * 0.15;
     repaintHUD();
-
+    
+    // modify energy bar position
     myProfession.bar.style.top = myCanvas.squareSide * 12 + "px";
     myProfession.bar.style.left = window.innerWidth * 0.32 + "px";
     myProfession.bar.style.height = myCanvas.squareSide * 8 + "px";
     myProfession.bar.style.width  = myCanvas.squareSide * 0.5 + "px";
+
+    // modify item icon position & size
+    document.getElementById('itemIcon').style.width  = myCanvas.squareSide * 2 + "px";
+    document.getElementById('itemIcon').style.height = myCanvas.squareSide * 2 + "px";
+    document.getElementById('itemIcon2').style.width  = myCanvas.squareSide * 2 + "px";
+    document.getElementById('itemIcon2').style.height = myCanvas.squareSide * 2 + "px";
+    
   });
 
   const playInterface = document.getElementById('playInterface');

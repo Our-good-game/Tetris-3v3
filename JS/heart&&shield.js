@@ -6,7 +6,8 @@ class heart{
     this.img = document.getElementById("heart");
     this.dir = direction
     this.canvas = inputCanvas.getContext("2d");
-    this.canvasWidth = parseInt(inputCanvas.width)
+    this.canvasWidth = parseInt(inputCanvas.width);
+    this.canvasHeight = parseInt(inputCanvas.height);
   }
   paint (){
     let constant = 0
@@ -14,7 +15,9 @@ class heart{
     else constant = 1 
     for(let i=1; i <= this.life; ++i){
       this.canvas.beginPath();
-      this.canvas.drawImage(this.img, this.canvasWidth /2 + (i*50*constant)-70, 10, 50, 50)
+      this.canvas.drawImage(this.img, 
+                            this.canvasWidth /2 + (i * this.canvasWidth * 0.03 * constant) - this.canvasWidth * 0.03, this.canvasHeight * 0.1, 
+                            this.canvasWidth * 0.03, this.canvasWidth * 0.03);
       this.canvas.closePath();
       this.canvas.fill();
       this.canvas.restore()
@@ -34,7 +37,9 @@ class shield extends heart{
     else constant = 1 
     for(let i=1; i <= this.life; ++i){
       this.canvas.beginPath();
-      this.canvas.drawImage(this.img, this.canvasWidth /2 + (i*50*constant)-70, 60, 50, 50)
+      this.canvas.drawImage(this.img, 
+                            this.canvasWidth /2 + (i * this.canvasWidth * 0.03 * constant) - this.canvasWidth * 0.03, this.canvasHeight * 0.45, 
+                            this.canvasWidth * 0.03, this.canvasWidth * 0.03);
       this.canvas.closePath();
       this.canvas.fill();
       this.canvas.restore()
