@@ -338,4 +338,4 @@ function cheakRooms(roomsId){
       console.log(leaver+' disconnected '+people)
     })
 })
-server.listen(22222,'::')
+server.listen(80,'::')
