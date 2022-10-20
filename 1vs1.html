@@ -11,10 +11,6 @@
   <style>
     @import"/CSS/style.css";
     @import"/CSS/countDown.css";
-    @font-face {
-      font-family: huakang_girl_w5;
-      src: url(/CSS/huakang_girl_w5.ttf);
-    }
     .btn_ani {
       transition: all 0.3s;
       width: 100%;
@@ -37,8 +33,6 @@
 
 <body>
   <div style='user-select: none;'>
-    <!-- 載入huakang_girl_w5字體 -->
-    <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
     <canvas id='js-background'></canvas>
     <div>
       <div id='player-name'
@@ -255,7 +249,7 @@
     document.getElementsByClassName('demo')[0].style.top = P1canvas.countDownY + "px";
     
     // modify canvas font size
-    draw.canvasFont = P1canvas.squareSide + 'px huakang_girl_w5';
+    draw.canvasFont = P1canvas.squareSide + 'px georgia';
     draw._render(gamecore, P1canvas);
     draw._render(P2core, P2canvas);
     

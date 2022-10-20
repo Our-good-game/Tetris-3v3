@@ -1,6 +1,6 @@
 class Render{
   constructor(){
-    this.canvasFont = '36px huakang_girl_w5',
+    this.canvasFont = '36px georgia',
     this.canvasFontColor = '#FFF',
     this.piececolor = [
       ['#fe103c', '#f890a7'], //z-0

@@ -16,10 +16,6 @@
     @import"/CSS/style.css";
     @import"/CSS/energyBar.css";
     @import"/CSS/countDown.css";
-    @font-face {
-      font-family: huakang_girl_w5;
-      src: url(/CSS/huakang_girl_w5.ttf);
-    }
     .btn_ani {
       transition: all 0.3s;
       width: 10%;
@@ -41,8 +37,6 @@
 
 <body>
   <div style='user-select: none;'>
-    <!-- 載入huakang_girl_w5字體 -->
-    <div style='font-family: huakang_girl_w5; font-size: 0px;'>Combo</div>
     <canvas id='js-background'></canvas>
     <div>
       <div class='container' id ='playInterface' style="display: none;"> 
@@ -466,7 +460,7 @@
     document.getElementsByClassName('demo')[0].style.top  = (parseInt (player.style.top, 10)  + myCanvas.countDownY) + "px";
 
     // modify canvas font size
-    draw.canvasFont = myCanvas.squareSide + 'px huakang_girl_w5';
+    draw.canvasFont = myCanvas.squareSide + 'px georgia';
     draw._render(gamecore, myCanvas)
     draw._renderNoHUD(teammate1Core, teammate1Canvas)
     draw._renderNoHUD(teammate2Core, teammate2Canvas)
