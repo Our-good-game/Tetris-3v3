@@ -285,11 +285,11 @@ class Render{
         if(!tetris.gameLoop)return
         if(tetris.gameState == 3)return;
        
-        if(tetris.cheakTetris){
+        if(tetris.checkTetris){
           this.displayTetris = true
           setTimeout( ()=>{this.displayTetris = false},1000)
         }
-        if(tetris.cheakTspin){
+        if(tetris.checkTspin){
           this.displayTspin = true
           setTimeout( ()=>{this.displayTspin = false},1000)
         }
@@ -304,7 +304,7 @@ class Render{
         }
         if(this.displayTetris)
           formal.context.fillText("Tetris", formal.comboX , formal.comboY + formal.squareSide * 6); 
-        if(tetris.cheakTspin)
+        if(this.displayTspin)
           formal.context.fillText("T-spin", formal.comboX, formal.comboY + formal.squareSide * 8);
         
       }

@@ -368,8 +368,8 @@ class ClassicTetris3v3 extends Items{
     this.backToBackTrigger = false 
     this.backToBack = false
     this.lastRotate =  false 
-    this.cheakTspin =  false 
-    this.cheakTetris = false
+    this.checkTspin =  false 
+    this.checkTetris = false
 
     // pointer coords
     this.xIni = undefined;
@@ -1039,7 +1039,7 @@ class ClassicTetris3v3 extends Items{
     this.framesTilDrop = -1;
     if(this.piece.id === 5){
       if(this.lastRotate)
-        if(!this._canMovePiece(0,-1))this.cheakTspin = true
+        if(!this._canMovePiece(0,-1))this.checkTspin = true
     }
     this._setPiece();
     
@@ -1057,10 +1057,10 @@ class ClassicTetris3v3 extends Items{
       this.columnsCleared = 0;
       this.gameState = ClassicTetris3v3.STATE_BURN;
       
-      // cheak special burnOn
-      if(this.linesCleared.length === 4)this.cheakTetris = true;
+      // check special burnOn
+      if(this.linesCleared.length === 4)this.checkTetris = true;
       if(this.backToBackTrigger)this.backToBack = true;
-      if( this.cheakTetris || this.cheakTspin)
+      if( this.checkTetris || this.checkTspin)
         this.backToBackTrigger = true
       else {
         this.backToBackTrigger = false
@@ -1070,8 +1070,8 @@ class ClassicTetris3v3 extends Items{
       // process combo && burnOn && detrash
       if(this.comboTrigger){ this.combos++; } 
       else { this.comboTrigger = true; }
-      if(this.cheakTetris)this.burnOn += 4; 
-      else if(this.cheakTspin){this.burnOn += this.linesCleared.length*2 }
+      if(this.checkTetris)this.burnOn += 4; 
+      else if(this.checkTspin){this.burnOn += this.linesCleared.length*2 }
       else this.burnOn += this.linesCleared.length -1;
       if(this.backToBack)++this.burnOn
       let temp = [0,1,1,2,2,3,3]
@@ -1184,8 +1184,8 @@ class ClassicTetris3v3 extends Items{
       this.areFrames = -1;
       this.hold = true;// 調整為can hold
       this.lastRotate = false
-      this.cheakTspin = false 
-      this.cheakTetris = false
+      this.checkTspin = false 
+      this.checkTetris = false
       // reset drop points
       this.pressDownScore = 0;
       this.pointerMoveDownEnabled = false;
