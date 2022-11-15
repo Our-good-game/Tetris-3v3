@@ -633,6 +633,16 @@ class ClassicTetris {
     this.previousGameState = ClassicTetris.STATE_DROP;
     this.gameState = ClassicTetris.STATE_DROP;
     this.result = true
+
+    // combo, backToback trigger
+    this.comboTrigger = false;
+    this.combos = 0;
+    this.backToBackTrigger = false;
+    this.backToBack = false;
+
+    // throw trash
+    this.raise = 0;
+    this.burnOn = 0;
   }
 
 
@@ -697,7 +707,7 @@ class ClassicTetris {
 
     switch (event.keyCode || event.which) {
       case 37:
-      case 65:
+      //case 65:
         // left
         event.preventDefault();
         if ( this.itemLeftRightChange ) {
@@ -707,7 +717,7 @@ class ClassicTetris {
         }
         break;
       case 39:
-      case 68:
+      //case 68:
         // right
         event.preventDefault();
         if ( this.itemLeftRightChange ) {
@@ -717,21 +727,21 @@ class ClassicTetris {
         }
         break;
       case 38:
-      case 75:
-      case 87:
-      case 88:
+      //case 75:
+      //case 87:
+      //case 88:
         // rotate clockwise
         event.preventDefault();
         this.rotateAnticlockwise = !(this.rotateClockwise = true);
         break;
-      case 76:
+      //case 76:
       case 90:
         // rotate anticlockwise
         event.preventDefault();
         this.rotateClockwise = !(this.rotateAnticlockwise = true);
         break;
       case 40:
-      case 83:
+      //case 83:
         // down
         event.preventDefault();
         this.moveDown = true;

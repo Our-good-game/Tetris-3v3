@@ -91,6 +91,27 @@
         </svg>
       </div>
     </div>
+    <div class="demo" style="display: none;">
+      <div class="demo__colored-blocks">
+        <div class="demo__colored-blocks-rotater">
+          <div class="demo__colored-block"></div>
+          <div class="demo__colored-block"></div>
+          <div class="demo__colored-block"></div>
+        </div>
+        <div class="demo__colored-blocks-inner"></div>
+        <div class="demo__text">Ready</div>
+      </div>
+      <div class="demo__inner">
+        <svg class="demo__numbers" viewBox="0 0 100 100">
+          <path class="demo__numbers-path" 
+                d="M-10,20 60,20 40,50 a18,15 0 1,1 -12,19 
+                   Q25,44 34.4,27.4
+                   l7,-7 a16,16 0 0,1 22.6,22.6 l-30,30 l35,0 L69,73 
+                   a20,10 0 0,1 20,10 a17,17 0 0,1 -34,0 L55,83 
+                   l0,-61 L40,28" />
+        </svg>
+      </div>
+    </div>
   </div>
 </body>
 <script src="/JS/background.js"></script>
@@ -118,6 +139,8 @@
   // set counter down position
   document.getElementsByClassName('demo')[0].style.left = P1canvas.countDownX + "px";
   document.getElementsByClassName('demo')[0].style.top = P1canvas.countDownY + "px";
+  document.getElementsByClassName('demo')[1].style.left = (HUD.width + canvas_player.width + P2canvas.countDownX)+ "px";
+  document.getElementsByClassName('demo')[1].style.top = P2canvas.countDownY + "px";
 
   window.onload = function () {
     draw._render(gamecore,P1canvas);
@@ -140,12 +163,16 @@
     _startStopBtn = event => {
       // timer.settime(P1canvas.togglePlayPause());
       if (gamecore.playing) return;
-      if (p2 !== undefined) socket.emit('fight', p2);
+      if (p2 !== undefined) {
+        socket.emit('fight', p2);
+        document.getElementsByClassName('demo')[1].style.display = "block";
+      }
       document.getElementsByClassName('demo')[0].style.display = "block";
       setTimeout( () => {
         P1canvas._disableUI();
         gamecore.togglePlayPause();
-        document.getElementsByClassName('demo')[0].style.display = "none";
+        document.getElementsByClassName('demo')[0].style.display = "none"; 
+        document.getElementsByClassName('demo')[1].style.display = "none";
       }, 3500)
     };
     document.getElementById('start-stop-btn').addEventListener('click', _startStopBtn );
@@ -222,10 +249,12 @@
   socket.on('fight', function (opponent) {
     // timer.settime(gamecore.togglePlayPause());
     document.getElementsByClassName('demo')[0].style.display = "block";
+    document.getElementsByClassName('demo')[1].style.display = "block";
     setTimeout( () => {
       P1canvas._disableUI();
       gamecore.togglePlayPause();
       document.getElementsByClassName('demo')[0].style.display = "none";
+      document.getElementsByClassName('demo')[1].style.display = "none";
     }, 3500)
   })
 
@@ -247,6 +276,8 @@
     // modify start-animation position
     document.getElementsByClassName('demo')[0].style.left = P1canvas.countDownX + "px";
     document.getElementsByClassName('demo')[0].style.top = P1canvas.countDownY + "px";
+    document.getElementsByClassName('demo')[1].style.left = (HUD.width + canvas_player.width + P2canvas.countDownX)+ "px";
+    document.getElementsByClassName('demo')[1].style.top = P2canvas.countDownY + "px";
     
     // modify canvas font size
     draw.canvasFont = P1canvas.squareSide + 'px georgia';
