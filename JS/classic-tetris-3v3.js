@@ -368,8 +368,8 @@ class ClassicTetris3v3 extends Items{
     this.backToBackTrigger = false 
     this.backToBack = false
     this.lastRotate =  false 
-    this.checkTspin =  false 
-    this.checkTetris = false
+    this.cheakTspin =  false 
+    this.cheakTetris = false
 
     // pointer coords
     this.xIni = undefined;
@@ -397,12 +397,12 @@ class ClassicTetris3v3 extends Items{
     // holding piece
 
     // game parameters
-    this.startLevel = 5;
-    this.level = 0;
-    this.lines = 0;
-    this.oldlines = this.lines;
+    this.startLevel = 5;//not use
+    this.level = 0; //not use
+    this.lines = 0; // not use
+    this.oldlines = this.lines;// not use
     this.score = 0;
-    this.pressDownScore = 0;
+    this.pressDownScore = 0;// not use
     this.result = undefined;
     this.boardOverLoad = false
 
@@ -433,6 +433,7 @@ class ClassicTetris3v3 extends Items{
     this.frameCounter = 0;
     this.areFrames = -1;
     this.framesTilDrop = this.maxFramesTilDrop
+    this.delayControl = true
 
     // counters for line-clear and game-over animations
     this.columnsCleared = -1;
@@ -548,6 +549,17 @@ class ClassicTetris3v3 extends Items{
     this.hold = true
     this.haveHold = false
     this.boardOverLoad = false
+   
+    // items && socre
+    this.burnOn = 0
+    this.raise = 0;
+    this.comboTrigger = false;
+    this.combos = 0;
+    this.backToBackTrigger = false 
+    this.backToBack = false
+    this.lastRotate =  false 
+    this.cheakTspin =  false 
+    this.cheakTetris = false
 
     //  pointer coords
     this.xIni = undefined
@@ -578,6 +590,7 @@ class ClassicTetris3v3 extends Items{
     this.frameCounter = 0;
     this.areFrames = -1;
     this.maxFramesTilDrop = 70
+    this.delayControl = true
     this.framesTilDrop = this.maxFramesTilDrop;
     this.columnsCleared = -1;
     this.gameOverLine = -1;
@@ -994,12 +1007,14 @@ class ClassicTetris3v3 extends Items{
           downPressed: this.moveDown
         });
 
-      } else if(this.framesTilDrop != 0){
+      } else if(this.delayControl  || this.framesTilDrop > 0){
         this.framesTilDrop = 60
+        this.delayControl = false
       }
       else{
         // lock piece if it couldn't move down
         this._lockPiece();
+        this.delayControl = true
       }
     }
     
@@ -1039,7 +1054,7 @@ class ClassicTetris3v3 extends Items{
     this.framesTilDrop = -1;
     if(this.piece.id === 5){
       if(this.lastRotate)
-        if(!this._canMovePiece(0,-1))this.checkTspin = true
+        if(!this._canMovePiece(0,-1))this.cheakTspin = true
     }
     this._setPiece();
     
@@ -1057,10 +1072,10 @@ class ClassicTetris3v3 extends Items{
       this.columnsCleared = 0;
       this.gameState = ClassicTetris3v3.STATE_BURN;
       
-      // check special burnOn
-      if(this.linesCleared.length === 4)this.checkTetris = true;
+      // cheak special burnOn
+      if(this.linesCleared.length === 4)this.cheakTetris = true;
       if(this.backToBackTrigger)this.backToBack = true;
-      if( this.checkTetris || this.checkTspin)
+      if( this.cheakTetris || this.cheakTspin)
         this.backToBackTrigger = true
       else {
         this.backToBackTrigger = false
@@ -1070,17 +1085,17 @@ class ClassicTetris3v3 extends Items{
       // process combo && burnOn && detrash
       if(this.comboTrigger){ this.combos++; } 
       else { this.comboTrigger = true; }
-      if(this.checkTetris)this.burnOn += 4; 
-      else if(this.checkTspin){this.burnOn += this.linesCleared.length*2 }
+      if(this.cheakTetris)this.burnOn += 4; 
+      else if(this.cheakTspin){this.burnOn += this.linesCleared.length*2 }
       else this.burnOn += this.linesCleared.length -1;
       if(this.backToBack)++this.burnOn
       let temp = [0,1,1,2,2,3,3]
       if(this.combos < 7) this.burnOn+=temp[this.combos]
       else this.burnOn+=4;
       if(this.raise > 0)this.raise -= this.burnOn
-      if(this.burnOn > 0 && this.raise){
-        //triiggertrashanime()
-      }
+      // if(this.burnOn > 0 && this.raise){
+      //   //triiggertrashanime()
+      // }
       
       myProfession.modifyEnergy(this.burnOn);
       this.burnOn = 0
@@ -1184,8 +1199,8 @@ class ClassicTetris3v3 extends Items{
       this.areFrames = -1;
       this.hold = true;// 調整為can hold
       this.lastRotate = false
-      this.checkTspin = false 
-      this.checkTetris = false
+      this.cheakTspin = false 
+      this.cheakTetris = false
       // reset drop points
       this.pressDownScore = 0;
       this.pointerMoveDownEnabled = false;
