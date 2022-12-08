@@ -293,10 +293,10 @@ class ClassicTetris {
      // sounds set
      this.takingItemSound.volume = 0.3;
      this.takingEndItemSound = 1.0;
-     this.gameTheme.volume = 0.1;
+     this.gameTheme.volume = 0.8;
      this.setSound.volume = 0.3;
-     this.moveSound.volume = 0.05;
-     this.rotateSound.volume = 0.05;
+     this.moveSound.volume = 0.2;
+     this.rotateSound.volume = 0.2;
 
     // pieces
     this.pieces = [
@@ -701,7 +701,8 @@ class ClassicTetris {
   // hard drop              space bar       32
   // pause                  esc             27
   // pause                  'p'             80
-  // hold                  'shift'          16
+  // hold                   'shift'         16
+  // hold                   'c'             67
   // key event listener
   _handleKeyDown = event => {
 
@@ -754,6 +755,7 @@ class ClassicTetris {
         this.hold = false;
         break;
       case 16:
+      case 67:
         event.preventDefault();
         // hold piece
         if ( this.hold )
@@ -1309,7 +1311,7 @@ class ClassicTetris {
         for (let i = 0; i < this.boardWidth; ++i) this.board[this.gameOverLine][i] = -1;
         draw._render(this, P1canvas);
       } else {
-        // game-over animation is done -stop the game loop
+        // game-over animation is done -stop t  he game loop
         this.gameLoop = false;
         SendData(this)
         draw._render(this, P1canvas);
