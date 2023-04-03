@@ -1,7 +1,7 @@
 
 class heart{
   constructor(direction, inputCanvas){
-    this.life = 3;
+    this.life = 5 
     this.img = new Image();
     this.img = document.getElementById("heart");
     this.dir = direction

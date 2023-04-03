@@ -652,7 +652,6 @@ class ClassicTetris3v3 extends Items{
   // down                   down arrow      40
   // hard drop              space bar       32
   // hold                  'shift'          16
-  // hold                   'c'             67
   // key event listener
   _handleKeyDown = event => {
 
@@ -698,7 +697,6 @@ class ClassicTetris3v3 extends Items{
         this.hold = false;
       break;
       case 16:
-      case 67:
         event.preventDefault();
         // hold piece
         if ( this.hold )
@@ -1091,7 +1089,7 @@ class ClassicTetris3v3 extends Items{
       else if(this.cheakTspin){this.burnOn += this.linesCleared.length*2 }
       else this.burnOn += this.linesCleared.length -1;
       if(this.backToBack)++this.burnOn
-      let temp = [1,1,1,2,2,3,3]
+      let temp = [0,1,1,2,2,3,3]
       if(this.combos < 7) this.burnOn+=temp[this.combos]
       else this.burnOn+=4;
       if(this.raise > 0)this.raise -= this.burnOn

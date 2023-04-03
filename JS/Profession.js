@@ -1,8 +1,8 @@
 class profession extends EnergyBar{
   static COST = {
-    Attacker: 5,
-    Defender: 5,
-    Magician: 5
+    Attacker: 7,
+    Defender: 8,
+    Magician: 10
   }
   constructor(config, bar, energy){
     super(bar, energy, profession.COST[config.profession])
